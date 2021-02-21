@@ -1,4 +1,5 @@
 lib/.precomp/**
+t/lib/.precomp/**
 **/.idea/**
 **/*.iml
 **/.DS_Store
