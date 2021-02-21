@@ -5,7 +5,7 @@ use Racoco::PrecompFileFind;
 use Racoco::X;
 plan 9;
 
-my $source = 't'.IO.add('resources').add('useful-provider');
+my $source = 't'.IO.add('resources').add('precomp-finder');
 
 {
   my $lib = $source.add('not-exists-lib');
