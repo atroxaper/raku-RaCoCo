@@ -1,6 +1,6 @@
 use Test;
 use lib 'lib';
-use Racoco::PrecompFileFind;
+use Racoco::PrecompFile;
 use Racoco::Sha;
 use Racoco::X;
 
@@ -8,9 +8,7 @@ plan 10;
 
 my $source = 't'.IO.add('resources').add('root-folder');
 my $sha = Racoco::Sha::create();
-my $file;
-my $lib;
-my $finder;
+my ($file, $lib, $finder);
 
 sub setUp($file-name, $lib-name) {
   $file = $file-name;

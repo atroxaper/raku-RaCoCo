@@ -1,8 +1,19 @@
-unit module Racoco::PrecompFileFind;
+unit module Racoco::PrecompFile;
 use Racoco::X;
 use Racoco::Sha;
 use Racoco::UtilExtProc;
 use Racoco::Constants;
+
+sub get-our-precomp($lib) {
+  $lib.parent.add($DOT-RACOCO).add($OUR-PRECOMP);
+}
+
+sub get-file-precomp(:$path, :$sha) {
+  my $path-wo-ext = $path.extension('').Str;
+  my $sha-value = $sha.uc($path-wo-ext);
+  my $two-letters = $sha-value.substr(0, 2);
+  $two-letters.IO.add($sha-value)
+}
 
 class Finder is export {
   has $!sha;
@@ -23,7 +34,7 @@ class Finder is export {
   }
 
   method !get-our-location($lib) {
-    my $our-precomp = $lib.parent.add($DOT-RACOCO).add($OUR-PRECOMP);
+    my $our-precomp = get-our-precomp($lib);
     return $our-precomp if $our-precomp.e;
     Nil
   }
@@ -35,13 +46,10 @@ class Finder is export {
     @compiler-ids.elems == 1 ?? $path.add(@compiler-ids[0].basename) !! IO::Path
   }
 
-  multi method find(Finder: IO() \path --> IO::Path) {
-    my $path-wo-ext = path.extension('').Str;
-    my $sha-value = $!sha.uc($path-wo-ext);
-    my $two-letters = $sha-value.substr(0, 2);
+  multi method find(IO() $path --> IO::Path) {
     for @!find-locations -> $location {
-      my $result = $location.add($two-letters).add($sha-value);
-      return $result if $result.e;
+      my $found = $location.add(get-file-precomp(:$path, :$!sha));
+      return $found if $found.e;
     }
     return Nil
   }
@@ -51,23 +59,41 @@ class Maker is export {
   has ExtProc $.proc;
   has IO::Path $.precomp-path;
   has Str $.raku = 'raku';
+  has Str $!lib-name;
   has $!sha;
 
-  submethod TWEAK() {
-    $!precomp-path //= '.racoco'.IO.add('.precomp');
+  submethod BUILD(:$lib is copy, :$!raku, :$!proc) {
+    $lib = $lib.absolute.IO;
+    $!lib-name = $lib.basename;
+    $!precomp-path = get-our-precomp($lib);
     $!precomp-path.mkdir;
-    $!sha = Racoco::Sha::create();
+    $!sha = Racoco::Sha::create()
   }
 
-  method compile($lib, $file --> IO::Path) {
-    my $output = $!precomp-path.add($!sha.uc($file));
+  method compile(IO() $path --> IO::Path) {
+    my $output = $!precomp-path.add(get-file-precomp(:$path, :$!sha));
+    $output.parent.mkdir;
     my $proc = $!proc.run(
       $!raku,
-      "-I$lib",
+      "-I$!lib-name",
       '--target=mbc',
       "--output=$output",
-      $file.Str
+      $path.Str
     );
     $proc.exitcode == 0 ?? $output !! Nil;
+  }
+}
+
+class Provider is export {
+  has $!finder;
+  has $!maker;
+
+  method BUILD(:$lib, :$raku, :$proc) {
+    $!finder = Finder.new(:$lib);
+    $!maker = Maker.new(:$lib, :$raku, :$proc)
+  }
+
+  method get($path) {
+    $!finder.find($path) // $!maker.compile($path)
   }
 }

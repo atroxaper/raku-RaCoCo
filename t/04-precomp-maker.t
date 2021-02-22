@@ -1,65 +1,41 @@
 use Test;
 use lib 'lib';
-
-use Racoco::PrecompFileFind;
+use lib 't/lib';
+use Racoco::PrecompFile;
 use Racoco::UtilTmpFile;
 use Racoco::UtilExtProc;
 use Racoco::Sha;
+use Racoco::TestExtProc;
 
-plan 5;
+plan 3;
 
 constant tmp-file = Racoco::UtilTmpFile;
 LEAVE { tmp-file::clean-up }
 my $sha = Racoco::Sha::create();
 
-my $proc;
-my $maker;
-class FakeProc does ExtProc {
-  has $.c;
-  method run(|c) {
-    $!c = c;
-    return class :: { method exitcode { 0 } }
-  }
-}
+my ($proc, $maker);
 
-class FailProc does ExtProc {
-  method run(|c) { return class :: { method exitcode { 1 } } }
-}
-
-sub setUp(:$precomp-path, :$raku, :$fail) {
+sub setUp(:$raku = 'raku', :$fail) {
   $proc = FakeProc.new;
   $proc = FailProc.new if $fail;
-  $maker = Maker.new(|(:$proc, :$precomp-path, :$raku)\
-      .grep(*.value.defined).Map)
+  $maker = Maker.new(:lib('libb'.IO), :$raku, :$proc);
 }
 
 {
-  my $file = 'module'.IO.add('module2.rakumod');
-  my $output = '.racoco'.IO.add('.precomp').add($sha.uc($file));
+  my $file = 'Module'.IO.add('Module2.rakumod');
+  my $output = '.racoco'.IO.absolute.IO.add('.precomp').add('5B')
+    .add('5B09525FBA2FACE03A1FCACDEF4904C2194F0307');
   tmp-file::register-dir('.racoco');
   setUp();
-  is $maker.compile('libb', $file.Str), $output, 'defalut precomp ok';
+  is $maker.compile($file.Str), $output, 'precomp ok';
   is $proc.c,
     \('raku', '-Ilibb', '--target=mbc', "--output=$output", $file.Str),
-    'default precomp';
+    'precomp';
 }
 
 {
   setUp(:fail);
-  nok $maker.compile('libb', 'file').defined, 'make precomp nok';
-}
-
-{
-  my $raku = 'path/raku';
-  my $file = 'module'.IO.add('module2.rakumod');
-  my $precomp-path = $*TMPDIR.add('.precomp');
-  tmp-file::register-dir($precomp-path);
-  my $output = $precomp-path.add($sha.uc($file));
-  setUp(:$raku, :$precomp-path);
-  is $maker.compile('libb', $file.Str), $output, 'custom precomp ok';
-  is $proc.c,
-    \($raku, '-Ilibb', '--target=mbc', "--output=$output", $file.Str),
-    'custom precomp';
+  nok $maker.compile('file').defined, 'precomp nok';
 }
 
 done-testing

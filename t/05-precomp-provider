@@ -1,4 +1,0 @@
-use Test;
-use lib 'lib';
-use Racoco::PrecompFileFind;
-
