@@ -3,22 +3,26 @@ unit module Racoco::UtilTmpFile;
 my @tmp-files;
 my @tmp-dirs;
 
-our sub create-file(IO() $path) {
+our sub create-file(IO() $path --> IO::Path:D) {
   register-file($path);
   $path.spurt: '';
+  $path
 }
 
-our sub create-dir(IO() $path) {
+our sub create-dir(IO() $path --> IO::Path:D) {
   register-dir($path);
   $path.mkdir;
+  $path
 }
 
-our sub register-file(IO() $path) {
+our sub register-file(IO() $path --> IO::Path:D) {
   @tmp-files.push: $path;
+  $path
 }
 
-our sub register-dir(IO() $path) {
+our sub register-dir(IO() $path --> IO::Path:D) {
   @tmp-dirs.push: $path;
+  $path
 }
 
 our sub clean-up() {

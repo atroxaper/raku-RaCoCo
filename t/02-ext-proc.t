@@ -8,9 +8,8 @@ plan 2;
 constant tmp-file = Racoco::UtilTmpFile;
 LEAVE { tmp-file::clean-up }
 
-my $test-dir = $*TMPDIR.add('ext-proc');
+my $test-dir = tmp-file::create-dir($*TMPDIR.add('ext-proc'));
 my $test-file = $test-dir.add('file');
-tmp-file::create-dir($test-dir);
 
 my $proc = RunProc.new;
 

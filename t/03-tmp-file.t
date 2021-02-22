@@ -6,32 +6,29 @@ plan 11;
 
 constant tmp-file = Racoco::UtilTmpFile;
 
-my $root = $*TMPDIR.add('tmp-file-dir');
-
-tmp-file::create-dir($root);
-tmp-file::create-file($root.add('file1'));
-tmp-file::register-file($root.add('file2'));
-tmp-file::register-dir($root.add('dir1'));
-
-tmp-file::create-dir($root.add('my'));
-$root.add('my').add('file').spurt: '';
+my $root = tmp-file::create-dir($*TMPDIR.add('tmp-file-dir'));
+my $file1 = tmp-file::create-file($root.add('file1'));
+my $file2 = tmp-file::register-file($root.add('file2'));
+my $dir1 = tmp-file::register-dir($root.add('dir1'));
 
 ok $root.e, 'create root';
-ok $root.add('file1').e, 'create file1';
-nok $root.add('file2').e, 'add file2';
-nok $root.add('dir1').e, 'add dir1';
-$root.add('dir1').mkdir;
-ok $root.add('dir1').e, 'mkdir dir1';
+ok $file1.e, 'create file1';
+nok $file2.e, 'add file2';
+nok $dir1.e, 'add dir1';
+$dir1.mkdir;
+ok $dir1.e, 'mkdir dir1';
 
-ok $root.add('my').add('file').e, 'create my file';
+my $my-dir = tmp-file::create-dir($root.add('my'));
+$my-dir.add('file').spurt: '';
+ok $my-dir.add('file').e, 'create my file';
 
 tmp-file::clean-up;
 
-nok $root.add('file2').e, 'unlink file1';
-nok $root.add('file1').e, 'unlink file2';
-nok $root.add('dir1').e, 'rmdir dir1';
+nok $file2.e, 'unlink file2';
+nok $file1.e, 'unlink file1';
+nok $dir1.e, 'rmdir dir1';
 nok $root.e, 'rmdir root';
 
-nok $root.add('my').e, 'rmdir my dir';
+nok $my-dir.e, 'rmdir my dir';
 
 done-testing
