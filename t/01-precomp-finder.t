@@ -1,11 +1,13 @@
 use Test;
 use lib 'lib';
-
 use Racoco::PrecompFileFind;
+use Racoco::Sha;
 use Racoco::X;
-plan 9;
 
-my $source = 't'.IO.add('resources').add('precomp-finder');
+plan 10;
+
+my $source = 't'.IO.add('resources').add('root-folder');
+my $sha = Racoco::Sha::create();
 my $file;
 my $lib;
 my $finder;
@@ -52,6 +54,13 @@ sub setUp($file-name, $lib-name) {
   setUp('Module.rakumod', 'lib3');
   my $result = $finder.find($file);
   nok $result.DEFINITE, 'cannot find .precomp folder';
+}
+
+{
+  setUp('Module2.rakumod', 'lib1');
+  my $expected = $source.add('.racoco').add('.precomp').add('C4')
+      .add('C42D08C62F336741E9DBBDC10EFA8A4673AA820F').absolute.IO;
+  is $finder.find($file), $expected, 'find in our precomp';
 }
 
 done-testing
