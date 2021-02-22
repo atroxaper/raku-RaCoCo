@@ -1,6 +1,7 @@
 unit module Racoco::PrecompFileFind;
 use Racoco::X;
 use Racoco::Sha;
+use Racoco::UtilExtProc;
 
 class Finder is export {
   has $.lib;
@@ -39,5 +40,28 @@ class Finder is export {
 }
 
 class Maker is export {
+
+  has ExtProc $.proc;
+  has IO::Path $.precomp-path;
+  has Str $.raku = 'raku';
+  has $!sha;
+
+  submethod TWEAK() {
+    $!precomp-path //= '.racoco'.IO.add('.precomp');
+    $!precomp-path.mkdir;
+    $!sha = Racoco::Sha::create();
+  }
+
+  method compile($lib, $file --> IO::Path) {
+    my $output = $!precomp-path.add($!sha.uc($file));
+    my $proc = $!proc.run(
+      $!raku,
+      "-I$lib",
+      '--target=mbc',
+      "--output=$output",
+      $file.Str
+    );
+    $proc.exitcode == 0 ?? $output !! Nil;
+  }
 
 }

@@ -5,11 +5,13 @@ use Racoco::UtilTmpFile;
 plan 11;
 
 constant tmp-file = Racoco::UtilTmpFile;
+LEAVE { tmp-file::clean-up }
 
 my $root = tmp-file::create-dir($*TMPDIR.add('tmp-file-dir'));
 my $file1 = tmp-file::create-file($root.add('file1'));
 my $file2 = tmp-file::register-file($root.add('file2'));
 my $dir1 = tmp-file::register-dir($root.add('dir1'));
+tmp-file::register-dir('not-exists');
 
 ok $root.e, 'create root';
 ok $file1.e, 'create file1';

@@ -42,6 +42,7 @@ our sub clean-up() {
 }
 
 sub rmdir($path) {
+  return unless $path ~~ :d & :e;
   for $path.dir() -> $sub-path {
     rmdir($sub-path) if $sub-path.d;
     $sub-path.unlink;
