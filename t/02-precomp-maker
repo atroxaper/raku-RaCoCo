@@ -1,0 +1,18 @@
+use Test;
+use lib 'lib';
+use lib 't/lib';
+
+use Racoco::PrecompFileFind;
+use Racoco::Fixture;
+
+plan 1;
+
+constant fixture = Racoco::Fixture;
+
+# fixture::create-tmp-dir($*TMPDIR.add('.racoco'));
+# fixture::create-tmp-dir($*TMPDIR.add('.racoco'));
+
+my $maker = Maker.new();
+ok $maker.DEFINITE;
+
+done-testing

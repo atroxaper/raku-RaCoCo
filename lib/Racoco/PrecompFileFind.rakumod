@@ -37,3 +37,7 @@ class Finder is export {
     Nil
   }
 }
+
+class Maker is export {
+
+}
