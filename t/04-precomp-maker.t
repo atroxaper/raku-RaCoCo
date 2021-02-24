@@ -5,7 +5,7 @@ use Racoco::PrecompFile;
 use Racoco::UtilTmpFile;
 use Racoco::UtilExtProc;
 use Racoco::Sha;
-use Racoco::TestExtProc;
+use Racoco::Fixture;
 
 plan 3;
 
@@ -16,8 +16,8 @@ my $sha = Racoco::Sha::create();
 my ($proc, $maker);
 
 sub setUp(:$raku = 'raku', :$fail) {
-  $proc = FakeProc.new;
-  $proc = FailProc.new if $fail;
+  $proc = Fixture::fakeProc;
+  $proc = Fixture::failProc if $fail;
   $maker = Maker.new(:lib('libb'.IO), :$raku, :$proc);
 }
 

@@ -2,7 +2,7 @@ use Test;
 use lib 'lib';
 use lib 't/lib';
 use Racoco::PrecompFile;
-use Racoco::TestExtProc;
+use Racoco::Fixture;
 use Racoco::Constants;
 
 plan 3;
@@ -10,7 +10,7 @@ plan 3;
 my $source = 't'.IO.absolute.IO.add('resources').add('root-folder');
 my $lib = $source.add('lib1');
 my $raku = 'raku';
-my $proc = FakeProc.new;
+my $proc = Fixture::fakeProc;
 my $module1-path = $source.add('lib1').add($DOT-PRECOMP)
   .add('7011F868022706D0DB123C03898593E0AB8D8AF3').add('B8')
   .add('B8FF02892916FF59F7FBD4E617FCCD01F6BCA576');

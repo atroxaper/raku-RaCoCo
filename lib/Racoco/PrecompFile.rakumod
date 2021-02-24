@@ -97,3 +97,11 @@ class Provider is export {
     $!finder.find($path) // $!maker.compile($path)
   }
 }
+
+class HashcodeGetter is export {
+  method hashcode(IO() $path --> Str) {
+    my $h = $path.open :r;
+    LEAVE { .close with $h }
+    $h.get
+  }
+}
