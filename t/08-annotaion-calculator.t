@@ -11,7 +11,7 @@ my $racoco = $source.add($DOT-RACOCO);
 my $lib = $source.add('lib1');
 my $now = now;
 
-my $calc = AnnotationCalculator.new(:$lib);
+my $calc = Calculator.new(:$lib);
 
 my $annotation = $calc.calc('Module.rakumod');
 isa-ok $annotation, Annotation, 'calc annotation';

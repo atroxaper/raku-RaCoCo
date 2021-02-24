@@ -4,8 +4,12 @@ use lib 't/lib';
 use Racoco::PrecompFile;
 use Racoco::Fixture;
 use Racoco::Constants;
+use Racoco::UtilTmpFile;
 
 plan 3;
+
+constant tmp-file = Racoco::UtilTmpFile;
+LEAVE { tmp-file::clean-up }
 
 my $source = 't'.IO.absolute.IO.add('resources').add('root-folder');
 my $lib = $source.add('lib1');
@@ -18,6 +22,7 @@ my $module2-path = $source.add($DOT-RACOCO).add($OUR-PRECOMP).add('C4')
   .add('C42D08C62F336741E9DBBDC10EFA8A4673AA820F');
 my $module3-path = $source.add($DOT-RACOCO).add($OUR-PRECOMP).add('5F')
   .add('5FB62D3D27EB6AAE0FD30F0E99F9EB7D3907F2F8');
+tmp-file::register-dir($module3-path.parent);
 my $provider = Provider.new(:$lib, :$raku, :$proc);
 
 is $provider.get('Module.rakumod'), $module1-path, 'precomp ok';

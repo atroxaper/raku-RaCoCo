@@ -56,7 +56,7 @@ class Finder is export {
 }
 
 class Maker is export {
-  has ExtProc $.proc;
+  has RunProc $.proc;
   has IO::Path $.precomp-path;
   has Str $.raku = 'raku';
   has Str $!lib-name;
@@ -99,7 +99,7 @@ class Provider is export {
 }
 
 class HashcodeGetter is export {
-  method hashcode(IO() $path --> Str) {
+  method get(IO() $path --> Str) {
     my $h = $path.open :r;
     LEAVE { .close with $h }
     $h.get

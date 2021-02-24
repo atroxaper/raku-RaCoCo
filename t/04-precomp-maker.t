@@ -6,6 +6,7 @@ use Racoco::UtilTmpFile;
 use Racoco::UtilExtProc;
 use Racoco::Sha;
 use Racoco::Fixture;
+use Racoco::Constants;
 
 plan 3;
 
@@ -15,17 +16,18 @@ my $sha = Racoco::Sha::create();
 
 my ($proc, $maker);
 
+my $root = tmp-file::register-dir($*TMPDIR.add('maker'));
+
 sub setUp(:$raku = 'raku', :$fail) {
   $proc = Fixture::fakeProc;
   $proc = Fixture::failProc if $fail;
-  $maker = Maker.new(:lib('libb'.IO), :$raku, :$proc);
+  $maker = Maker.new(:lib($root.add('libb')), :$raku, :$proc);
 }
 
 {
   my $file = 'Module'.IO.add('Module2.rakumod');
-  my $output = '.racoco'.IO.absolute.IO.add('.precomp').add('5B')
+  my $output = $root.add($DOT-RACOCO).add($DOT-PRECOMP).add('5B')
     .add('5B09525FBA2FACE03A1FCACDEF4904C2194F0307');
-  tmp-file::register-dir('.racoco');
   setUp();
   is $maker.compile($file.Str), $output, 'precomp ok';
   is $proc.c,
