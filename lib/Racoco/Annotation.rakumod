@@ -54,7 +54,7 @@ class IndexFile does Index is export {
   }
 
   method !read-index() {
-    return unless $!path.e;
+    return %{} unless $!path.e;
     $!path.lines.map(-> $l {
       my ($file, $timestamp, $hashcode, $lines) =
         $l.split('|').map(*.trim).List;
@@ -87,6 +87,7 @@ class IndexFile does Index is export {
   }
 
   method flush() {
+    $!path.parent.mkdir;
     my $h = $!path.open(:w);
     LEAVE { .close with $h }
     %!annotations.sort.map(*.value)
@@ -125,7 +126,7 @@ class Calculator is export {
         lines => $!dumper.get($precomp)
       )
     }
-    $!index.add($path, $new-index);
+    $!index.add($new-index);
     $new-index.lines
   }
 

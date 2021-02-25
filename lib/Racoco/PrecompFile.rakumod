@@ -8,9 +8,15 @@ sub get-our-precomp($lib) {
   $lib.parent.add($DOT-RACOCO).add($OUR-PRECOMP);
 }
 
-sub get-file-precomp(:$path, :$sha) {
-  my $path-wo-ext = $path.extension('').Str;
-  my $sha-value = $sha.uc($path-wo-ext);
+sub get-file-precomp(:$path is copy, :$sha) {
+  my @parts;
+  $path .= extension('');
+  while $path ne '.' {
+    @parts.push: $path.basename;
+    $path .= parent;
+  }
+  my $module-name = @parts.reverse.join('::');
+  my $sha-value = $sha.uc($module-name);
   my $two-letters = $sha-value.substr(0, 2);
   $two-letters.IO.add($sha-value)
 }
@@ -57,7 +63,7 @@ class Finder is export {
 class Maker is export {
   has RunProc $.proc;
   has IO::Path $.precomp-path;
-  has Str $.raku = 'raku';
+  has Str $.raku;
   has Str $!lib-name;
   has $!sha;
 
@@ -73,7 +79,7 @@ class Maker is export {
     $output.parent.mkdir;
     my $file = $!lib-name.IO.add($path);
     my $proc = $!proc.run(
-      "$!raku -I$!lib-name --target=mbc --output=$output $file"
+      "$!raku -I$!lib-name --target=mbc --output=$output $file", :out(False)
     );
     $proc.exitcode == 0 ?? $output !! Nil;
   }

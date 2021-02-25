@@ -42,7 +42,7 @@ our sub fakePath($path, :$modified) {
 my role TestKeyValueStore {
   has %.mock;
 
-  method add($key, $value) {
+  multi method add($key, $value) {
     %!mock{$key} = $value
   }
 
@@ -53,7 +53,10 @@ my role TestKeyValueStore {
 
 my class TestProvider does Provider does TestKeyValueStore {}
 my class TestHashcodeGetter does HashcodeGetter does TestKeyValueStore {}
-my class TestIndex does Index does TestKeyValueStore { method flush() {} }
+my class TestIndex does Index does TestKeyValueStore {
+  multi method add($annotation) { self.add($annotation.file, $annotation) }
+  method flush() {}
+}
 my class TestDumper does Dumper does TestKeyValueStore { }
 
 sub putToTestKeyValueStore($store, %values) {

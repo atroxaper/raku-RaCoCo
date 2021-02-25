@@ -5,7 +5,7 @@ use Racoco::Annotation;
 use Racoco::Constants;
 use Racoco::Fixture;
 
-plan 5;
+plan 6;
 
 my $root = 't-resources'.IO.add('root-folder');
 my $index-path = $root.add($DOT-RACOCO).add($INDEX);
@@ -46,6 +46,10 @@ my $index = IndexFile.new(:$lib);
     empty-lines | 1485726595.3 | hashcode |
     xLast.rakumod | 1485726596 | hash | 3 2 1
     END
+}
+
+{
+  lives-ok { IndexFile.new(:lib($*TMPDIR)) }, 'index without index file'
 }
 
 done-testing

@@ -35,9 +35,10 @@ sub setUp(:$raku = 'raku', :$fail, :$real) {
   my $file = 'Module'.IO.add('Module2.rakumod');
   my $arg = 'lib'.IO.add('Module').add('Module2.rakumod');
   my $output = $dot-precomp
-    .add('5B').add('5B09525FBA2FACE03A1FCACDEF4904C2194F0307');
+    .add('77').add('770D15B487025165F9B99486A04A6E11285C6416');
   is $maker.compile($file), $output, 'fake precomp ok';
-  is $proc.c, "raku -Ilib --target=mbc --output=$output $arg", 'fake run ok';
+  is $proc.c, \("raku -Ilib --target=mbc --output=$output $arg", :!out),
+    'fake run ok';
 }
 
 {

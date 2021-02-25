@@ -21,7 +21,8 @@ is $dumper.get($file), (1, 2), 'annotation dumper ok';
   my $err = $*ERR;
   LEAVE { $*ERR = $err; }
   $*ERR = Fixture::devNullHandle;
-  is DumperReal.new(:moar<not-exists>, :$proc).get($file), (), 'bad moar';
+  is DumperReal.new(:moar<moar>, :proc(Fixture::failProc)).get($file), (),
+    'fail moar proc';
 }
 
 done-testing
