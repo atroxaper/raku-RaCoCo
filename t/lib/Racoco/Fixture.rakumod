@@ -3,6 +3,7 @@ unit module Fixture;
 use Racoco::UtilExtProc;
 use Racoco::PrecompFile;
 use Racoco::Annotation;
+use Racoco::UtilTmpFile;
 
 our sub instant($time) {
   Instant.from-posix($time.Str)
@@ -89,4 +90,32 @@ our sub anno(Str $file, Str() $time, Str $hash, *@lines) {
   Annotation.new(
     :$file, :timestamp(instant($time)), :hashcode($hash), lines => @lines
   )
+}
+
+sub cp($from, $to) {
+  $from.copy($to);
+}
+
+sub create($create) {
+  $create.mkdir;
+}
+
+sub copy($from, $to) {
+  create($to);
+  for $from.dir() -> $ls-from {
+    my $ls-to = $to.add($ls-from.basename);
+    if $ls-from.d {
+      copy($ls-from, $ls-to);
+    } else {
+      cp($ls-from, $ls-to);
+    }
+  }
+}
+
+our sub restore-root-folder() {
+  my $to = 't/resources/root-folder'.IO;
+  my $from = 't/resources/backup-root-folder'.IO;
+  Racoco::UtilTmpFile::register-dir($to);
+  Racoco::UtilTmpFile::clean-up();
+  copy($from, $to);
 }

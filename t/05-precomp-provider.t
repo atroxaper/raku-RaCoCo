@@ -11,7 +11,7 @@ plan 3;
 constant tmp-file = Racoco::UtilTmpFile;
 LEAVE { tmp-file::clean-up }
 
-my $source = 't'.IO.absolute.IO.add('resources').add('root-folder');
+my $source = 't-resources'.IO.add('root-folder');
 my $lib = $source.add('lib');
 my $raku = 'raku';
 my $proc = Fixture::fakeProc;

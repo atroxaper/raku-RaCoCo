@@ -13,7 +13,7 @@ constant tmp-file = Racoco::UtilTmpFile;
 LEAVE { tmp-file::clean-up }
 
 my $proc = RunProc.new;
-my $file = 't'.IO.add('resources').add('root-folder').add('lib')
+my $file = 't-resources'.IO.add('root-folder').add('lib')
   .add('Module3.rakumod');
 my $tmp-dir = tmp-file::create-dir($*TMPDIR.add('dumper'));
 my $tmp-lib = tmp-file::create-dir($tmp-dir.add('lib'));
@@ -21,7 +21,7 @@ my $maker = Maker.new(:lib($tmp-lib), :raku<raku>, :$proc);
 my $out = $maker.compile($file);
 
 my $dumper = DumperReal.new(:moar<moar>, :$proc);
-is $dumper.get($out), (1, 2, 3), 'annotation dumper ok';
+is $dumper.get($out), (1, 2, 3, 5), 'annotation dumper ok';
 
 {
   my $err = $*ERR;

@@ -4,9 +4,9 @@ use Racoco::PrecompFile;
 use Racoco::Sha;
 use Racoco::X;
 
-plan 10;
+plan 9;
 
-my $source = 't'.IO.add('resources').add('root-folder');
+my $source = 't-resources'.IO.add('root-folder');
 my $sha = Racoco::Sha::create();
 my ($file, $lib, $finder);
 
@@ -30,9 +30,8 @@ sub setUp($file-name, $lib-name) {
   my $result = $finder.find($file);
   isa-ok $result, IO, 'find io';
   ok $result.e, 'find exists';
-  ok $result.is-absolute, 'find absolute';
-  ok $result.Str.starts-with($lib.absolute), 'find under source';
-  is $result, $precomp.IO.absolute.IO, 'find ok';
+  ok $result.Str.starts-with($lib), 'find under source';
+  is $result, $precomp.IO, 'find ok';
 }
 
 {
@@ -57,7 +56,7 @@ sub setUp($file-name, $lib-name) {
 {
   setUp('Module2.rakumod', 'lib');
   my $expected = $source.add('.racoco').add('.precomp').add('C4')
-      .add('C42D08C62F336741E9DBBDC10EFA8A4673AA820F').absolute.IO;
+      .add('C42D08C62F336741E9DBBDC10EFA8A4673AA820F');
   is $finder.find($file), $expected, 'find in our precomp';
 }
 

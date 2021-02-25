@@ -19,9 +19,8 @@ class Finder is export {
   has $!sha;
   has @!find-locations;
 
-  method BUILD(:$lib is copy) {
+  method BUILD(:$lib) {
     Racoco::X::WrongLibPath.new(:path($lib)).throw unless $lib.e;
-    $lib = $lib.absolute.IO;
     @!find-locations.push: $_ with self!get-raku-location($lib);
     @!find-locations.push: $_ with self!get-our-location($lib);
     $!sha = Racoco::Sha::create()
@@ -62,8 +61,7 @@ class Maker is export {
   has Str $!lib-name;
   has $!sha;
 
-  submethod BUILD(:$lib is copy, :$!raku, :$!proc) {
-    $lib = $lib.absolute.IO;
+  submethod BUILD(:$lib, :$!raku, :$!proc) {
     $!lib-name = $lib.basename;
     $!precomp-path = get-our-precomp($lib);
     $!precomp-path.mkdir;
