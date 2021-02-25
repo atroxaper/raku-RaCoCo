@@ -71,12 +71,9 @@ class Maker is export {
   method compile(IO() $path --> IO::Path) {
     my $output = $!precomp-path.add(get-file-precomp(:$path, :$!sha));
     $output.parent.mkdir;
+    my $file = $!lib-name.IO.add($path);
     my $proc = $!proc.run(
-      $!raku,
-      "-I$!lib-name",
-      '--target=mbc',
-      "--output=$output",
-      $path.Str
+      "$!raku -I$!lib-name --target=mbc --output=$output $file"
     );
     $proc.exitcode == 0 ?? $output !! Nil;
   }

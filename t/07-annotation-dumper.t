@@ -4,24 +4,18 @@ use lib 't/lib';
 use Racoco::PrecompFile;
 use Racoco::Annotation;
 use Racoco::UtilExtProc;
-use Racoco::UtilTmpFile;
+use Racoco::Constants;
 use Racoco::Fixture;
 
 plan 2;
 
-constant tmp-file = Racoco::UtilTmpFile;
-LEAVE { tmp-file::clean-up }
-
 my $proc = RunProc.new;
-my $file = 't-resources'.IO.add('root-folder').add('lib')
-  .add('Module3.rakumod');
-my $tmp-dir = tmp-file::create-dir($*TMPDIR.add('dumper'));
-my $tmp-lib = tmp-file::create-dir($tmp-dir.add('lib'));
-my $maker = Maker.new(:lib($tmp-lib), :raku<raku>, :$proc);
-my $out = $maker.compile($file);
+my $file = 't-resources'.IO.add('root-folder').add('lib').add($DOT-PRECOMP)
+  .add('7011F868022706D0DB123C03898593E0AB8D8AF3')
+  .add('B8').add('B8FF02892916FF59F7FBD4E617FCCD01F6BCA576');
 
 my $dumper = DumperReal.new(:moar<moar>, :$proc);
-is $dumper.get($out), (1, 2, 3, 5), 'annotation dumper ok';
+is $dumper.get($file), (1, 2), 'annotation dumper ok';
 
 {
   my $err = $*ERR;

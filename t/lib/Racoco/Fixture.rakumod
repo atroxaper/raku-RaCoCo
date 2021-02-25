@@ -113,8 +113,8 @@ sub copy($from, $to) {
 }
 
 our sub restore-root-folder() {
-  my $to = 't/resources/root-folder'.IO;
-  my $from = 't/resources/backup-root-folder'.IO;
+  my $to = 't-resources/root-folder'.IO;
+  my $from = 't-resources/root-folder-backup'.IO;
   Racoco::UtilTmpFile::register-dir($to);
   Racoco::UtilTmpFile::clean-up();
   copy($from, $to);

@@ -22,10 +22,11 @@ class DumperReal does Dumper is export {
   has $.moar;
 
   method get($file) {
-    my @args = "$!moar", "--dump", $file.Str;
-    my $proc = $!proc.run(|@args, :out);
+    my $arg = "$!moar --dump $file";
+    my $proc = $!proc.run($arg, :out);
+    LEAVE { $proc.out.close if $proc && $proc.out }
     if $proc.exitcode != 0 {
-      $*ERR.say: "Fail dump. Executed: ", @args;
+      $*ERR.say: "Fail dump. Executed: $arg";
       return ();
     }
     $proc.out.lines
