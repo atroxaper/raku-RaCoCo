@@ -4,9 +4,9 @@ use Racoco::PrecompFile;
 
 plan 1;
 
-my $getter = HashcodeGetter.new;
+my $getter = HashcodeGetterReal.new;
 
-my $precomp = 't'.IO.add('resources').add('root-folder').add('lib1')
+my $precomp = 't'.IO.add('resources').add('root-folder').add('lib')
   .add('.precomp').add('7011F868022706D0DB123C03898593E0AB8D8AF3')
   .add('B8').add('B8FF02892916FF59F7FBD4E617FCCD01F6BCA576');
 

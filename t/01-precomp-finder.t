@@ -23,7 +23,7 @@ sub setUp($file-name, $lib-name) {
 }
 
 {
-  setUp('Module.rakumod', 'lib1');
+  setUp('Module.rakumod', 'lib');
   my $precomp = $lib.add('.precomp')
       .add('7011F868022706D0DB123C03898593E0AB8D8AF3')
       .add('B8').add('B8FF02892916FF59F7FBD4E617FCCD01F6BCA576');
@@ -36,26 +36,26 @@ sub setUp($file-name, $lib-name) {
 }
 
 {
-  setUp('NotExists.rakumod', 'lib1');
+  setUp('NotExists.rakumod', 'lib');
   my $result = $finder.find($file);
   nok $result.DEFINITE, 'cannot find precomp file';
 }
 
 {
-  my $lib = $source.add('lib2');
+  my $lib = $source.add('two-precomp-lib');
   throws-like { Finder.new(:$lib) }, Racoco::X::AmbiguousPrecompContent,
     'two precomp content', message => /$lib/;
 
 }
 
 {
-  setUp('Module.rakumod', 'lib3');
+  setUp('Module.rakumod', 'no-precomp-lib');
   my $result = $finder.find($file);
   nok $result.DEFINITE, 'cannot find .precomp folder';
 }
 
 {
-  setUp('Module2.rakumod', 'lib1');
+  setUp('Module2.rakumod', 'lib');
   my $expected = $source.add('.racoco').add('.precomp').add('C4')
       .add('C42D08C62F336741E9DBBDC10EFA8A4673AA820F').absolute.IO;
   is $finder.find($file), $expected, 'find in our precomp';

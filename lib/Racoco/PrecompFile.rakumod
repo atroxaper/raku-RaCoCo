@@ -84,7 +84,10 @@ class Maker is export {
   }
 }
 
-class Provider is export {
+role Provider is export {
+  method get($path) { ... }
+}
+class ProviderReal does Provider is export {
   has $!finder;
   has $!maker;
 
@@ -98,7 +101,10 @@ class Provider is export {
   }
 }
 
-class HashcodeGetter is export {
+role HashcodeGetter is export {
+  method get($path) { ... }
+}
+class HashcodeGetterReal does HashcodeGetter is export {
   method get(IO() $path --> Str) {
     my $h = $path.open :r;
     LEAVE { .close with $h }

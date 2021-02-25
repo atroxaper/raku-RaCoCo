@@ -1,42 +1,40 @@
 use Test;
 use lib 'lib';
+use lib 't/lib';
 use Racoco::Annotation;
 use Racoco::Constants;
+use Racoco::Fixture;
 
 plan 5;
 
 my $root = 't'.IO.add('resources').add('root-folder');
 my $index-path = $root.add($DOT-RACOCO).add($INDEX);
-my $lib = $root.add('lib1');
+my $lib = $root.add('lib');
 
 my $index-content = $index-path.slurp;
 END { $index-path.spurt: $index-content }
 
-my $index = Index.new(:$lib);
+my $index = IndexFile.new(:$lib);
 
 {
-  my $timestamp = Instant.from-posix('1485726595');
-  my $timestamp2 = Instant.from-posix('1485726595.3');
-  my $module = Annotation.new(:file<Module.rakumod>, :hashcode<hashcode>,
-    :$timestamp, :lines(47, 49, 50));
-  my $empty-lines = Annotation.new(:file<empty-lines>, :hashcode<hashcode>,
-    :timestamp($timestamp2), :lines(()));
+  my ($mod, $empty-lines) = (
+    Fixture::anno('Module.rakumod', 1485726595, 'hashcode', 47, 49, 50),
+    Fixture::anno('empty-lines', 1485726595.3, 'hashcode')
+  );
 
-  is $index.get('Module.rakumod'), $module, 'index get ok';
-  is $index.get('empty-lines'), $empty-lines, 'empty-lines ok';
+  is $index.get($mod.file), $mod, 'index get ok';
+  is $index.get($empty-lines.file), $empty-lines, 'empty-lines ok';
+
   nok $index.get('bad-timestamp'), 'bad-timestamp ok';
   nok $index.get('no-hashcode'), 'no-hashcode ok';
 }
 
 {
-  my $timestamp = Instant.from-posix('1485726596');
-  my $first = Annotation.new(
-    :file<AFirst.rakumod>, :$timestamp, :hashcode<hash>, :lines(1, 2));
-  my $last = Annotation.new( # the new at the tail ot the list
-    :file<xLast.rakumod>, :$timestamp, :hashcode<hash>, :lines(3, 2, 1));
-  my $rewrite-hash = Annotation.new(:file<Module.rakumod>, :hashcode<rewrite>,
-    :timestamp(Instant.from-posix('1485726595')),
-    :lines(47, 49, 50));
+  my ($first, $last, $rewrite-hash) = (
+    Fixture::anno('AFirst.rakumod', 1485726596, 'hash', 1, 2),
+    Fixture::anno('xLast.rakumod', 1485726596, 'hash', 3, 2, 1),
+    Fixture::anno('Module.rakumod', 1485726595, 'rewrite', 47, 49, 50),
+  );
   $index.add($last);
   $index.add($first);
   $index.add($rewrite-hash);

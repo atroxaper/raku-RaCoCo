@@ -14,16 +14,19 @@ class Annotation is export {
   }
 }
 
-class Dumper is export {
+role Dumper is export {
+  method get($file) { ... }
+}
+class DumperReal does Dumper is export {
   has $.proc;
   has $.moar;
 
-  method dump($file) {
+  method get($file) {
     my @args = "$!moar", "--dump", $file.Str;
     my $proc = $!proc.run(|@args, :out);
     if $proc.exitcode != 0 {
       $*ERR.say: "Fail dump. Executed: ", @args;
-      return Nil;
+      return ();
     }
     $proc.out.lines
       .grep(*.starts-with: '     annotation:')
@@ -35,7 +38,12 @@ class Dumper is export {
   }
 }
 
-class Index is export {
+role Index is export {
+  method get($path) { ... }
+  method add($annotation) { ... }
+  method flush() { ... }
+}
+class IndexFile does Index is export {
   has $.path;
   has %!annotations;
 
@@ -61,17 +69,12 @@ class Index is export {
     .grep(*.so).map(-> $a { $a.file => $a }).eager.Map;
   }
 
-  method !parse-lines($lines is copy) {
-    $lines //= '';
-    $lines .= trim;
-    $lines.split(' ').grep(*.so).map(*.Int).eager.sort.List
+  method !parse-lines($lines) {
+    ($lines // '').trim.split(' ').grep(*.so).map(*.Int).eager.sort.List
   }
 
-  method !parse-timestamp($timestamp is copy) {
-    $timestamp .= trim;
-    my $result;
-    try $result = Instant.from-posix($timestamp);
-    return $result;
+  method !parse-timestamp($timestamp) {
+    try Instant.from-posix($timestamp.trim);
   }
 
   method get($path) {
@@ -100,9 +103,34 @@ class Index is export {
 }
 
 class Calculator is export {
-  has $.provider;
+  has Provider $.provider;
+  has Index $.index;
+  has HashcodeGetter $.hashcodeGetter;
+  has Dumper $.dumper;
 
-  method calc($path) {
-    Annotation.new(:file($path))
+  method calc-and-update-index($path) {
+    my $precomp = $!provider.get($path);
+    return () without $precomp;
+    my $hashcode = $!hashcodeGetter.get($precomp);
+    my $index = $!index.get($path);
+    my $new-index;
+    if self!is-actual($index, $precomp, $hashcode) {
+      $new-index = $index;
+    } else {
+      $new-index = Annotation.new(
+        file => $path,
+        timestamp => $precomp.modified,
+        hashcode => $hashcode,
+        lines => $!dumper.get($precomp)
+      )
+    }
+    $!index.add($path, $new-index);
+    $new-index.lines
+  }
+
+  method !is-actual($index, $precomp, $hashcode) {
+    $index &&
+    $index.timestamp >= $precomp.modified &&
+    $index.hashcode eq $hashcode
   }
 }
