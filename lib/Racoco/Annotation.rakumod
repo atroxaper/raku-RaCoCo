@@ -2,11 +2,12 @@ unit module Racoco::Annotation;
 
 use Racoco::PrecompFile;
 use Racoco::Constants;
+use Racoco::UtilExtProc;
 
 class Annotation is export {
-  has $.file;
-  has $.timestamp = now;
-  has $.hashcode;
+  has Str $.file;
+  has Instant $.timestamp;
+  has Str $.hashcode;
   has @.lines;
 
   method Str() {
@@ -18,8 +19,8 @@ role Dumper is export {
   method get($file) { ... }
 }
 class DumperReal does Dumper is export {
-  has $.proc;
-  has $.moar;
+  has RunProc $.proc;
+  has Str $.moar;
 
   method get($file) {
     my $arg = "$!moar --dump $file";
@@ -45,7 +46,7 @@ role Index is export {
   method flush() { ... }
 }
 class IndexFile does Index is export {
-  has $.path;
+  has IO::Path $.path;
   has %!annotations;
 
   submethod TWEAK(:$lib) {
@@ -59,7 +60,7 @@ class IndexFile does Index is export {
       my ($file, $timestamp, $hashcode, $lines) =
         $l.split('|').map(*.trim).List;
 
-      my $annotation = Annotation.new(:$file, :$hashcode,
+      my $annotation = Annotation.new(:$file, :hashcode($hashcode // ''),
         :timestamp(self!parse-timestamp($timestamp)),
         :lines(self!parse-lines($lines))
       );
@@ -110,7 +111,7 @@ class Calculator is export {
   has HashcodeGetter $.hashcodeGetter;
   has Dumper $.dumper;
 
-  method calc-and-update-index($path) {
+  method calc-and-update-index(IO() $path) {
     my $precomp = $!provider.get($path);
     return () without $precomp;
     my $hashcode = $!hashcodeGetter.get($precomp);
@@ -120,7 +121,7 @@ class Calculator is export {
       $new-index = $index;
     } else {
       $new-index = Annotation.new(
-        file => $path,
+        file => $path.Str,
         timestamp => $precomp.modified,
         hashcode => $hashcode,
         lines => $!dumper.get($precomp)
@@ -134,5 +135,33 @@ class Calculator is export {
     $index &&
     $index.timestamp >= $precomp.modified &&
     $index.hashcode eq $hashcode
+  }
+}
+
+class AnnotationCollector is export {
+  has IO::Path $.lib;
+  has Calculator $.calculator;
+  has Int $!lib-path-len;
+
+  submethod TWEAK() {
+    $!lib-path-len = $!lib.Str.chars + '/'.chars;
+  }
+
+  method get() {
+    return %{} unless $!lib.e;
+    self!iter-through($!lib, %{});
+  }
+
+  method !iter-through($dir, %collect) {
+    for $dir.dir -> $l {
+      if $l.d {
+        self!iter-through($l, %collect);
+      } elsif $l.extension eq any('rakumod', 'pm6') {
+        my $path = $l.Str.substr($!lib-path-len);
+        my $lines = $!calculator.calc-and-update-index($path);
+        %collect{$path} = $lines.Set if $lines;
+      }
+    }
+    %collect
   }
 }

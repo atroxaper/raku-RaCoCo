@@ -57,6 +57,9 @@ my class TestIndex does Index does TestKeyValueStore {
   multi method add($annotation) { self.add($annotation.file, $annotation) }
   method flush() {}
 }
+my class TestCalculator is Calculator does TestKeyValueStore {
+  method calc-and-update-index($path) { self.get($path) }
+}
 my class TestDumper does Dumper does TestKeyValueStore { }
 
 sub putToTestKeyValueStore($store, %values) {
@@ -76,6 +79,10 @@ our sub testHashcodeGetter(%files?) {
 
 our sub testIndex(%files?) {
   putToTestKeyValueStore(TestIndex.new, %files)
+}
+
+our sub testCalculator(%files?) {
+  putToTestKeyValueStore(TestCalculator.new, %files)
 }
 
 our sub testDumper(%files?) {

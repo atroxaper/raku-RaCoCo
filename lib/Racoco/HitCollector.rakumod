@@ -37,7 +37,7 @@ class HitCollector is export {
       .unique
       .map(-> $h { .[0] => .[2] with $h.words})
       .classify({ $_.key })
-      .map({ $_.key => $_.value.map(*.value.Int).sort.List })
+      .map({ $_.key => $_.value.map(*.value.Int).Set })
       .eager
       .Hash
   }
