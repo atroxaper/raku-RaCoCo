@@ -1,2 +1,3 @@
 #!/usr/bin/env raku
-use Racoco;
+use lib 'lib';
+use Racoco::Cli;

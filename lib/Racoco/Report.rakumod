@@ -26,6 +26,7 @@ class ReportFile is export {
     return GREEN if $!green{$n};
     return RED if $!red{$n};
     return PURPLE if $!purple{$n};
+    Nil
   }
 }
 
@@ -87,6 +88,84 @@ class BaseReporter does Reporter is export {
       $h.say('purple ', "{$f.purple.keys.sort.List}") if $f.purple;
     });
     $path
+  }
+
+  class HtmlReporter does Reporter is export {
+    has BaseReporter $.base;
+    my $report-line = '<tr class="report"><td>%%module-name%%</td><td>%%percent%%</td><td><div class="progress-bar"><span class="progress-bar-fill" style="width: %%progress%%%;"></span></div></td><td class="total">%%total%%</td><td class="covered">%%coveted%%</td></tr>';
+
+    method from-data(:%possible-lines, :%covered-lines --> Reporter) {
+      self.bless(base =>
+        BaseReporter.from-data(:%possible-lines, :%covered-lines));
+    }
+
+    method write(:$lib --> IO::Path) {
+      return Nil unless $lib.e;
+      $!base.write(:$lib);
+      my $racoco = $lib.parent.add($DOT-RACOCO);
+      my $report-html = $racoco.add($REPORT-HTML);
+      my $modules = $racoco.add($REPORT-MODULES);
+      $modules.mkdir;
+      my $html = %?RESOURCES<report.html>.slurp;
+      my $file-html = %?RESOURCES<report-file.html>.slurp;
+      $html .= subst('%%project-name%%', $lib.absolute.IO.parent.basename, :g);
+      my $report = $!base.report;
+      my @report-lines;
+      for $report.files -> $file {
+        my $line = $report-line;
+        $line .= subst('%%module-name%%', self!get-module-name($file.file));
+        $line .= subst('%%percent%%', $file.percent);
+        $line .= subst('%%progress%%', $file.percent.round);
+        $line .= subst('%%total%%', $file.green.elems + $file.red.elems);
+        $line .= subst('%%coveted%%', $file.green.elems + $file.purple.elems);
+        @report-lines.push: $line;
+
+        my $content = $file-html
+          .subst('%%module-name%%', self!get-module-name($file.file), :g)
+          .subst('%%module-coverage%%', $file.percent)
+          .subst('%%pre%%', self!write-file($lib, $file));
+
+        $modules.add(self!get-file-for-module($file.file)).spurt($content);
+      }
+      $html .= subst('%%report-lines%%', @report-lines.join("\n"));
+      $report-html.spurt($html);
+      $report-html
+    }
+
+    method !write-file($lib, $file) {
+      my @pre;
+      for $lib.add($file.file).lines.kv -> $i, $line {
+        @pre.push: sprintf('<span class="coverage-%s">%s</span>', self!get-span-class($file, $i), $line);
+      }
+      return @pre.join("\n");
+    }
+
+    method !get-span-class($file, $i) {
+      return 'red' if $file.color($i + 1) === RED;
+      return 'green' if $file.color($i + 1) === GREEN;
+      return 'purple' if $file.color($i + 1) === PURPLE;
+      return 'no';
+    }
+
+    method !get-module-name($path) {
+      my @parts = self!get-module-parts($path);
+      return @parts.join('::');
+    }
+
+    method !get-module-parts(IO() $path is copy) {
+      my @parts;
+      $path .= extension('');
+      while $path ne '.' {
+        @parts.push: $path.basename;
+        $path .= parent;
+      }
+      @parts.reverse
+    }
+
+    method !get-file-for-module($path) {
+      my @parts = self!get-module-parts($path);
+      @parts.map(*.lc).join('-') ~ '.html';
+    }
   }
 
 }

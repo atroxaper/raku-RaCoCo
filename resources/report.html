@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>RaCoCo result: %%project-name%%</title>
+	<link rel="stylesheet"
+				href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+				integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+				crossorigin="anonymous">
+	<style>
+      ::placeholder {
+          color: #ddd !important;
+      }
+
+      th:hover {
+          background-color: #fdf893;
+      }
+
+      .report:hover {
+          background-color: #fdf893 !important;
+      }
+
+      th {
+          cursor: pointer;
+      }
+
+      .progress-bar {
+          width: 100%;
+          background-color: #e0e0e0;
+          padding: 3px;
+          border-radius: 3px;
+          box-shadow: inset 0 1px 3px rgba(0, 0, 0, .2);
+      }
+
+      .progress-bar-fill {
+          display: block;
+          height: 17px;
+          background-color: #65ef91;
+          border-radius: 3px;
+
+          transition: width 500ms ease-in-out;
+      }
+	</style>
+</head>
+<body>
+<div class="container">
+	<div class="row mt-5 mb-3">
+		<div class="col-md-12">
+			<div class="page-header">
+				<h1>%%project-name%%</h1>
+			</div>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-md-12">
+			<input
+					class="form-control form-control-lg filter-input"
+					type="text"
+					placeholder="Filter coverage table..."
+					autofocus="autofocus"
+					value=""
+			/>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-md-6">
+			<h4>Coverage: <span class="coverage-header"></span>%</h4>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-md-12">
+			<table class="table table-sm">
+				<thead>
+				<tr>
+					<th scope="col">
+						Package&nbsp;&#x25B2;&#x25BC;
+					</th>
+					<th scope="col">
+						%&nbsp;&#x25B2;&#x25BC;
+					</th>
+					<th scope="col">
+						Coverage %&nbsp;&#x25B2;&#x25BC;
+					</th>
+					<th scope="col">
+						Total lines&nbsp;&#x25B2;&#x25BC;
+					</th>
+					<th scope="col">
+						Covered lines&nbsp;&#x25B2;&#x25BC;
+					</th>
+				</tr>
+				</thead>
+				<tbody>
+				%%report-lines%%
+				</tbody>
+			</table>
+			<p class="err">No results were found...</p>
+		</div>
+	</div>
+</div>
+<script>
+    const tbody = document.querySelector('tbody');
+    const thead = document.querySelector('thead');
+    const th = document.querySelectorAll('thead th');
+    const err = document.querySelector('.err');
+    const coverage_header = document.querySelector('.coverage-header');
+    const filterInput = document.querySelector(".filter-input");
+    const report = document.querySelectorAll(".report");
+
+    filterInput.addEventListener("keyup", () => {
+        let criteria = filterInput.value.toUpperCase().trim();
+        let j = 0;
+        let full_total = 0;
+        let full_covered = 0;
+
+        report.forEach(data => {
+
+            console.log(data);
+            thead.style.opacity = "1";
+            err.style.display = "none";
+            if (data.innerText.toUpperCase().indexOf(criteria) > -1) {
+                data.style.display = "";
+                full_total += parseInt(data.querySelector('.total').innerText);
+                full_covered += parseInt(data.querySelector('.covered').innerText);
+            } else {
+                data.style.display = "none";
+                j++;
+                if (j === report.length) {
+                    thead.style.opacity = "0.2";
+                    err.style.display = "flex";
+                }
+            }
+        });
+        let current_coverage = 100;
+        if (full_total !== 0) {
+            current_coverage = Math.round((full_covered / full_total) * 10 * 100) / 10;
+        }
+        coverage_header.textContent = current_coverage.toString();
+    });
+
+    let sortDirection;
+
+    th.forEach((col, idx) => {
+        col.addEventListener("click", () => {
+            sortDirection = !sortDirection;
+            const rowsArrFromNodeList = Array.from(report);
+            const filteredRows = rowsArrFromNodeList.filter(
+                item => item.style.display !== "none"
+            );
+
+            filteredRows
+                .sort((a, b) => {
+                    return a.cells[idx].innerHTML.localeCompare(
+                        b.cells[idx].innerHTML,
+                        "en",
+                        {numeric: true, sensitivity: "base"}
+                    );
+                })
+                .forEach(row => {
+                    sortDirection
+                        ? tbody.insertBefore(row, tbody.rows[tbody.length])
+                        : tbody.insertBefore(row, tbody.rows[0]);
+                });
+        });
+    });
+</script>
+</body>
+</html>

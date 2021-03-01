@@ -9,3 +9,5 @@ our $COVERAGE-LOG is export = 'coverage.log';
 our $COVERAGE-ENV-KEY is export = 'MVM_COVERAGE_LOG';
 
 our $REPORT-TXT is export = 'report.txt';
+our $REPORT-MODULES is export = 'report-modules';
+our $REPORT-HTML is export = 'report.html';
