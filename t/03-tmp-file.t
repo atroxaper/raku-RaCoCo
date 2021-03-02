@@ -1,36 +1,28 @@
 use Test;
-use lib 'lib';
-use Racoco::UtilTmpFile;
+use lib 't/lib';
+use Racoco::TmpDir;
 
-plan 11;
+plan 9;
 
-constant tmp-file = Racoco::UtilTmpFile;
-LEAVE { tmp-file::clean-up }
+my $sources = create-tmp-dir('racoco-tests');
+ok $sources.e, 'create sources';
 
-my $root = tmp-file::create-dir($*TMPDIR.add('tmp-file-dir'));
-my $file1 = tmp-file::create-file($root.add('file1'));
-my $file2 = tmp-file::register-file($root.add('file2'));
-my $dir1 = tmp-file::register-dir($root.add('dir1'));
-tmp-file::register-dir('not-exists');
+my $sub-dir = register-dir($sources.add('sub-dir'));
+nok $sub-dir.e, 'register sub-dir';
 
-ok $root.e, 'create root';
-ok $file1.e, 'create file1';
-nok $file2.e, 'add file2';
-nok $dir1.e, 'add dir1';
-$dir1.mkdir;
-ok $dir1.e, 'mkdir dir1';
+$sub-dir.mkdir;
+ok $sub-dir.e, 'mkdir sub-dir';
 
-my $my-dir = tmp-file::create-dir($root.add('my'));
-$my-dir.add('file').spurt: '';
-ok $my-dir.add('file').e, 'create my file';
+lives-ok { register-dir('not-exists') }, 'register not-exists';
 
-tmp-file::clean-up;
+my $dir-with-file = create-dir($sources.add('dir-with-file'));
+$dir-with-file.add('file').spurt: '';
+ok $dir-with-file.add('file').e, 'create dir-with-file/file';
 
-nok $file2.e, 'unlink file2';
-nok $file1.e, 'unlink file1';
-nok $dir1.e, 'rmdir dir1';
-nok $root.e, 'rmdir root';
+lives-ok { clean-up }, 'good clean-up';
 
-nok $my-dir.e, 'rmdir my dir';
+nok $sub-dir.e, 'rmdir sub-dir';
+nok $sources.e, 'rmdir sources';
+nok $dir-with-file.e, 'rmdir dir-with-file';
 
 done-testing

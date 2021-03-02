@@ -1,6 +1,6 @@
 unit module Racoco::HitCollector;
 use Racoco::UtilExtProc;
-use Racoco::Constants;
+use Racoco::Paths;
 
 class HitCollector is export {
   has $!path;

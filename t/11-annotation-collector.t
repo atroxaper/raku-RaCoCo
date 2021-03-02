@@ -6,8 +6,8 @@ use Racoco::Fixture;
 
 plan 2;
 
-my $source = 't-resources'.IO.add('root-folder');
-my $lib = $source.add('lib');
+my $sources = Fixture::root-folder();
+my $lib = $sources.add('lib');
 
 my $calculator = Fixture::testCalculator(%{
   'Module.rakumod' => (1, 2, 3),

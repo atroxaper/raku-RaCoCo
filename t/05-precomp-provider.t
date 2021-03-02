@@ -1,28 +1,25 @@
 use Test;
 use lib 'lib';
-use lib 't/lib';
 use Racoco::PrecompFile;
+use Racoco::Paths;
+use lib 't/lib';
 use Racoco::Fixture;
-use Racoco::Constants;
-use Racoco::UtilTmpFile;
+use Racoco::TmpDir;
 
 plan 3;
 
-constant tmp-file = Racoco::UtilTmpFile;
-LEAVE { tmp-file::clean-up }
-
-my $source = 't-resources'.IO.add('root-folder');
-my $lib = $source.add('lib');
+my $sources = Fixture::root-folder();
+my $lib = $sources.add('lib');
 my $raku = 'raku';
 my $proc = Fixture::fakeProc;
-my $module1-path = $source.add('lib').add(DOT-PRECOMP)
+my $module1-path = lib-precomp-path(:$lib)
   .add('7011F868022706D0DB123C03898593E0AB8D8AF3').add('B8')
-  .add('B8FF02892916FF59F7FBD4E617FCCD01F6BCA576');
-my $module2-path = $source.add(DOT-RACOCO).add(OUR-PRECOMP).add('C4')
-  .add('C42D08C62F336741E9DBBDC10EFA8A4673AA820F');
-my $module3-path = $source.add(DOT-RACOCO).add(OUR-PRECOMP).add('5F')
-  .add('5FB62D3D27EB6AAE0FD30F0E99F9EB7D3907F2F8');
-tmp-file::register-dir($module3-path.parent);
+  .add('B8FF02892916FF59F7FBD4E617FCCD01F6BCA576').relative.IO;
+my $module2-path = our-precomp-path(:$lib).add('C4')
+  .add('C42D08C62F336741E9DBBDC10EFA8A4673AA820F').relative.IO;
+my $module3-path = our-precomp-path(:$lib).add('5F')
+  .add('5FB62D3D27EB6AAE0FD30F0E99F9EB7D3907F2F8').relative.IO;
+register-dir($module3-path.parent);
 my $provider = ProviderReal.new(:$lib, :$raku, :$proc);
 
 is $provider.get('Module.rakumod'), $module1-path, 'precomp ok';

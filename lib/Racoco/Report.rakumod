@@ -1,5 +1,5 @@
 unit module Racoco::Report;
-use Racoco::Constants;
+use Racoco::Paths;
 
 enum COLOR is export <GREEN RED PURPLE>;
 

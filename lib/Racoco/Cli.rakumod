@@ -2,7 +2,7 @@ use Racoco::Annotation;
 use Racoco::PrecompFile;
 use Racoco::HitCollector;
 use Racoco::UtilExtProc;
-use Racoco::Constants;
+use Racoco::Paths;
 use Racoco::Report;
 
 sub MAIN() is export {

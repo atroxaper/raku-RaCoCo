@@ -3,23 +3,16 @@ use lib 'lib';
 use lib 't/lib';
 use Racoco::HitCollector;
 use Racoco::UtilExtProc;
-use Racoco::Constants;
+use Racoco::Paths;
 use Racoco::Fixture;
 
 plan 6;
 
-my $original-dir = '.'.IO.absolute.IO;
-END {
-  &*chdir($original-dir);
-  Fixture::restore-root-folder
-}
-my $source = 't-resources'.IO.add('root-folder');
-&*chdir($source);
+Fixture::change-current-dir-to-root-folder();
 
 my $lib = 'lib'.IO;
-my $coverage-log = DOT-RACOCO.IO.add(COVERAGE-LOG);
+my $coverage-log = coverage-log-path(:$lib).relative.IO;
 my $exec = 'prove6';
-my $fakeProc = Fixture::fakeProc;
 
 {
   my $proc = Fixture::fakeProc;
@@ -41,14 +34,16 @@ my $fakeProc = Fixture::fakeProc;
 }
 
 {
+	my $proc = Fixture::fakeProc;
   $coverage-log.spurt('');
-  my $collector = HitCollector.new(:append, :$exec, :proc($fakeProc), :$lib);
+  my $collector = HitCollector.new(:append, :$exec, :$proc, :$lib);
   my $coverage = $collector.get();
   ok $coverage-log.e, 'leave log before test';
 }
 
 {
-  my $collector = HitCollector.new(:$exec, :proc($fakeProc), :$lib);
+	my $proc = Fixture::fakeProc;
+  my $collector = HitCollector.new(:$exec, :$proc, :$lib);
   my $coverage = $collector.get();
   nok $coverage-log.e, 'delete log before test';
 }

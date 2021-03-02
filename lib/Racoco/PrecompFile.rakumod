@@ -2,7 +2,7 @@ unit module Racoco::PrecompFile;
 use Racoco::X;
 use Racoco::Sha;
 use Racoco::UtilExtProc;
-use Racoco::Constants;
+use Racoco::Paths;
 
 sub get-our-precomp($lib) {
   $lib.parent.add(DOT-RACOCO).add(OUR-PRECOMP);

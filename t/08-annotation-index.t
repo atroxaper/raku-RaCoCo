@@ -2,14 +2,14 @@ use Test;
 use lib 'lib';
 use lib 't/lib';
 use Racoco::Annotation;
-use Racoco::Constants;
+use Racoco::Paths;
 use Racoco::Fixture;
 
 plan 6;
 
-my $root = 't-resources'.IO.add('root-folder');
-my $index-path = $root.add(DOT-RACOCO).add(INDEX);
-my $lib = $root.add('lib');
+my $sources = Fixture::root-folder();
+my $lib = $sources.add('lib');
+my $index-path = index-path(:$lib);
 
 my $index-content = $index-path.slurp;
 END { $index-path.spurt: $index-content }
@@ -17,12 +17,12 @@ END { $index-path.spurt: $index-content }
 my $index = IndexFile.new(:$lib);
 
 {
-  my ($mod, $empty-lines) = (
+  my ($module, $empty-lines) = (
     Fixture::anno('Module.rakumod', 1485726595, 'hashcode', 47, 49, 50),
     Fixture::anno('empty-lines', 1485726595.3, 'hashcode')
   );
 
-  is $index.get($mod.file), $mod, 'index get ok';
+  is $index.get($module.file), $module, 'index get ok';
   is $index.get($empty-lines.file), $empty-lines, 'empty-lines ok';
 
   nok $index.get('bad-timestamp'), 'bad-timestamp ok';

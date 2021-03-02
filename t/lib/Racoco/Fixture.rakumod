@@ -3,7 +3,7 @@ unit module Fixture;
 use Racoco::UtilExtProc;
 use Racoco::PrecompFile;
 use Racoco::Annotation;
-use Racoco::UtilTmpFile;
+use Racoco::TmpDir;
 
 our sub instant($time) {
   Instant.from-posix($time.Str)
@@ -122,10 +122,26 @@ sub copy($from, $to) {
   }
 }
 
+our sub root-folder() {
+	't-resources'.IO.add('root-folder')
+}
+
+my $original-dir;
+our sub change-current-dir-to-root-folder() {
+	$original-dir = '.'.IO.absolute.IO;
+	&*chdir(root-folder());
+}
+
 our sub restore-root-folder() {
   my $to = 't-resources/root-folder'.IO;
   my $from = 't-resources/root-folder-backup'.IO;
-  Racoco::UtilTmpFile::register-dir($to);
-  Racoco::UtilTmpFile::clean-up();
+  Racoco::TmpDir::rmdir($to);
   copy($from, $to);
+}
+
+END {
+	if $original-dir {
+  	&*chdir($original-dir);
+  	restore-root-folder;
+  }
 }

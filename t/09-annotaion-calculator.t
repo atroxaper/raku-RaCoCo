@@ -2,7 +2,7 @@ use Test;
 use lib 'lib';
 use lib 't/lib';
 use Racoco::Annotation;
-use Racoco::Constants;
+use Racoco::Paths;
 use Racoco::Fixture;
 
 plan 4;

@@ -1,7 +1,7 @@
 unit module Racoco::Annotation;
 
 use Racoco::PrecompFile;
-use Racoco::Constants;
+use Racoco::Paths;
 use Racoco::UtilExtProc;
 
 class Annotation is export {
