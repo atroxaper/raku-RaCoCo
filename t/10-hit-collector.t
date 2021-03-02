@@ -17,7 +17,7 @@ my $source = 't-resources'.IO.add('root-folder');
 &*chdir($source);
 
 my $lib = 'lib'.IO;
-my $coverage-log = $DOT-RACOCO.IO.add($COVERAGE-LOG);
+my $coverage-log = DOT-RACOCO.IO.add(COVERAGE-LOG);
 my $exec = 'prove6';
 my $fakeProc = Fixture::fakeProc;
 

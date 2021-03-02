@@ -12,7 +12,7 @@ class HitCollector is export {
 
   submethod TWEAK(:$lib) {
     $!lib = $lib.absolute.IO;
-    $!path = $lib.parent.add($DOT-RACOCO).add($COVERAGE-LOG);
+    $!path = $lib.parent.add(DOT-RACOCO).add(COVERAGE-LOG);
   }
 
   method get() {

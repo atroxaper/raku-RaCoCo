@@ -50,7 +50,7 @@ class IndexFile does Index is export {
   has %!annotations;
 
   submethod TWEAK(:$lib) {
-    $!path = $lib.parent.add($DOT-RACOCO).add($INDEX);
+    $!path = $lib.parent.add(DOT-RACOCO).add(INDEX);
     %!annotations = self!read-index();
   }
 

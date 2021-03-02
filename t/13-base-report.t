@@ -10,9 +10,9 @@ constant tmp-file = Racoco::UtilTmpFile;
 END { tmp-file::clean-up }
 
 my $source = tmp-file::create-dir($*TMPDIR.add('racoco-test'));
-my $racoco = tmp-file::create-dir($source.add($DOT-RACOCO));
+my $racoco = tmp-file::create-dir($source.add(DOT-RACOCO));
 my $lib = $source.add('lib');
-my $report-path = $racoco.add($REPORT-TXT);
+my $report-path = $racoco.add(REPORT-TXT);
 
 my %possible-lines = %{
   'AllGreen' => (1, 3, 5).Set,

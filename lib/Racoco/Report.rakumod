@@ -76,7 +76,7 @@ class BaseReporter does Reporter is export {
 
   method write(:$lib --> IO::Path) {
     return Nil unless $lib.e;
-    my $path = $lib.parent.add($DOT-RACOCO).add($REPORT-TXT);
+    my $path = $lib.parent.add(DOT-RACOCO).add(REPORT-TXT);
     my $h = $path.open(:w);
     LEAVE { .close with $h }
     $h.say($!report.percent(), '%');
@@ -102,9 +102,9 @@ class BaseReporter does Reporter is export {
     method write(:$lib --> IO::Path) {
       return Nil unless $lib.e;
       $!base.write(:$lib);
-      my $racoco = $lib.parent.add($DOT-RACOCO);
-      my $report-html = $racoco.add($REPORT-HTML);
-      my $modules = $racoco.add($REPORT-MODULES);
+      my $racoco = $lib.parent.add(DOT-RACOCO);
+      my $report-html = $racoco.add(REPORT-HTML);
+      my $modules = $racoco.add(REPORT-MODULES);
       $modules.mkdir;
       my $html = %?RESOURCES<report.html>.slurp;
       my $file-html = %?RESOURCES<report-file.html>.slurp;

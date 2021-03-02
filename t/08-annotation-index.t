@@ -8,7 +8,7 @@ use Racoco::Fixture;
 plan 6;
 
 my $root = 't-resources'.IO.add('root-folder');
-my $index-path = $root.add($DOT-RACOCO).add($INDEX);
+my $index-path = $root.add(DOT-RACOCO).add(INDEX);
 my $lib = $root.add('lib');
 
 my $index-content = $index-path.slurp;

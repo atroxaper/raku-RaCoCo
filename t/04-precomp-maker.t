@@ -21,7 +21,7 @@ my $sha = Racoco::Sha::create();
 my ($proc, $maker);
 
 my $lib = 'lib'.IO;
-my $dot-precomp = $DOT-RACOCO.IO.add($DOT-PRECOMP);
+my $dot-precomp = DOT-RACOCO.IO.add(DOT-PRECOMP);
 
 sub setUp(:$raku = 'raku', :$fail, :$real) {
   $proc = Fixture::fakeProc;

@@ -8,7 +8,7 @@ use Racoco::Report;
 sub MAIN() is export {
 
   my $lib = 'lib'.IO;
-  $lib.parent.add($DOT-RACOCO).add($DOT-PRECOMP).mkdir;
+  $lib.parent.add(DOT-RACOCO).add(DOT-PRECOMP).mkdir;
   my $exec = 'prove6';
   my $moar = 'moar';
   my $raku = 'raku';

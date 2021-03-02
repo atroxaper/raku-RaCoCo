@@ -5,7 +5,7 @@ use Racoco::UtilExtProc;
 use Racoco::Constants;
 
 sub get-our-precomp($lib) {
-  $lib.parent.add($DOT-RACOCO).add($OUR-PRECOMP);
+  $lib.parent.add(DOT-RACOCO).add(OUR-PRECOMP);
 }
 
 sub get-file-precomp(:$path is copy, :$sha) {
@@ -33,7 +33,7 @@ class Finder is export {
   }
 
   method !get-raku-location($lib) {
-    my $lib-precomp = $lib.add($DOT-PRECOMP);
+    my $lib-precomp = $lib.add(DOT-PRECOMP);
     return self!add-compiler-id($lib-precomp) if $lib-precomp.e;
     Nil
   }
