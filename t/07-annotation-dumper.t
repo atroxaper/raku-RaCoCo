@@ -1,10 +1,10 @@
 use Test;
 use lib 'lib';
+use lib 't/lib';
 use Racoco::PrecompFile;
 use Racoco::Annotation;
 use Racoco::UtilExtProc;
 use Racoco::Paths;
-use lib 't/lib';
 use Racoco::Fixture;
 
 plan 2;

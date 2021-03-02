@@ -24,7 +24,7 @@ our sub our-precomp-path(:$lib --> IO::Path:D) is export {
 }
 
 our sub lib-precomp-path(:$lib --> IO::Path:D) is export {
-	mkdir absolute($lib).add(DOT-PRECOMP)
+	absolute($lib).add(DOT-PRECOMP)
 }
 
 our sub index-path(:$lib) is export {

@@ -4,7 +4,7 @@ use Racoco::Paths;
 use lib 't/lib';
 use Racoco::TmpDir;
 
-plan 8;
+plan 7;
 
 my ($sources, $lib) = create-tmp-lib('racoco-tests');
 
@@ -21,9 +21,7 @@ my ($sources, $lib) = create-tmp-lib('racoco-tests');
 }
 
 {
-	my $lib-precomp-path = lib-precomp-path(:$lib);
-	ok $lib-precomp-path.is-absolute, 'lib precomp path is absolute';
-	ok $lib-precomp-path.e, 'lib precomp path exists';
+	nok lib-precomp-path(:$lib).e, 'lib precomp path does not exists by default';
 }
 
 {

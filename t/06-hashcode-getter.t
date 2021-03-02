@@ -1,7 +1,7 @@
 use Test;
 use lib 'lib';
-use Racoco::PrecompFile;
 use lib 't/lib';
+use Racoco::PrecompFile;
 use Racoco::Fixture;
 
 plan 1;
