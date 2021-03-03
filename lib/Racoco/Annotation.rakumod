@@ -26,10 +26,7 @@ class DumperReal does Dumper is export {
     my $arg = "$!moar --dump $file";
     my $proc = $!proc.run($arg, :out);
     LEAVE { $proc.out.close if $proc && $proc.out }
-    if $proc.exitcode != 0 {
-      $*ERR.say: "Fail dump. Executed: $arg";
-      return ();
-    }
+    return () if $proc.exitcode;
     $proc.out.lines
       .grep(*.starts-with: '     annotation:')
       .map(*.split(':')[*-1].Int)

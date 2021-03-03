@@ -2,6 +2,10 @@ unit module Racoco::UtilExtProc;
 
 class RunProc is export {
   method run(|c --> Proc) {
-    shell(|c);
+    my $proc = shell(|c);
+    if $proc.exitcode != 0 {
+    	$*ERR.say: "Fail proc execute: {c.List[0]}";
+    }
+    $proc
   }
 }
