@@ -1,7 +1,7 @@
 use Test;
 use lib 'lib';
 use lib 't/lib';
-use Racoco::PrecompFile;
+use Racoco::Precomp::PrecompSupplier;
 use Racoco::Paths;
 use Racoco::Fixture;
 use Racoco::TmpDir;
@@ -20,10 +20,10 @@ my $module2-path = our-precomp-path(:$lib).add('C4')
 my $module3-path = our-precomp-path(:$lib).add('5F')
   .add('5FB62D3D27EB6AAE0FD30F0E99F9EB7D3907F2F8').IO;
 register-dir($module3-path.parent);
-my $provider = ProviderReal.new(:$lib, :$raku, :$proc);
+my $supplier = PrecompSupplierReal.new(:$lib, :$raku, :$proc);
 
-is $provider.get('Module.rakumod'), $module1-path, 'precomp ok';
-is $provider.get('Module2.rakumod'), $module2-path, 'our precomp ok';
-is $provider.get('Module3.rakumod'), $module3-path, 'made ok';
+is $supplier.supply(:file-name<Module.rakumod>), $module1-path, 'precomp ok';
+is $supplier.supply(:file-name<Module2.rakumod>), $module2-path, 'our precomp ok';
+is $supplier.supply(:file-name<Module3.rakumod>), $module3-path, 'compile ok';
 
 done-testing

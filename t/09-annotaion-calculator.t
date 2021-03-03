@@ -14,17 +14,17 @@ sub setUp(
   :$path!, :$hash!, :$index-hash, :$time!, :$index-time, :@lines!, :@index-lines
 ) {
   my $index = Fixture::testIndex;
-  my $provider = Fixture::testProvider;
+  my $supplier = Fixture::testSupplier;
   my $hashcodeGetter = Fixture::testHashcodeGetter;
   my $dumper = Fixture::testDumper;
-  $calc = Calculator.new(:$index, :$provider, :$hashcodeGetter, :$dumper);
+  $calc = Calculator.new(:$index, :$supplier, :$hashcodeGetter, :$dumper);
 
   my $indexed = Fixture::anno(
     $path, $index-time // $time, $index-hash // $hash, @index-lines // @lines
   );
   my $precomp = Fixture::fakePath("pre$path", :modified($time));
   $index.add($path, $indexed) unless $no-index;
-  $provider.add($path, $precomp);
+  $supplier.add($path, $precomp);
   $hashcodeGetter.add($precomp.Str, $hash);
   $dumper.add($precomp.Str, @lines);
 }

@@ -1,5 +1,6 @@
 unit module Racoco::Annotation;
 
+use Racoco::Precomp::PrecompSupplier;
 use Racoco::PrecompFile;
 use Racoco::Paths;
 use Racoco::UtilExtProc;
@@ -103,13 +104,13 @@ class IndexFile does Index is export {
 }
 
 class Calculator is export {
-  has Provider $.provider;
+  has PrecompSupplier $.supplier;
   has Index $.index;
   has HashcodeGetter $.hashcodeGetter;
   has Dumper $.dumper;
 
   method calc-and-update-index(IO() $path) {
-    my $precomp = $!provider.get($path);
+    my $precomp = $!supplier.supply(file-name => $path.Str);
     return () without $precomp;
     my $hashcode = $!hashcodeGetter.get($precomp);
     my $index = $!index.get($path);

@@ -1,5 +1,6 @@
 unit module Fixture;
 
+use Racoco::Precomp::PrecompSupplier;
 use Racoco::UtilExtProc;
 use Racoco::PrecompFile;
 use Racoco::Annotation;
@@ -51,7 +52,6 @@ my role TestKeyValueStore {
   }
 }
 
-my class TestProvider does Provider does TestKeyValueStore {}
 my class TestHashcodeGetter does HashcodeGetter does TestKeyValueStore {}
 my class TestIndex does Index does TestKeyValueStore {
   multi method add($annotation) { self.add($annotation.file, $annotation) }
@@ -69,8 +69,10 @@ sub putToTestKeyValueStore($store, %values) {
   $store
 }
 
-our sub testProvider(%files?) {
-  putToTestKeyValueStore(TestProvider.new, %files)
+our sub testSupplier(%files?) {
+	return class Supplier does PrecompSupplier does TestKeyValueStore {
+		method supply(Str :$file-name --> IO::Path) { self.get($file-name) }
+	}.new
 }
 
 our sub testHashcodeGetter(%files?) {
