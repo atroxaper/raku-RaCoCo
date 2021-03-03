@@ -1,8 +1,9 @@
 use Test;
 use lib 'lib';
-use Racoco::UtilExtProc;
 use lib 't/lib';
+use Racoco::UtilExtProc;
 use Racoco::TmpDir;
+use Racoco::Fixture;
 
 plan 4;
 
@@ -17,6 +18,8 @@ my $test-file = $sources.add('file');
 }
 
 {
+	Fixture::suppressErr;
+  LEAVE { Fixture::restoreErr }
 	nok RunProc.new.run('not-exists', :!err), 'run not-exists ok';
 }
 

@@ -1,8 +1,11 @@
 unit module Fixture;
 
 use Racoco::Precomp::PrecompSupplier;
+use Racoco::Precomp::PrecompHashcodeReader;
 use Racoco::UtilExtProc;
-use Racoco::PrecompFile;
+use Racoco::Coverable::Coverable;
+use Racoco::Coverable::CoverableIndex;
+use Racoco::Coverable::CoverableOutliner;
 use Racoco::Annotation;
 use Racoco::TmpDir;
 
@@ -52,16 +55,6 @@ my role TestKeyValueStore {
   }
 }
 
-my class TestHashcodeGetter does HashcodeGetter does TestKeyValueStore {}
-my class TestIndex does Index does TestKeyValueStore {
-  multi method add($annotation) { self.add($annotation.file, $annotation) }
-  method flush() {}
-}
-my class TestCalculator is Calculator does TestKeyValueStore {
-  method calc-and-update-index($path) { self.get($path) }
-}
-my class TestDumper does Dumper does TestKeyValueStore { }
-
 sub putToTestKeyValueStore($store, %values) {
   for %values.kv -> $key, $value {
     $store.add($key, $value);
@@ -69,39 +62,54 @@ sub putToTestKeyValueStore($store, %values) {
   $store
 }
 
-our sub testSupplier(%files?) {
-	return class Supplier does PrecompSupplier does TestKeyValueStore {
+our sub testSupplier() {
+	class Supplier does PrecompSupplier does TestKeyValueStore {
 		method supply(Str :$file-name --> IO::Path) { self.get($file-name) }
 	}.new
 }
 
-our sub testHashcodeGetter(%files?) {
-  putToTestKeyValueStore(TestHashcodeGetter.new, %files)
+our sub testOutliner() {
+	class Outliner does CoverableOutliner does TestKeyValueStore {
+		method outline(IO::Path :$path --> Positional) { self.get($path) }
+	}.new
 }
 
-our sub testIndex(%files?) {
-  putToTestKeyValueStore(TestIndex.new, %files)
+our sub testIndex() {
+  class Index does CoverableIndex does TestKeyValueStore {
+		method put(Coverable :$coverable) {
+			self.add($coverable.file-name, $coverable)
+		}
+		method retrieve(Str :$file-name --> Coverable) { self.get($file-name) // Nil }
+	}.new
+}
+
+our sub testHashcodeReader() {
+  class Reader does PrecompHashcodeReader does TestKeyValueStore {
+		method read(IO() :$path --> Str) { self.get($path) }
+	}.new
+}
+
+my class TestCalculator is Calculator does TestKeyValueStore {
+  method calc-and-update-index($path) { self.get($path) }
 }
 
 our sub testCalculator(%files?) {
   putToTestKeyValueStore(TestCalculator.new, %files)
 }
 
-our sub testDumper(%files?) {
-  putToTestKeyValueStore(TestDumper.new, %files)
-}
 
-our sub devNullHandle() {
-  (class :: is IO::Handle {
+
+
+my $err;
+our sub suppressErr() {
+	$err = $*ERR;
+	$*ERR = (class :: is IO::Handle {
     submethod TWEAK { self.encoding: 'utf8' }
     method WRITE(Blob:D \data) { True }
   }).new
 }
-
-our sub anno(Str $file, Str() $time, Str $hash, *@lines) {
-  Annotation.new(
-    :$file, :timestamp(instant($time)), :hashcode($hash), lines => @lines
-  )
+our sub restoreErr() {
+	$*ERR = $err if $err
 }
 
 sub cp($from, $to) {
