@@ -13,7 +13,7 @@ class ReportFile is export {
   has Set $.red;
   has Set $.purple;
 
-  method BUILD(:$!file, Set() :$!green, Set() :$!red, Set() :$!purple) {}
+  submethod BUILD(:$!file, Set() :$!green, Set() :$!red, Set() :$!purple) {}
 
   method percent() {
     my $covered = $!green.elems + $!purple.elems;
@@ -37,7 +37,7 @@ class Report is export {
     self.bless(files => @files.map({ .file => $_ }).Hash)
   }
 
-  method BUILD(:%!files) { }
+  submethod BUILD(:%!files) { }
 
   method percent() {
     return 100 if %!files.elems == 0;

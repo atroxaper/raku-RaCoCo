@@ -2,7 +2,7 @@ unit module Fixture;
 
 use Racoco::Precomp::PrecompSupplier;
 use Racoco::Precomp::PrecompHashcodeReader;
-use Racoco::UtilExtProc;
+use Racoco::RunProc;
 use Racoco::Coverable::Coverable;
 use Racoco::Coverable::CoverableIndex;
 use Racoco::Coverable::CoverableOutliner;

@@ -65,7 +65,7 @@ my class OurPrecompLocation does PrecompLocation {
 class PrecompLookup is export {
   has PrecompLocation @!find-locations;
 
-  method BUILD(IO() :$lib) {
+  submethod BUILD(IO() :$lib) {
     @!find-locations =
     	LibPrecompLocation.new(:$lib),
     	OurPrecompLocation.new(:$lib);

@@ -1,7 +1,7 @@
 use Test;
 use lib 'lib';
 use lib 't/lib';
-use Racoco::UtilExtProc;
+use Racoco::RunProc;
 use Racoco::TmpDir;
 use Racoco::Fixture;
 

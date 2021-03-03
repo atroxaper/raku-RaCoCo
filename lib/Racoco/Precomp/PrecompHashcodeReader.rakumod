@@ -1,6 +1,6 @@
 unit module Racoco::Precomp::PrecompHashcodeReader;
 
-use Racoco::UtilExtProc;
+use Racoco::RunProc;
 
 role PrecompHashcodeReader is export {
   method read(IO() :$path --> Str) { ... }

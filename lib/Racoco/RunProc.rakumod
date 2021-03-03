@@ -1,4 +1,4 @@
-unit module Racoco::UtilExtProc;
+unit module Racoco::RunProc;
 
 class RunProc is export {
   method run(|c --> Proc) {

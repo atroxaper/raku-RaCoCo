@@ -2,7 +2,7 @@ use Test;
 use lib 'lib';
 use lib 't/lib';
 use Racoco::Precomp::Precompiler;
-use Racoco::UtilExtProc;
+use Racoco::RunProc;
 use Racoco::Fixture;
 use Racoco::Paths;
 

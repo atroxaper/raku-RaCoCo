@@ -1,7 +1,7 @@
 unit module Racoco::Precomp::Precompiler;
 
 use Racoco::ModuleNames;
-use Racoco::UtilExtProc;
+use Racoco::RunProc;
 use Racoco::Paths;
 
 class Precompiler is export {

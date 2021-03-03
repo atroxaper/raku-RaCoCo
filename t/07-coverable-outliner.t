@@ -2,7 +2,7 @@ use Test;
 use lib 'lib';
 use lib 't/lib';
 use Racoco::Coverable::CoverableOutliner;
-use Racoco::UtilExtProc;
+use Racoco::RunProc;
 use Racoco::Paths;
 use Racoco::Fixture;
 

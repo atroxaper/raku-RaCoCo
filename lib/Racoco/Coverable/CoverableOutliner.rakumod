@@ -1,6 +1,6 @@
 unit module Racoco::Coverable::CoverableOutliner;
 
-use Racoco::UtilExtProc;
+use Racoco::RunProc;
 
 role CoverableOutliner is export {
 	method outline(IO::Path :$path --> Positional) { ... }

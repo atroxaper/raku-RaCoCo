@@ -11,7 +11,7 @@ class PrecompSupplierReal does PrecompSupplier is export {
 	has PrecompLookup $!lookup;
   has Precompiler $!precompiler;
 
-	method BUILD(:$lib, :$raku, :$proc) {
+	submethod BUILD(:$lib, :$raku, :$proc) {
     $!lookup = PrecompLookup.new(:$lib);
     $!precompiler = Precompiler.new(:$lib, :$raku, :$proc)
   }
