@@ -13,32 +13,31 @@ our sub instant($time) {
   Instant.from-posix($time.Str)
 }
 
-my class FakeProc is RunProc {
-  has $.c;
-  method run(|c) {
-    $!c = c;
-    return class :: { method exitcode { 0 } }
-  }
+our sub fakeProc() {
+  class FakeProc is RunProc {
+    has $.c;
+    method run(|c) {
+      $!c = c;
+      return class :: { method exitcode { 0 } }
+    }
+  }.new
 }
 
-my class FailProc is RunProc {
-  method run(|c) {
-    return class :: { method exitcode { 1 } }
-  }
-}
-
-our sub fakeProc() { FakeProc.new }
-our sub failProc() { FailProc.new }
-
-my class FakeIOPath is IO::Path {
-  has $.modified is rw;
-  method Str() {
-    self.path
-  }
+our sub failProc() {
+  class FailProc is RunProc {
+    method run(|c) {
+      return class :: { method exitcode { 1 } }
+    }
+  }.new
 }
 
 our sub fakePath($path, :$modified) {
-  my $result = FakeIOPath.new($path);
+  my $result = class FakeIOPath is IO::Path {
+    has $.modified is rw;
+    method Str() {
+      self.path
+    }
+  }.new($path);
   $result.modified = instant($modified);
   $result
 }
@@ -82,9 +81,6 @@ our sub testLinesSupplier() {
 	}.new
 }
 
-
-
-
 my $err;
 our sub suppressErr() {
 	$err = $*ERR;
@@ -95,6 +91,10 @@ our sub suppressErr() {
 }
 our sub restoreErr() {
 	$*ERR = $err if $err
+}
+
+our sub root-folder() {
+	't-resources'.IO.add('root-folder')
 }
 
 sub cp($from, $to) {
@@ -115,10 +115,6 @@ sub copy($from, $to) {
       cp($ls-from, $ls-to);
     }
   }
-}
-
-our sub root-folder() {
-	't-resources'.IO.add('root-folder')
 }
 
 my $original-dir;
