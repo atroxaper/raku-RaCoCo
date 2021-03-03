@@ -12,7 +12,7 @@ class CoverableLinesSupplier is export {
   has CoverableOutliner $.outliner;
   has PrecompHashcodeReader $.hashcodeReader;
 
-  method supply(Str $file-name) {
+  method supply(Str :$file-name) {
     my $precomp-path = $!supplier.supply(:$file-name);
 		return () unless $precomp-path;
     my $coverable = $!index.retrieve(:$file-name);

@@ -6,7 +6,7 @@ use Racoco::UtilExtProc;
 use Racoco::Coverable::Coverable;
 use Racoco::Coverable::CoverableIndex;
 use Racoco::Coverable::CoverableOutliner;
-use Racoco::Annotation;
+use Racoco::Coverable::CoverableLinesSupplier;
 use Racoco::TmpDir;
 
 our sub instant($time) {
@@ -45,25 +45,12 @@ our sub fakePath($path, :$modified) {
 
 my role TestKeyValueStore {
   has %.mock;
-
-  multi method add($key, $value) {
-    %!mock{$key} = $value
-  }
-
-  method get($path) {
-    %!mock{$path}
-  }
+  multi method add($key, $value) { %!mock{$key} = $value }
+  method get($path) { %!mock{$path} }
 }
 
-sub putToTestKeyValueStore($store, %values) {
-  for %values.kv -> $key, $value {
-    $store.add($key, $value);
-  }
-  $store
-}
-
-our sub testSupplier() {
-	class Supplier does PrecompSupplier does TestKeyValueStore {
+our sub testPrecompSupplier() {
+	class PreSupplier does PrecompSupplier does TestKeyValueStore {
 		method supply(Str :$file-name --> IO::Path) { self.get($file-name) }
 	}.new
 }
@@ -89,12 +76,10 @@ our sub testHashcodeReader() {
 	}.new
 }
 
-my class TestCalculator is Calculator does TestKeyValueStore {
-  method calc-and-update-index($path) { self.get($path) }
-}
-
-our sub testCalculator(%files?) {
-  putToTestKeyValueStore(TestCalculator.new, %files)
+our sub testLinesSupplier() {
+  class LineSupplier is CoverableLinesSupplier does TestKeyValueStore {
+		method supply(Str :$file-name) { self.get($file-name) }
+	}.new
 }
 
 

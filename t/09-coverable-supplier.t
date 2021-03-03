@@ -22,7 +22,7 @@ sub setUp(
   );
 
   my $index = Fixture::testIndex;
-  my $precompSupplier = Fixture::testSupplier;
+  my $precompSupplier = Fixture::testPrecompSupplier;
   my $hashcodeReader = Fixture::testHashcodeReader;
   my $outliner = Fixture::testOutliner;
   $supplier = CoverableLinesSupplier.new(:$index, :supplier($precompSupplier), :$hashcodeReader, :$outliner);
@@ -36,25 +36,25 @@ sub setUp(
 {
   setUp(:path<from-index>, :123time, :hash<hashcode>, lines => (1, 2, 3),
     index-lines => (4, 5, 6));
-  is $supplier.supply('from-index'), (4, 5, 6), 'from-index ok';
+  is $supplier.supply(:file-name<from-index>), (4, 5, 6), 'from-index ok';
 }
 
 {
   setUp(:path<bad-hash>, :123time, :hash<hashcode>, lines => (1, 2, 3),
     index-lines => (4, 5, 6), index-hash => 'obsolete');
-  is $supplier.supply('bad-hash'), (1, 2, 3), 'bad-hash ok';
+  is $supplier.supply(:file-name<bad-hash>), (1, 2, 3), 'bad-hash ok';
 }
 
 {
   setUp(:path<bad-time>, :123time, :hash<hashcode>, lines => (1, 2, 3),
     index-lines => (4, 5, 6), index-time => 122);
-  is $supplier.supply('bad-time'), (1, 2, 3), 'bad-time ok';
+  is $supplier.supply(:file-name<bad-time>), (1, 2, 3), 'bad-time ok';
 }
 
 {
   setUp(:path<no-index>, :123time, :hash<hashcode>, lines => (1, 2, 3),
     :no-index);
-  is $supplier.supply('no-index'), (1, 2, 3), 'no-index ok';
+  is $supplier.supply(:file-name<no-index>), (1, 2, 3), 'no-index ok';
 }
 
 done-testing
