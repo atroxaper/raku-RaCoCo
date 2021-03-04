@@ -35,7 +35,7 @@ our sub coverage-log-path(IO() :$lib --> IO::Path:D) is export {
 	racoco-path(:$lib).add(COVERAGE-LOG)
 }
 
-our sub report-txt-path(IO() :$lib --> IO::Path:D) is export {
+our sub report-basic-path(IO() :$lib --> IO::Path:D) is export {
 	racoco-path(:$lib).add(REPORT-TXT)
 }
 

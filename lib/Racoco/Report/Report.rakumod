@@ -13,6 +13,8 @@ class FileReportData is export {
   has Set $.red;
   has Set $.purple;
 
+  submethod BUILD(Str :$!file-name, Set() :$!green, Set() :$!red, Set() :$!purple) {}
+
   method percent(--> Real) {
     my $covered = self.covered();
     my $coverable = self.coverable();
