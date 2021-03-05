@@ -1,15 +1,17 @@
 unit module Racoco::Paths;
 
-constant \DOT-RACOCO  is export = '.racoco';
-constant \DOT-PRECOMP is export = '.precomp';
-constant \OUR-PRECOMP is export = '.precomp';
+constant \DOT-RACOCO = '.racoco';
+constant \DOT-PRECOMP = '.precomp';
+constant \OUR-PRECOMP = '.precomp';
 
-constant \INDEX is export = 'index';
-constant \COVERAGE-LOG is export = 'coverage.log';
+constant \INDEX = 'index';
+constant \COVERAGE-LOG = 'coverage.log';
 
-constant \REPORT-TXT is export = 'report.txt';
-constant \REPORT-MODULES is export = 'report-modules';
-constant \REPORT-HTML is export = 'report.html';
+constant \REPORT-TXT = 'report.txt';
+constant \REPORT-DATA = 'report-data';
+constant \REPORT-HTML = 'report.html';
+
+constant \META6 = 'META6.json';
 
 sub absolute(IO::Path $path --> IO::Path) {
 	$path.is-absolute ?? $path !! $path.absolute.IO
@@ -37,5 +39,21 @@ our sub coverage-log-path(IO() :$lib --> IO::Path:D) is export {
 
 our sub report-basic-path(IO() :$lib --> IO::Path:D) is export {
 	racoco-path(:$lib).add(REPORT-TXT)
+}
+
+our sub report-html-data-path(IO() :$lib --> IO::Path:D) is export {
+	mkdir racoco-path(:$lib).add(REPORT-DATA)
+}
+
+our sub report-html-path(IO() :$lib --> IO::Path:D) is export {
+	racoco-path(:$lib).add(REPORT-HTML)
+}
+
+our sub meta6-path(IO() :$lib --> IO::Path:D) is export {
+  absolute($lib).parent.add(META6)
+}
+
+our sub parent-name(IO() $path) is export {
+  absolute($path).parent.basename;
 }
 

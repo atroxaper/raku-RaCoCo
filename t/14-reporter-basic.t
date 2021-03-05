@@ -9,7 +9,6 @@ use Racoco::TmpDir;
 plan 5;
 
 my ($sources, $lib) = create-tmp-lib('racoco-test');
-my $racoco = racoco-path(:$lib);
 my $report-path = report-basic-path(:$lib);
 
 my %coverable-lines = %{

@@ -36,10 +36,6 @@ class FileReportData is export {
   method coverable(--> Int) {
     $!green.elems + $!red.elems
   }
-
-  method Str() {
-    "FileReportData[$!file-name](g $!green)(r $!red)(p $!purple)"
-  }
 }
 
 multi sub infix:<eqv>(FileReportData $data1, FileReportData $data2) is export {

@@ -4,7 +4,7 @@ use Racoco::Paths;
 use lib 't/lib';
 use Racoco::TmpDir;
 
-plan 7;
+plan 8;
 
 my ($sources, $lib) = create-tmp-lib('racoco-tests');
 
@@ -29,10 +29,7 @@ my ($sources, $lib) = create-tmp-lib('racoco-tests');
 	isnt our-precomp-path(:$lib), lib-precomp-path(:$lib), 'lib and our precomp';
 }
 
-
-
-
-
-
-
+{
+  is parent-name($lib), 'racoco-tests', 'parent name ok';
+}
 done-testing
