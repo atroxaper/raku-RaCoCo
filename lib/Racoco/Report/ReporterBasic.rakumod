@@ -34,7 +34,7 @@ class ReporterBasic does Reporter is export {
     )
   }
 
-  method write(:$lib --> IO::Path) {
+  method write(IO::Path :$lib --> IO::Path) {
     my $report-basic-path = report-basic-path(:$lib);
     my $serialized-report = self!serialise-report();
     $report-basic-path.spurt: $serialized-report;
@@ -56,5 +56,30 @@ class ReporterBasic does Reporter is export {
     @lines.push: 'red ' ~ $file-report-data.red.keys.sort.List;
     @lines.push: 'purple ' ~ $file-report-data.purple.keys.sort.List;
     @lines.map(*.trim).join("\n")
+  }
+
+  method read(IO::Path :$lib --> Reporter) {
+    my $report-basic-path = report-basic-path(:$lib);
+    return Nil unless $report-basic-path.e;
+
+    my @fileReportData;
+    my @lines = $report-basic-path.lines;
+    loop (my $i = 1; $i < @lines.elems; $i+=5) {
+      @fileReportData.push: self!read-report-data(@lines, $i);
+    }
+    self.bless(report => Report.new(:@fileReportData));
+  }
+
+  method !read-report-data(@lines, $i --> FileReportData) {
+    FileReportData.new(
+      file-name => @lines[$i],
+      green => self!read-color(@lines, $i + 2),
+      red => self!read-color(@lines, $i + 3),
+      purple => self!read-color(@lines, $i + 4),
+    )
+  }
+
+  method !read-color(@lines, $i --> Set) {
+    @lines[$i].split(' ').[1..^*].map(*.Int).Set
   }
 }

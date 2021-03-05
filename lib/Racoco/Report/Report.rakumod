@@ -36,6 +36,17 @@ class FileReportData is export {
   method coverable(--> Int) {
     $!green.elems + $!red.elems
   }
+
+  method Str() {
+    "FileReportData[$!file-name](g $!green)(r $!red)(p $!purple)"
+  }
+}
+
+multi sub infix:<eqv>(FileReportData $data1, FileReportData $data2) is export {
+  $data1.file-name eqv $data2.file-name &&
+  $data1.green eqv $data2.green &&
+  $data1.red eqv $data2.red &&
+  $data1.purple eqv $data2.purple
 }
 
 class Report is export {
@@ -64,4 +75,12 @@ class Report is export {
   method all-data(--> Positional) {
     %!data.values.sort(*.file-name).List
   }
+}
+
+multi sub infix:<eqv>(Report:D $report1, Report:D $report2) is export {
+  return False unless $report1.all-data.elems == $report2.all-data.elems;
+  for $report1.all-data Z $report2.all-data -> ($l, $r) {
+    return False unless $l eqv $r;
+  }
+  True
 }
