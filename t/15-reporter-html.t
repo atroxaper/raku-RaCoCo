@@ -8,7 +8,7 @@ use App::Racoco::Paths;
 use App::Racoco::TmpDir;
 use App::Racoco::Fixture;
 
-plan 42;
+plan 49;
 
 my $lib = Fixture::root-folder.add('lib-for-report');
 my $mod = 'RootModule.rakumod';
@@ -33,7 +33,7 @@ my $report-expect = Report.new(fileReportData => (
   FileReportData.new(:file-name($mod2), green => (), red => (1, 2), purple => (3, 4)),
 ));
 
-sub check-page($file-name, $page-name) {
+sub check-page($file-name, $page-name, :$color-blind = False) {
   my $data = $report-expect.data(:$file-name);
   my $page = (report-html-data-path(:$lib).add($page-name) ~ '.html').IO;
   ok $page.e, $page-name ~ ' exists';
@@ -42,6 +42,9 @@ sub check-page($file-name, $page-name) {
     my $color = ($data.color(:$line).key // 'no').lc;
     ok $content ~~ /"<span class=\"coverage-$color\">line$line\</span>"/,
        "$page-name line$line ok";
+  }
+  if $color-blind {
+    nok $content.contains('color-blind'), "$page-name color-blind";
   }
 
   nok $content ~~ /'%%'/, $page-name ~ ' has no placeholders';
@@ -94,6 +97,13 @@ do-test {
   check-main-page($main-content, $mod2, 'RootModule-SubModule2');
   nok $main-content ~~ /'%%'/, 'main page has no placeholders';
 };
+
+do-test {
+  my $reporter = ReporterHtml.make-from-data(:%coverable-lines, :%covered-lines);
+  $reporter.color-blind = True;
+  $reporter.write(:$lib);
+  check-page($mod, 'RootModule', :color-blind);
+}
 
 do-test {
   my ($, $lib) = create-tmp-lib('racoco-test-not-exists-report');

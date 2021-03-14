@@ -10,6 +10,7 @@ use App::Racoco::ProjectName;
 class ReporterHtml does Reporter is export {
   has ReporterBasic $!reporter is built;
   has IO::Path $!lib;
+  has Bool $.color-blind is rw;
 
   method make-from-data(:%coverable-lines, :%covered-lines --> Reporter) {
     self.bless(reporter =>
@@ -66,6 +67,7 @@ class ReporterHtml does Reporter is export {
     $template .= subst('%%pre%%', self!code-module-content($data));
     $template .= subst('%%module-name%%', module-name(:path($data.file-name)), :g);
     $template .= subst('%%module-coverage%%', $data.percent);
+    $template .= subst('/*color-blind', '') if $!color-blind;
 
     $path.spurt: $template;
     $path.Str.substr(report-html-data-path(:$!lib).Str.chars + '/'.chars)

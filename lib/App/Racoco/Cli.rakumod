@@ -61,7 +61,8 @@ our sub MAIN(
   Str :lib($lib-dir) = 'lib',
   Str :$raku-bin-dir,
   BoolOrStr :exec($exec-command) = 'prove6',
-  Bool :$html,
+  Bool :$html = False,
+  Bool :$color-blind = False,
   Bool :$silent = False,
   Bool :$append = False,
   Int :$fail-level = 0
@@ -87,6 +88,7 @@ our sub MAIN(
   my $reporter = $exec === False
     ?? read-reporter(:$reporter-class, :$lib)
     !! calculate-reporter(:$covered-collector, :$coverable-collector, :$reporter-class);
+  $reporter.color-blind = $color-blind if $html;
   $reporter.write(:$lib);
   print-simple-coverage($reporter.report);
   check-fail-level($fail-level, $reporter.report);
