@@ -14,7 +14,11 @@ my $path = lib-precomp-path(lib => Fixture::root-folder().add('lib'))
   .add('B8').add('B8FF02892916FF59F7FBD4E617FCCD01F6BCA576');
 
 my $outliner = CoverableOutlinerReal.new(:moar<moar>, :$proc);
-is $outliner.outline(:$path), (1, 2), 'coverable outline ok';
+if !$*DISTRO.is-win {
+	is $outliner.outline(:$path), (1, 2), 'coverable outline ok';
+} else {
+	skip "Can't use moar --dump in tests on Windows", 1;
+}
 
 {
   Fixture::suppressErr;
