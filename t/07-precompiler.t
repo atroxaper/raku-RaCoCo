@@ -8,31 +8,33 @@ use Racoco::Paths;
 
 plan 5;
 
-Fixture::change-current-dir-to-root-folder();
-
-my ($proc, $precompiler);
-
-my $lib = 'lib'.IO;
-my $our-precomp = our-precomp-path(:$lib).IO;
+my ($proc, $precompiler, $lib, $our-precomp);
 
 multi sub setUp(:$fake) {
-	precompiler(Fixture::fakeProc);
+	setUp(Fixture::fakeProc);
 }
 
 multi sub setUp(:$fail) {
-	precompiler(Fixture::failProc);
+	setUp(Fixture::failProc);
 }
 
 multi sub setUp(:$real) {
-	precompiler(RunProc.new);
+	setUp(RunProc.new);
 }
 
-sub precompiler($proc-arg) {
+multi sub setUp($proc-arg) {
+  $lib = 'lib'.IO;
+  $our-precomp = our-precomp-path(:$lib).IO;
   $proc = $proc-arg;
   $precompiler = Precompiler.new(:$lib, :raku<raku>, :$proc);
 }
 
-{
+Fixture::need-restore-root-folder();
+sub do-test(&code) {
+  indir(Fixture::root-folder, &code)
+}
+
+do-test {
   setUp(:fake);
   my $file-name = 'Module/Module2.rakumod';
   my $source-file = 'lib'.IO.add('Module').add('Module2.rakumod');
@@ -42,20 +44,20 @@ sub precompiler($proc-arg) {
   is $proc.c,
   	\("raku -I$lib --target=mbc --output=$out-path $source-file", :!out),
     'fake run ok';
-}
+};
 
-{
+do-test {
   setUp(:fail);
   nok $precompiler.compile(:file-name<file>).defined, 'fail precomp ok';
-}
+};
 
-{
+do-test {
   setUp(:real);
   my $file-name = 'Module3.rakumod';
   my $out-path = $our-precomp.add('5F')
   	.add('5FB62D3D27EB6AAE0FD30F0E99F9EB7D3907F2F8');
   is $precompiler.compile(:$file-name), $out-path, 'precomp ok';
   ok $out-path.e, 'precomp exists';
-}
+};
 
 done-testing

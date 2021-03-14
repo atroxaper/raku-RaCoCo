@@ -9,7 +9,7 @@ role CoverableIndex is export {
 }
 
 class CoverableIndexFile does CoverableIndex is export {
-	has IO::Path $.index-path;
+	has IO::Path $!index-path;
   has Coverable %!coverables;
 
   submethod BUILD(IO() :$lib) {

@@ -10,8 +10,7 @@ use Racoco::Fixture;
 
 plan 42;
 
-Fixture::change-current-dir-to-root-folder();
-my $lib = 'lib-for-report'.IO;
+my $lib = Fixture::root-folder.add('lib-for-report');
 my $mod = 'RootModule.rakumod';
 my $mod1 = 'RootModule'.IO.add('SubModule1.rakumod').Str;
 my $mod2 = 'RootModule'.IO.add('SubModule2.rakumod').Str;
@@ -60,7 +59,12 @@ sub check-main-page($content, $file-name, $page-name) {
   ok $line ~~ /"href=\"./report-data/$link\""/, $module-name ~ ' link ok';
 }
 
-{
+Fixture::need-restore-root-folder();
+sub do-test(&code) {
+  indir(Fixture::root-folder, &code)
+}
+
+do-test {
   my $reporter = ReporterHtml.make-from-data(:%coverable-lines, :%covered-lines);
   ok $reporter.report eqv $report-expect, 'make correct data';
   $reporter.write(:$lib);
@@ -68,9 +72,9 @@ sub check-main-page($content, $file-name, $page-name) {
   my $read-reporter = ReporterHtml.read(:$lib);
   ok $read-reporter.report eqv $report-expect, 'read correct data';
   Racoco::TmpDir::rmdir(report-html-data-path(:$lib));
-}
+};
 
-{
+do-test {
   my $reporter = ReporterHtml.make-from-data(:%coverable-lines, :%covered-lines);
   my $wrote-page = $reporter.write(:$lib);
 
@@ -89,12 +93,12 @@ sub check-main-page($content, $file-name, $page-name) {
   check-main-page($main-content, $mod1, 'RootModule-SubModule1');
   check-main-page($main-content, $mod2, 'RootModule-SubModule2');
   nok $main-content ~~ /'%%'/, 'main page has no placeholders';
-}
+};
 
-{
+do-test {
   my ($, $lib) = create-tmp-lib('racoco-test-not-exists-report');
   my $reporter = ReporterHtml.read(:$lib);
   nok $reporter, 'no report file, no html reporter';
-}
+};
 
 done-testing

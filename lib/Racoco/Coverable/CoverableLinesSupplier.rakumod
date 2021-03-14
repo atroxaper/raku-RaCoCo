@@ -10,7 +10,7 @@ class CoverableLinesSupplier is export {
 	has PrecompSupplier $.supplier;
   has CoverableIndex $.index;
   has CoverableOutliner $.outliner;
-  has PrecompHashcodeReader $.hashcodeReader;
+  has PrecompHashcodeReader $.hashcode-reader;
 
   method supply(Str :$file-name) {
     my $precomp-path = $!supplier.supply(:$file-name);
@@ -26,14 +26,14 @@ class CoverableLinesSupplier is export {
   method !is-coverable-actual($coverable, $precomp-path) {
     $coverable && $precomp-path &&
     $coverable.timestamp >= $precomp-path.modified &&
-    $coverable.hashcode eq $!hashcodeReader.read(path => $precomp-path)
+    $coverable.hashcode eq $!hashcode-reader.read(path => $precomp-path)
   }
 
   method !calc-coverable($file-name, $precomp-path) {
   	Coverable.new(
     	:$file-name,
     	timestamp => $precomp-path.modified,
-    	hashcode => $!hashcodeReader.read(path => $precomp-path),
+    	hashcode => $!hashcode-reader.read(path => $precomp-path),
     	lines => $!outliner.outline(path => $precomp-path)
     )
   }

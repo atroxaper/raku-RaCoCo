@@ -22,14 +22,14 @@ sub setUp(
   );
 
   my $index = Fixture::testIndex;
-  my $precompSupplier = Fixture::testPrecompSupplier;
-  my $hashcodeReader = Fixture::testHashcodeReader;
+  my $precomp-supplier = Fixture::testPrecompSupplier;
+  my $hashcode-reader = Fixture::testHashcodeReader;
   my $outliner = Fixture::testOutliner;
-  $supplier = CoverableLinesSupplier.new(:$index, :supplier($precompSupplier), :$hashcodeReader, :$outliner);
+  $supplier = CoverableLinesSupplier.new(:$index, :supplier($precomp-supplier), :$hashcode-reader, :$outliner);
   my $precomp = Fixture::fakePath("pre$path", :modified($time));
   $index.add($path, $indexed) unless $no-index;
-  $precompSupplier.add($path, $precomp);
-  $hashcodeReader.add($precomp.Str, $hash);
+  $precomp-supplier.add($path, $precomp);
+  $hashcode-reader.add($precomp.Str, $hash);
   $outliner.add($precomp.Str, @lines);
 }
 

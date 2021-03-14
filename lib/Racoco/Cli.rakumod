@@ -1,29 +1,76 @@
-use Racoco::Annotation;
-use Racoco::PrecompFile;
-use Racoco::HitCollector;
+unit module Racoco::Cli;
+
 use Racoco::RunProc;
-use Racoco::Paths;
-use Racoco::Report;
+use Racoco::Precomp::PrecompSupplier;
+use Racoco::Precomp::PrecompHashcodeReader;
+use Racoco::Coverable::CoverableIndex;
+use Racoco::Coverable::CoverableOutliner;
+use Racoco::Coverable::CoverableLinesSupplier;
+use Racoco::CoverableLinesCollector;
+use Racoco::CoveredLinesCollector;
+use Racoco::Report::Report;
+use Racoco::Report::ReporterHtml;
+use Racoco::Report::ReporterBasic;
+use Racoco::X;
 
-sub MAIN() is export {
+my %config =
+  lib => 'lib',
+  raku-bin-dir => $*EXECUTABLE.parent.Str,
+  exec => 'prove6',
+  reporter => ReporterBasic;
 
-  my $lib = 'lib'.IO;
-  $lib.parent.add(DOT-RACOCO).add(DOT-PRECOMP).mkdir;
-  my $exec = 'prove6';
-  my $moar = 'moar';
-  my $raku = 'raku';
+multi sub get(:$lib) {
+  my $result = ($lib // %config<lib>);
+  return $result.IO if $result.IO ~~ :e & :d;
+  Racoco::X::WrongLibPath.new(path => $result).throw
+}
+
+multi sub get(:$exec) {
+  $exec // %config<exec>
+}
+
+multi sub get(:$raku-bin-dir, :$name) {
+  my $result = ($raku-bin-dir // %config<raku-bin-dir>);
+  unless $result.IO ~~ :e & :d {
+    Racoco::X::WrongRakuBinDirPath.new(path => $result).throw
+  }
+  my $moar = $result.IO.add($name);
+  unless $moar.e {
+    Racoco::X::WrongRakuBinDirPath.new(path => $result).throw
+  }
+  $moar.Str
+}
+
+multi sub get(:$reporter, :$html) {
+  return ReporterHtml if $html;
+  return ReporterBasic;
+}
+
+sub print-simple-coverage(Report $report) {
+  say "Coverage: {$report.percent}%"
+}
+
+our sub MAIN(:lib($lib-dir), :$raku-bin-dir, :exec($exec-command), :$html) is export {
+  my $lib = get(lib => $lib-dir);
+  my $moar = get(:name<moar>, :$raku-bin-dir);
+  my $raku = get(:name<raku>, :$raku-bin-dir);
+  my $exec = get(exec => $exec-command);
+  my $reporter-class = get(:reporter, :$html);
 
   my $proc = RunProc.new;
-  my $hit-collector = HitCollector.new(:$exec, :$lib, :$proc);
-  my $provider = ProviderReal.new(:$proc, :$lib, :$raku);
-  my $index = IndexFile.new(:$lib);
-  my $dumper = DumperReal.new(:$proc, :$moar);
-  my $hashcodeGetter = HashcodeGetterReal.new;
-  my $calculator = Calculator.new(:$provider, :$index, :$dumper, :$hashcodeGetter);
-  my $annotation-collector = AnnotationCollector.new(:$lib, :$calculator);
+  my $covered-collector = CoveredLinesCollector.new(:$exec, :$lib, :$proc);
+  my $precomp-supplier = PrecompSupplierReal.new(:$proc, :$lib, :$raku);
+  my $index = CoverableIndexFile.new(:$lib);
+  my $outliner = CoverableOutlinerReal.new(:$proc, :$moar);
+  my $hashcode-reader = PrecompHashcodeReaderReal.new;
+  my $coverable-supplier = CoverableLinesSupplier.new(
+    supplier => $precomp-supplier, :$index, :$outliner, :$hashcode-reader);
+  my $coverable-collector = CoverableLinesCollector.new(
+    supplier => $coverable-supplier, :$lib);
 
-  my %covered-lines = $hit-collector.get();
-  my %possible-lines = $annotation-collector.get();
-  HtmlReporter.from-data(:%possible-lines, :%covered-lines).write(:$lib);
-  #$index.flush;
+  my %covered-lines = $covered-collector.collect();
+  my %coverable-lines = $coverable-collector.collect();
+  my $reporter = $reporter-class.make-from-data(:%coverable-lines, :%covered-lines);
+  $reporter.write(:$lib);
+  print-simple-coverage($reporter.report);
 }

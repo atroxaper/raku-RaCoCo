@@ -93,6 +93,26 @@ our sub restoreErr() {
 	$*ERR = $err if $err
 }
 
+my $out;
+my @out-collect = [];
+our sub capture-out() {
+  $out = $*OUT;
+  $*OUT = (class :: is IO::Handle {
+    submethod TWEAK { self.encoding: 'utf8' }
+    method WRITE(Blob:D \data) { @out-collect.push(data.decode); True }
+  }).new
+}
+
+our sub get-out() {
+  my $result = @out-collect.join("\n").trim;
+  @out-collect = [];
+  $result
+}
+
+our sub restore-out() {
+  $*OUT = $out if $out;
+}
+
 our sub root-folder() {
 	't-resources'.IO.add('root-folder')
 }
@@ -117,12 +137,10 @@ sub copy($from, $to) {
   }
 }
 
-my $original-dir;
-our sub change-current-dir-to-root-folder() {
-	$original-dir = '.'.IO.absolute.IO;
-	&*chdir(root-folder());
+my $need-restore;
+our sub need-restore-root-folder() {
+  $need-restore = True;
 }
-
 our sub restore-root-folder() {
   my $to = 't-resources/root-folder'.IO;
   my $from = 't-resources/root-folder-backup'.IO;
@@ -131,8 +149,5 @@ our sub restore-root-folder() {
 }
 
 END {
-	if $original-dir {
-  	&*chdir($original-dir);
-  	restore-root-folder;
-  }
+  restore-root-folder() if $need-restore;
 }
