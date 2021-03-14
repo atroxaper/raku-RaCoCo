@@ -36,7 +36,7 @@ sub do-test(&code) {
 
 do-test {
   setUp(:fake);
-  my $file-name = 'Module/Module2.rakumod';
+  my $file-name = 'Module'.IO.add('Module2.rakumod').Str;
   my $source-file = 'lib'.IO.add('Module').add('Module2.rakumod');
   my $out-path = $our-precomp.add('77')
   	.add('770D15B487025165F9B99486A04A6E11285C6416');

@@ -11,7 +11,7 @@ my $sources = create-tmp-dir('racoco-tests');
 my $test-file = $sources.add('file');
 
 {
-	my $result = RunProc.new.run('echo "boom"', out => $test-file.open(:w));
+	my $result = RunProc.new.run('echo boom', out => $test-file.open(:w));
 	ok $test-file.e, 'run echo into file';
 	is $test-file.slurp.trim, 'boom', 'echo into file correct';
 	is $result.exitcode, 0, 'exitcode 0';
