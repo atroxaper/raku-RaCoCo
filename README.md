@@ -15,6 +15,7 @@ Result: PASS
 Coverage: 89.2%
 
 > racoco --html --silent
+Visualisation: file://.racoco/report.html
 Coverage: 89.2%
 > browsername .racoco/report.html
 ```
