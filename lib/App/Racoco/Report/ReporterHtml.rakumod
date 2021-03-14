@@ -89,9 +89,9 @@ class ReporterHtml does Reporter is export {
     <td><a href="./report-data/%%link%%">%%module-name%%</a></td>
     <td>%%percent%%</td>
     <td>
-    <div class="progress-bar">
+    <span class="progress-bar">
     <span class="progress-bar-fill" style="width: %%percent%%%;"></span>
-    </div>
+    </span>
     </td>
     <td class="total">%%coverable%%</td>
     <td class="covered">%%covered%%</td>
