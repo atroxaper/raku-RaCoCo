@@ -6,7 +6,7 @@ use Racoco::RunProc;
 use Racoco::Paths;
 use Racoco::Fixture;
 
-plan 6;
+plan 7;
 
 my ($lib, $coverage-log, $exec);
 
@@ -26,7 +26,7 @@ do-test {
   my $proc = Fixture::fakeProc;
   my $collector = CoveredLinesCollector.new(:$exec, :$proc, :$lib);
   $collector.collect();
-  is $proc.c, \("MVM_COVERAGE_LOG=$coverage-log prove6", :!out), 'run test ok';
+  is $proc.c, \("MVM_COVERAGE_LOG=$coverage-log prove6"), 'run test ok';
 };
 
 do-test {
@@ -56,9 +56,16 @@ do-test {
 
 do-test {
   my $proc = Fixture::fakeProc;
-  my $collector = CoveredLinesCollector.new(:no-tests, :$exec, :$proc, :$lib);
+  my $collector = CoveredLinesCollector.new(:!exec, :$proc, :$lib);
   $collector.collect();
   nok $proc.c, 'do not test';
+};
+
+do-test {
+  my $proc = Fixture::failProc;
+  my $collector = CoveredLinesCollector.new(:$exec, :$proc, :$lib);
+  throws-like { $collector.collect() }, Racoco::X::NonZeroExitCode,
+    'no zero exitcode';
 };
 
 done-testing

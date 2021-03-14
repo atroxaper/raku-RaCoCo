@@ -18,3 +18,7 @@ class AmbiguousPrecompContent is Exception {
   method message() { "Library path ｢$!path｣ has ambiguous .precomp folder with "
     ~ 'more than one CompUnit Repository' }
 }
+
+class NonZeroExitCode is Exception {
+  has $.exitcode
+}

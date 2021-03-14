@@ -2,34 +2,42 @@ unit module Racoco::CoveredLinesCollector;
 
 use Racoco::RunProc;
 use Racoco::Paths;
+use Racoco::X;
 
 class CoveredLinesCollector is export {
   has IO::Path $.lib;
   has RunProc $.proc;
-  has Str $.exec;
+  has $.exec;
   has Bool $.append = False;
-  has Bool $.no-tests = False;
+  has Bool $.print-test-log = True;
   has $!coverage-log-path;
 
   submethod TWEAK() {
     $!lib = $!lib.absolute.IO;
     $!coverage-log-path = coverage-log-path(:$!lib);
-    $!coverage-log-path.unlink unless $!append;
+    $!coverage-log-path.unlink unless self!need-save-log;
+  }
+
+  method !need-save-log() {
+    $!append || !$!exec
   }
 
   method collect(--> Associative) {
-    return %{} unless self!run-tests();
+    self!run-tests();
     self!parse-log;
   }
 
-  method !run-tests(--> Bool) {
-    return True if $!no-tests;
-    my $proc = $!proc.run("MVM_COVERAGE_LOG=$!coverage-log-path $!exec", :!out);
-    $proc.exitcode == 0;
+  method !run-tests() {
+    return True unless $!exec;
+    my $arg = "MVM_COVERAGE_LOG=$!coverage-log-path $!exec";
+    my $proc = $!print-test-log ?? $!proc.run($arg) !! $!proc.run($arg, :!out);
+    if $proc.exitcode {
+      Racoco::X::NonZeroExitCode.new(exitcode => $proc.exitcode).throw
+    }
   }
 
   method !parse-log(--> Associative) {
-    return Nil unless $!coverage-log-path.e;
+    return %{} unless $!coverage-log-path.e;
     my $prefix = 'HIT  ' ~ $!lib;
     my $prefix-len = $prefix.chars + '/'.chars;
     $!coverage-log-path.lines
