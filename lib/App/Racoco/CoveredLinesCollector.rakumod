@@ -28,7 +28,7 @@ class CoveredLinesCollector is export {
   }
 
   method !run-tests() {
-    return True unless $!exec;
+    return unless $!exec;
     my $arg = "MVM_COVERAGE_LOG=$!coverage-log-path $!exec";
     my $proc = $!print-test-log ?? $!proc.run($arg) !! $!proc.run($arg, :!out);
     if $proc.exitcode {

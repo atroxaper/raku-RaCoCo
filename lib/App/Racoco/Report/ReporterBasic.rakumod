@@ -3,6 +3,7 @@ unit module App::Racoco::Report::ReporterBasic;
 use App::Racoco::Paths;
 use App::Racoco::Report::Report;
 use App::Racoco::Report::Reporter;
+use App::Racoco::X;
 
 class ReporterBasic does Reporter is export {
   has Report $.report;
@@ -60,7 +61,8 @@ class ReporterBasic does Reporter is export {
 
   method read(IO::Path :$lib --> Reporter) {
     my $report-basic-path = report-basic-path(:$lib);
-    return Nil unless $report-basic-path.e;
+    App::Racoco::X::CannotReadReport.new(path => $lib).throw
+      unless $report-basic-path.e;
 
     my @fileReportData;
     my @lines = $report-basic-path.lines;

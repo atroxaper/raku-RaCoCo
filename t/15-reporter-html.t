@@ -97,8 +97,8 @@ do-test {
 
 do-test {
   my ($, $lib) = create-tmp-lib('racoco-test-not-exists-report');
-  my $reporter = ReporterHtml.read(:$lib);
-  nok $reporter, 'no report file, no html reporter';
+  throws-like { ReporterHtml.read(:$lib) }, App::Racoco::X::CannotReadReport,
+    'no report, exception', message => /'lib'/;
 };
 
 done-testing

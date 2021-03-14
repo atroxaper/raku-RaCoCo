@@ -77,8 +77,8 @@ my $report-expect = Report.new(fileReportData => (
 
 {
   my ($, $lib) = create-tmp-lib('racoco-test-not-exists-report');
-  my $reporter = ReporterBasic.read(:$lib);
-  nok $reporter, 'no report file, no reporter';
+  throws-like { ReporterBasic.read(:$lib) }, App::Racoco::X::CannotReadReport,
+    'no report file, no reporter', message => /$lib/;
 }
 
 done-testing

@@ -15,6 +15,7 @@ END { Fixture::restore-out }
 sub do-test(&code) {
   indir(Fixture::root-folder, &code);
   Fixture::restore-root-folder();
+  Fixture::get-out
 }
 
 {
@@ -45,8 +46,8 @@ do-test {
 };
 
 do-test {
-  App::Racoco::Cli::MAIN(exec => False);
-  is Fixture::get-out, 'Coverage: 0%', 'pass not exec';
+  throws-like { App::Racoco::Cli::MAIN(exec => False) }, App::Racoco::X::CannotReadReport,
+    'no report, exception', message => /'lib'/;
 };
 
 do-test {
@@ -54,7 +55,6 @@ do-test {
   App::Racoco::Cli::MAIN();
   App::Racoco::Cli::MAIN(:!exec);
   ok $path.e, 'coverage log exist without exec';
-  Fixture::get-out
 };
 
 do-test {

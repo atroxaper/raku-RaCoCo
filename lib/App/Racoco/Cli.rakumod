@@ -47,6 +47,16 @@ sub check-fail-level(Int $fail-level, Report $report) {
 
 subset BoolOrStr where Bool | Str;
 
+sub calculate-reporter(:$covered-collector, :$coverable-collector, :$reporter-class) {
+  my %covered-lines = $covered-collector.collect();
+  my %coverable-lines = $coverable-collector.collect();
+  $reporter-class.make-from-data(:%coverable-lines, :%covered-lines)
+}
+
+sub read-reporter(:$reporter-class, :$lib) {
+  $reporter-class.read(:$lib)
+}
+
 our sub MAIN(
   Str :lib($lib-dir) = 'lib',
   Str :$raku-bin-dir,
@@ -74,9 +84,9 @@ our sub MAIN(
   my $coverable-collector = CoverableLinesCollector.new(
     supplier => $coverable-supplier, :$lib);
 
-  my %covered-lines = $covered-collector.collect();
-  my %coverable-lines = $coverable-collector.collect();
-  my $reporter = $reporter-class.make-from-data(:%coverable-lines, :%covered-lines);
+  my $reporter = $exec === False
+    ?? read-reporter(:$reporter-class, :$lib)
+    !! calculate-reporter(:$covered-collector, :$coverable-collector, :$reporter-class);
   $reporter.write(:$lib);
   print-simple-coverage($reporter.report);
   check-fail-level($fail-level, $reporter.report);
