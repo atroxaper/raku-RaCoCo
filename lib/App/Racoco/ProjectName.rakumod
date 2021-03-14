@@ -1,6 +1,6 @@
-unit module Racoco::ProjectName;
+unit module App::Racoco::ProjectName;
 
-use Racoco::Paths;
+use App::Racoco::Paths;
 
 our sub project-name(IO::Path :$lib --> Str) is export {
   from-meta(:$lib) // from-path(:$lib) // Nil

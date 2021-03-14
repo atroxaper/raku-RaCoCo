@@ -1,13 +1,13 @@
 unit module Fixture;
 
-use Racoco::Precomp::PrecompSupplier;
-use Racoco::Precomp::PrecompHashcodeReader;
-use Racoco::RunProc;
-use Racoco::Coverable::Coverable;
-use Racoco::Coverable::CoverableIndex;
-use Racoco::Coverable::CoverableOutliner;
-use Racoco::Coverable::CoverableLinesSupplier;
-use Racoco::TmpDir;
+use App::Racoco::Precomp::PrecompSupplier;
+use App::Racoco::Precomp::PrecompHashcodeReader;
+use App::Racoco::RunProc;
+use App::Racoco::Coverable::Coverable;
+use App::Racoco::Coverable::CoverableIndex;
+use App::Racoco::Coverable::CoverableOutliner;
+use App::Racoco::Coverable::CoverableLinesSupplier;
+use App::Racoco::TmpDir;
 
 our sub instant($time) {
   Instant.from-posix($time.Str)
@@ -144,7 +144,7 @@ our sub need-restore-root-folder() {
 our sub restore-root-folder() {
   my $to = 't-resources/root-folder'.IO;
   my $from = 't-resources/root-folder-backup'.IO;
-  Racoco::TmpDir::rmdir($to);
+  App::Racoco::TmpDir::rmdir($to);
   copy($from, $to);
 }
 

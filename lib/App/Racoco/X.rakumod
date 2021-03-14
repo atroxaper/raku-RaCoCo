@@ -1,4 +1,4 @@
-unit module Racoco::X;
+unit module App::Racoco::X;
 
 class WrongLibPath is Exception {
   has $.path;

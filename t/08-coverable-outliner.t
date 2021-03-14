@@ -1,10 +1,10 @@
 use Test;
 use lib 'lib';
 use lib 't/lib';
-use Racoco::Coverable::CoverableOutliner;
-use Racoco::RunProc;
-use Racoco::Paths;
-use Racoco::Fixture;
+use App::Racoco::Coverable::CoverableOutliner;
+use App::Racoco::RunProc;
+use App::Racoco::Paths;
+use App::Racoco::Fixture;
 
 plan 2;
 

@@ -1,9 +1,9 @@
 use Test;
 use lib 'lib';
 use lib 't/lib';
-use Racoco::ProjectName;
-use Racoco::Fixture;
-use Racoco::TmpDir;
+use App::Racoco::ProjectName;
+use App::Racoco::Fixture;
+use App::Racoco::TmpDir;
 
 plan 2;
 

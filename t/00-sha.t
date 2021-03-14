@@ -1,6 +1,6 @@
 use Test;
 use lib 'lib';
-use Racoco::Sha;
+use App::Racoco::Sha;
 
 plan 4;
 
@@ -9,7 +9,7 @@ sub test($sha) {
   is $sha.lc('1ahs'), 'e82efccfbeb2f189abb6d4bb79b02a20a277d04c', 'sha lc ok';
 }
 
-test(Racoco::Sha::NQPSha.new);
-test(Racoco::Sha::create());
+test(App::Racoco::Sha::NQPSha.new);
+test(App::Racoco::Sha::create());
 
 done-testing

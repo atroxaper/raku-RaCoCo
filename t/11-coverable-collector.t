@@ -1,8 +1,8 @@
 use Test;
 use lib 'lib';
 use lib 't/lib';
-use Racoco::CoverableLinesCollector;
-use Racoco::Fixture;
+use App::Racoco::CoverableLinesCollector;
+use App::Racoco::Fixture;
 
 plan 1;
 

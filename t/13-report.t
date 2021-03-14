@@ -1,6 +1,6 @@
 use Test;
 use lib 'lib';
-use Racoco::Report::Report;
+use App::Racoco::Report::Report;
 
 plan 9;
 

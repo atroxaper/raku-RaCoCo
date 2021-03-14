@@ -1,10 +1,10 @@
-unit module Racoco::Coverable::CoverableLinesSupplier;
+unit module App::Racoco::Coverable::CoverableLinesSupplier;
 
-use Racoco::Precomp::PrecompSupplier;
-use Racoco::Precomp::PrecompHashcodeReader;
-use Racoco::Coverable::CoverableIndex;
-use Racoco::Coverable::Coverable;
-use Racoco::Coverable::CoverableOutliner;
+use App::Racoco::Precomp::PrecompSupplier;
+use App::Racoco::Precomp::PrecompHashcodeReader;
+use App::Racoco::Coverable::CoverableIndex;
+use App::Racoco::Coverable::Coverable;
+use App::Racoco::Coverable::CoverableOutliner;
 
 class CoverableLinesSupplier is export {
 	has PrecompSupplier $.supplier;

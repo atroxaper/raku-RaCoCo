@@ -1,10 +1,10 @@
 use Test;
 use lib 'lib';
 use lib 't/lib';
-use Racoco::Precomp::PrecompSupplier;
-use Racoco::Paths;
-use Racoco::Fixture;
-use Racoco::TmpDir;
+use App::Racoco::Precomp::PrecompSupplier;
+use App::Racoco::Paths;
+use App::Racoco::Fixture;
+use App::Racoco::TmpDir;
 
 plan 3;
 

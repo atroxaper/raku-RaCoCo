@@ -1,12 +1,12 @@
 use Test;
 use lib 'lib';
 use lib 't/lib';
-use Racoco::Report::Report;
-use Racoco::Report::ReporterHtml;
-use Racoco::ModuleNames;
-use Racoco::Paths;
-use Racoco::TmpDir;
-use Racoco::Fixture;
+use App::Racoco::Report::Report;
+use App::Racoco::Report::ReporterHtml;
+use App::Racoco::ModuleNames;
+use App::Racoco::Paths;
+use App::Racoco::TmpDir;
+use App::Racoco::Fixture;
 
 plan 42;
 
@@ -71,7 +71,7 @@ do-test {
   ok report-basic-path(:$lib).e, 'basic report exists';
   my $read-reporter = ReporterHtml.read(:$lib);
   ok $read-reporter.report eqv $report-expect, 'read correct data';
-  Racoco::TmpDir::rmdir(report-html-data-path(:$lib));
+  App::Racoco::TmpDir::rmdir(report-html-data-path(:$lib));
 };
 
 do-test {

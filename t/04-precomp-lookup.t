@@ -1,12 +1,12 @@
 use Test;
 use lib 'lib';
 use lib 't/lib';
-use Racoco::Precomp::PrecompLookup;
-use Racoco::Paths;
-use Racoco::Sha;
-use Racoco::X;
-use Racoco::Fixture;
-use Racoco::TmpDir;
+use App::Racoco::Precomp::PrecompLookup;
+use App::Racoco::Paths;
+use App::Racoco::Sha;
+use App::Racoco::X;
+use App::Racoco::Fixture;
+use App::Racoco::TmpDir;
 
 plan 9;
 
@@ -41,7 +41,7 @@ sub setUp($file, $lib-name) {
   my $lib = $sources.add('two-precomp-lib');
   my $lookup = PrecompLookup.new(:$lib);
   throws-like { $lookup.lookup(file-name => 'any.rakumod') },
-  	Racoco::X::AmbiguousPrecompContent,
+  	App::Racoco::X::AmbiguousPrecompContent,
   	'two precomp contents', message => /$lib/;
 
 }
@@ -54,7 +54,7 @@ sub setUp($file, $lib-name) {
   my $precomp-path = lib-precomp-path(:$lib);
   my $expected = $precomp-path.add('7011F868022706D0DB123C03898593E0AB8D8AF3')
   	.add('B8').add('B8FF02892916FF59F7FBD4E617FCCD01F6BCA576');
-  LEAVE { Racoco::TmpDir::rmdir($precomp-path) }
+  LEAVE { App::Racoco::TmpDir::rmdir($precomp-path) }
   $expected.parent.mkdir;
   $expected.spurt: '';
 

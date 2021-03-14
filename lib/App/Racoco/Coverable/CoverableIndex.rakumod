@@ -1,7 +1,7 @@
-unit module Racoco::Coverable::CoverableIndex;
+unit module App::Racoco::Coverable::CoverableIndex;
 
-use Racoco::Paths;
-use Racoco::Coverable::Coverable;
+use App::Racoco::Paths;
+use App::Racoco::Coverable::Coverable;
 
 role CoverableIndex is export {
   method put(Coverable :$coverable) { ... }

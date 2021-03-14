@@ -1,8 +1,8 @@
-unit module Racoco::CoveredLinesCollector;
+unit module App::Racoco::CoveredLinesCollector;
 
-use Racoco::RunProc;
-use Racoco::Paths;
-use Racoco::X;
+use App::Racoco::RunProc;
+use App::Racoco::Paths;
+use App::Racoco::X;
 
 class CoveredLinesCollector is export {
   has IO::Path $.lib;
@@ -32,7 +32,7 @@ class CoveredLinesCollector is export {
     my $arg = "MVM_COVERAGE_LOG=$!coverage-log-path $!exec";
     my $proc = $!print-test-log ?? $!proc.run($arg) !! $!proc.run($arg, :!out);
     if $proc.exitcode {
-      Racoco::X::NonZeroExitCode.new(exitcode => $proc.exitcode).throw
+      App::Racoco::X::NonZeroExitCode.new(exitcode => $proc.exitcode).throw
     }
   }
 

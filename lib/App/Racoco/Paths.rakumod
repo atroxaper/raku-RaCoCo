@@ -1,4 +1,4 @@
-unit module Racoco::Paths;
+unit module App::Racoco::Paths;
 
 constant \DOT-RACOCO = '.racoco';
 constant \DOT-PRECOMP = '.precomp';

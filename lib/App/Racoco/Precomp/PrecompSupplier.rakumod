@@ -1,7 +1,7 @@
-unit module Racoco::Precomp::PrecompSupplier;
+unit module App::Racoco::Precomp::PrecompSupplier;
 
-use Racoco::Precomp::PrecompLookup;
-use Racoco::Precomp::Precompiler;
+use App::Racoco::Precomp::PrecompLookup;
+use App::Racoco::Precomp::Precompiler;
 
 role PrecompSupplier is export {
 	method supply(Str :$file-name --> IO::Path) { ... }

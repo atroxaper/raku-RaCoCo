@@ -1,11 +1,11 @@
-unit module Racoco::Report::ReporterHtml;
+unit module App::Racoco::Report::ReporterHtml;
 
-use Racoco::Report::Report;
-use Racoco::Report::Reporter;
-use Racoco::Report::ReporterBasic;
-use Racoco::Paths;
-use Racoco::ModuleNames;
-use Racoco::ProjectName;
+use App::Racoco::Report::Report;
+use App::Racoco::Report::Reporter;
+use App::Racoco::Report::ReporterBasic;
+use App::Racoco::Paths;
+use App::Racoco::ModuleNames;
+use App::Racoco::ProjectName;
 
 class ReporterHtml does Reporter is export {
   has ReporterBasic $!reporter is built;

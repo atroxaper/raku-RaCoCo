@@ -1,10 +1,10 @@
 use Test;
 use lib 'lib';
 use lib 't/lib';
-use Racoco::Report::Report;
-use Racoco::Report::ReporterBasic;
-use Racoco::Paths;
-use Racoco::TmpDir;
+use App::Racoco::Report::Report;
+use App::Racoco::Report::ReporterBasic;
+use App::Racoco::Paths;
+use App::Racoco::TmpDir;
 
 plan 5;
 

@@ -1,6 +1,6 @@
-unit module Racoco::CoverableLinesCollector;
+unit module App::Racoco::CoverableLinesCollector;
 
-use Racoco::Coverable::CoverableLinesSupplier;
+use App::Racoco::Coverable::CoverableLinesSupplier;
 
 class CoverableLinesCollector is export {
   has IO::Path $.lib;

@@ -1,8 +1,8 @@
 use Test;
 use lib 'lib';
-use Racoco::Paths;
+use App::Racoco::Paths;
 use lib 't/lib';
-use Racoco::TmpDir;
+use App::Racoco::TmpDir;
 
 plan 8;
 

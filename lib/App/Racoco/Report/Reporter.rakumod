@@ -1,6 +1,6 @@
-unit module Racoco::Report::Reporter;
+unit module App::Racoco::Report::Reporter;
 
-use Racoco::Report::Report;
+use App::Racoco::Report::Report;
 
 role Reporter is export {
   method make-from-data(:%coverable-lines, :%covered-lines --> Reporter) { ... }

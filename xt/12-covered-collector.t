@@ -1,10 +1,10 @@
 use Test;
 use lib 'lib';
 use lib 't/lib';
-use Racoco::CoveredLinesCollector;
-use Racoco::RunProc;
-use Racoco::Paths;
-use Racoco::Fixture;
+use App::Racoco::CoveredLinesCollector;
+use App::Racoco::RunProc;
+use App::Racoco::Paths;
+use App::Racoco::Fixture;
 
 plan 7;
 
@@ -64,7 +64,7 @@ do-test {
 do-test {
   my $proc = Fixture::failProc;
   my $collector = CoveredLinesCollector.new(:$exec, :$proc, :$lib);
-  throws-like { $collector.collect() }, Racoco::X::NonZeroExitCode,
+  throws-like { $collector.collect() }, App::Racoco::X::NonZeroExitCode,
     'no zero exitcode';
 };
 

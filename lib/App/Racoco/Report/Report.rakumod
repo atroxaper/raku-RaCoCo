@@ -1,4 +1,4 @@
-unit module Racoco::Report::Report;
+unit module App::Racoco::Report::Report;
 
 enum COLOR is export <GREEN RED PURPLE>;
 

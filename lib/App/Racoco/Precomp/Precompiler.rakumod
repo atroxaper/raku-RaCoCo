@@ -1,8 +1,8 @@
-unit module Racoco::Precomp::Precompiler;
+unit module App::Racoco::Precomp::Precompiler;
 
-use Racoco::ModuleNames;
-use Racoco::RunProc;
-use Racoco::Paths;
+use App::Racoco::ModuleNames;
+use App::Racoco::RunProc;
+use App::Racoco::Paths;
 
 class Precompiler is export {
 	has IO::Path $.lib;

@@ -1,10 +1,10 @@
 use Test;
 use lib 'lib';
 use lib 't/lib';
-use Racoco::Precomp::Precompiler;
-use Racoco::RunProc;
-use Racoco::Fixture;
-use Racoco::Paths;
+use App::Racoco::Precomp::Precompiler;
+use App::Racoco::RunProc;
+use App::Racoco::Fixture;
+use App::Racoco::Paths;
 
 plan 5;
 

@@ -1,6 +1,6 @@
 use Test;
 use lib 't/lib';
-use Racoco::TmpDir;
+use App::Racoco::TmpDir;
 
 plan 9;
 

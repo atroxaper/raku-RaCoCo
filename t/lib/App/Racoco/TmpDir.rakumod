@@ -1,4 +1,4 @@
-unit module Racoco::TmpDir;
+unit module App::Racoco::TmpDir;
 
 my @tmp-dirs;
 

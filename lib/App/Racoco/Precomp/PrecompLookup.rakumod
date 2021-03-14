@@ -1,9 +1,9 @@
-unit module Racoco::Precomp::PrecompLookup;
+unit module App::Racoco::Precomp::PrecompLookup;
 
-use Racoco::ModuleNames;
-use Racoco::Paths;
-use Racoco::Sha;
-use Racoco::X;
+use App::Racoco::ModuleNames;
+use App::Racoco::Paths;
+use App::Racoco::Sha;
+use App::Racoco::X;
 
 my role PrecompLocation {
 	method lookup(Str $file-name --> IO::Path) { ... }
@@ -45,7 +45,7 @@ my class LibPrecompLocation does PrecompLocation {
 
 	method !check-compiler-amount(@compiler-ids, $path) {
 		if @compiler-ids.elems > 1 {
-			Racoco::X::AmbiguousPrecompContent.new(:$path).throw
+			App::Racoco::X::AmbiguousPrecompContent.new(:$path).throw
 		}
 	}
 }

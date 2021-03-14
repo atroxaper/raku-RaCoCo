@@ -1,9 +1,9 @@
 use Test;
 use lib 'lib';
 use lib 't/lib';
-use Racoco::RunProc;
-use Racoco::TmpDir;
-use Racoco::Fixture;
+use App::Racoco::RunProc;
+use App::Racoco::TmpDir;
+use App::Racoco::Fixture;
 
 plan 4;
 

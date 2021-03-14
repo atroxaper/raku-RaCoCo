@@ -1,4 +1,4 @@
-unit module Racoco::Sha;
+unit module App::Racoco::Sha;
 use nqp;
 
 role Sha is export {

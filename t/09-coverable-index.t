@@ -1,10 +1,10 @@
 use Test;
 use lib 'lib';
 use lib 't/lib';
-use Racoco::Coverable::Coverable;
-use Racoco::Coverable::CoverableIndex;
-use Racoco::Paths;
-use Racoco::Fixture;
+use App::Racoco::Coverable::Coverable;
+use App::Racoco::Coverable::CoverableIndex;
+use App::Racoco::Paths;
+use App::Racoco::Fixture;
 
 plan 6;
 

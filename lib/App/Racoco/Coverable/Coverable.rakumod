@@ -1,4 +1,4 @@
-unit module Racoco::Coverable::Coverable;
+unit module App::Racoco::Coverable::Coverable;
 
 class Coverable is export {
 	has Str $.file-name;

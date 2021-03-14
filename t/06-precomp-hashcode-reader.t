@@ -1,9 +1,9 @@
 use Test;
 use lib 'lib';
 use lib 't/lib';
-use Racoco::Fixture;
-use Racoco::Paths;
-use Racoco::Precomp::PrecompHashcodeReader;
+use App::Racoco::Fixture;
+use App::Racoco::Paths;
+use App::Racoco::Precomp::PrecompHashcodeReader;
 
 plan 1;
 

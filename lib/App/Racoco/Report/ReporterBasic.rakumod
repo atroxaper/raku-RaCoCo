@@ -1,8 +1,8 @@
-unit module Racoco::Report::ReporterBasic;
+unit module App::Racoco::Report::ReporterBasic;
 
-use Racoco::Paths;
-use Racoco::Report::Report;
-use Racoco::Report::Reporter;
+use App::Racoco::Paths;
+use App::Racoco::Report::Report;
+use App::Racoco::Report::Reporter;
 
 class ReporterBasic does Reporter is export {
   has Report $.report;
