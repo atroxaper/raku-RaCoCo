@@ -97,3 +97,19 @@ our sub MAIN(
     }
   }
 }
+
+sub USAGE() is export {
+  print q:to/END/;
+	Usage: racoco [options]
+
+	Options:
+		--lib=<path>                   path to directory with coverable source files
+		--raku-bin-dir=<path>          path to directory with raku and moar binaries
+		--exec=<command-string|false>  command, which need to be executed to run tests or false to not run tests and use coverage data from the previous run
+		--fail-level=<int>             minimum possible coverage percent for success exit
+		--silent                       hide test result output
+		--append                       do not clean coverage data before run tests and append its result to the previous one
+		--html                         produce simple html page to visualize results
+		--color-blind                  use more readable colors than green/red pare
+	END
+}

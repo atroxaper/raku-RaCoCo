@@ -32,7 +32,9 @@ class ReporterHtml does Reporter is export {
     $!lib = $lib;
     $!reporter.write(:$lib);
     my %module-links = self!write-module-pages();
-    self!write-main-page(%module-links)
+    my $result = self!write-main-page(%module-links);
+    self!write-main-page-url();
+    $result
   }
 
   method !write-module-pages(--> Associative) {
@@ -51,6 +53,10 @@ class ReporterHtml does Reporter is export {
 
     $path.spurt: $template;
     $path
+  }
+
+  method !write-main-page-url() {
+    say "Visualisation: file://", report-html-path(:$!lib).Str
   }
 
   method !write-module-page(FileReportData $data, Str $template is copy--> Str) {

@@ -74,7 +74,7 @@ do-test {
   nok $path.e, 'nok html';
   App::Racoco::Cli::MAIN(:html, :!exec, :append);
   ok $path.e, 'ok html';
-  is Fixture::get-out, "Coverage: 62.5%\n\nCoverage: 62.5%", 'pass html';
+  ok Fixture::get-out.contains(report-html-path(:lib<lib>)), 'pass html';
 };
 
 done-testing

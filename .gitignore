@@ -3,4 +3,4 @@ t/lib/.precomp/**
 **/.idea/**
 **/*.iml
 **/.DS_Store
-todo.md
+.racoco/**

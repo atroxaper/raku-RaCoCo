@@ -1,0 +1,20 @@
+name: Ubuntu
+
+on:
+  push:
+    branches: [ master, dev ]
+  pull_request:
+    branches: [ master ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: prove
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+    - name: Runs tests
+      id: tests
+      uses: JJ/raku-container-action@master
