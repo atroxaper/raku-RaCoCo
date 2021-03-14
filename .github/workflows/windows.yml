@@ -66,3 +66,6 @@ jobs:
 
       - name: Tests
         run: prove6
+
+      - name: XT Tests
+        run: prove6 xt
