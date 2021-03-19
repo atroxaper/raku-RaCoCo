@@ -9,12 +9,24 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    name: prove
-    runs-on: ubuntu-latest
+  raku:
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+        raku-version:
+          - 'latest'
+    runs-on: ${{ matrix.os }}
     steps:
-    - name: Checkout
-      uses: actions/checkout@v1
-    - name: Runs tests
-      id: tests
-      uses: JJ/raku-container-action@master
+      - uses: actions/checkout@v2
+      - uses: Raku/setup-raku@v1
+        with:
+          raku-version: ${{ matrix.raku-version }}
+      - name: Install Dependencies
+        run: zef install --/test --test-depends --deps-only .
+      - name: Install App::Prove6
+        run: zef install --/test App::Prove6
+      - name: Run Tests
+        run: prove6 t
+      - name: Run XT Tests
+        run: prove6 xt

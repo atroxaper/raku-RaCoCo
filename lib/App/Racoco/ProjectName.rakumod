@@ -9,7 +9,7 @@ our sub project-name(IO::Path :$lib --> Str) is export {
 sub from-meta(:$lib) {
   my $path = meta6-path(:$lib);
   return Nil unless $path.e;
-  my $line-with-name = $path.lines.grep(* ~~ /'"name"'/).first;
+  my $line-with-name = $path.slurp.lines.grep(* ~~ /'"name"'/).first;
   return Nil unless $line-with-name;
   ($line-with-name.split(':').[*-1].trim ~~ / <-['",]>+/).Str
 }

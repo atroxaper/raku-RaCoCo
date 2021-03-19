@@ -29,8 +29,10 @@ class CoveredLinesCollector is export {
 
   method !run-tests() {
     return unless $!exec;
-    my $arg = "MVM_COVERAGE_LOG=$!coverage-log-path $!exec";
-    my $proc = $!print-test-log ?? $!proc.run($arg) !! $!proc.run($arg, :!out);
+    my %vars = MVM_COVERAGE_LOG => $!coverage-log-path;
+    my $proc = $!print-test-log
+        ?? $!proc.run($!exec, :%vars)
+        !! $!proc.run($!exec, :%vars, :!out);
     if $proc.exitcode {
       App::Racoco::X::NonZeroExitCode.new(exitcode => $proc.exitcode).throw
     }

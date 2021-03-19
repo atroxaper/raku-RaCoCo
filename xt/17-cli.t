@@ -6,8 +6,9 @@ use App::Racoco::Fixture;
 use App::Racoco::Paths;
 use App::Racoco::X;
 
-plan 13;
+plan 14;
 
+Fixture::restore-root-folder();
 Fixture::capture-out;
 END { Fixture::restore-out }
 
@@ -46,7 +47,7 @@ do-test {
 };
 
 do-test {
-  throws-like { App::Racoco::Cli::MAIN(exec => False) }, App::Racoco::X::CannotReadReport,
+  throws-like { App::Racoco::Cli::MAIN(:!exec) }, App::Racoco::X::CannotReadReport,
     'no report, exception', message => /'lib'/;
 };
 
@@ -58,14 +59,15 @@ do-test {
 };
 
 do-test {
-  App::Racoco::Cli::MAIN(silent => True);
+  App::Racoco::Cli::MAIN(:silent);
   is Fixture::get-out, 'Coverage: 62.5%', 'pass silent';
 };
 
 do-test {
   App::Racoco::Cli::MAIN();
   App::Racoco::Cli::MAIN(:append, exec => 'echo "foo"');
-  is Fixture::get-out, "Coverage: 62.5%\n\nCoverage: 62.5%", 'pass append';
+  my $on-screen = Fixture::get-out().lines.map(*.trim).grep(*.chars).join(' ');
+  is $on-screen, "Coverage: 62.5% Coverage: 62.5%", 'pass append';
 };
 
 do-test {
@@ -76,5 +78,14 @@ do-test {
   ok $path.e, 'ok html';
   ok Fixture::get-out.contains(report-html-path(:lib<lib>)), 'pass html';
 };
+
+do-test {
+  App::Racoco::Cli::MAIN(
+      lib => 'fix-compunit',
+      :fix-compunit,
+      exec => 'prove6 fix-compunit/t'
+  );
+  is Fixture::get-out.trim, 'Coverage: 100%', 'two precomp with fix-compunit';
+}
 
 done-testing

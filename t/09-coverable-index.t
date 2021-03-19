@@ -5,6 +5,7 @@ use App::Racoco::Coverable::Coverable;
 use App::Racoco::Coverable::CoverableIndex;
 use App::Racoco::Paths;
 use App::Racoco::Fixture;
+use App::Racoco::TmpDir;
 
 plan 6;
 
@@ -55,7 +56,8 @@ my $index = CoverableIndexFile.new(:$lib);
 }
 
 {
-  lives-ok { CoverableIndexFile.new(:lib($*TMPDIR)) }, 'without index file'
+  my $lib = TmpDir::create-tmp-dir('lib');
+  lives-ok { CoverableIndexFile.new(:$lib) }, 'without index file'
 }
 
 done-testing

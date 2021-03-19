@@ -1,4 +1,4 @@
-name: Windows
+name: MacOS
 
 on:
   push:
@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         os:
-          - windows-latest
+          - macOS-latest
         raku-version:
           - 'latest'
     runs-on: ${{ matrix.os }}

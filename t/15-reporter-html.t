@@ -74,7 +74,7 @@ do-test {
   ok report-basic-path(:$lib).e, 'basic report exists';
   my $read-reporter = ReporterHtml.read(:$lib);
   ok $read-reporter.report eqv $report-expect, 'read correct data';
-  App::Racoco::TmpDir::rmdir(report-html-data-path(:$lib));
+  TmpDir::rmdir(report-html-data-path(:$lib));
 };
 
 do-test {
@@ -106,7 +106,7 @@ do-test {
 }
 
 do-test {
-  my ($, $lib) = create-tmp-lib('racoco-test-not-exists-report');
+  my ($, $lib) = TmpDir::create-tmp-lib('racoco-test-not-exists-report');
   throws-like { ReporterHtml.read(:$lib) }, App::Racoco::X::CannotReadReport,
     'no report, exception', message => /'lib'/;
 };
