@@ -55,7 +55,7 @@ my $index = CoverableIndexFile.new(:$lib);
 }
 
 {
-  lives-ok { CoverableIndexFile.new(:lib($*TMPDIR)) }, 'without index file'
+  lives-ok { CoverableIndexFile.new(:lib($*TMPDIR.add('test'))) }, 'without index file'
 }
 
 done-testing
