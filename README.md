@@ -1,6 +1,10 @@
 [![Ubuntu](https://github.com/atroxaper/raku-RaCoCo/actions/workflows/ubuntu.yml/badge.svg)](https://github.com/atroxaper/raku-RaCoCo/actions/workflows/ubuntu.yml)
 [![MacOS](https://github.com/atroxaper/raku-RaCoCo/actions/workflows/macos.yml/badge.svg)](https://github.com/atroxaper/raku-RaCoCo/actions/workflows/macos.yml)
-[![Windows](https://github.com/atroxaper/raku-RaCoCo/actions/workflows/windows.yml/badge.svg)](https://github.com/atroxaper/raku-RaCoCo/actions/workflows/windows.yml)
+[![Windows](https://github.com/atroxaper/raku-RaCoCo/actions/workflows/windows.yml/badge.svg)](https://github.com/atroxaper/raku-RaCoCo/actions/workflows/windows.yml)<br/>
+![badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/atroxaper/bbe5dc9c78db69d256b11c2ea562a42f/raw/racoco-ubuntu-coco.json)
+![badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/atroxaper/3113bf626af5b82ec0917574e638fcf5/raw/racoco-macos-coco.json)
+![badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/atroxaper/ab8fd9f770291f542eec3245a756e7c8/raw/racoco-windows-coco.json)
+
 # NAME
 
 `App::RaCoCo` - Raku Code Coverage tool.
