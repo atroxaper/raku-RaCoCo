@@ -15,7 +15,7 @@ class Precompiler is export {
 		$out-path.parent.mkdir;
 		my $source-file = $!lib.add($file-name);
 		my $proc = $!proc.run(
-			"$!raku -I$!lib --target=mbc --output=$out-path $source-file", :!out
+			qq/$!raku -I$!lib --target=mbc --output=$out-path $source-file/, :!out
 		);
 		$proc.exitcode ?? Nil !! $out-path;
 	}

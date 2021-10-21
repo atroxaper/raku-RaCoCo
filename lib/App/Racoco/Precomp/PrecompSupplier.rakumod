@@ -9,7 +9,7 @@ role PrecompSupplier is export {
 
 class PrecompSupplierReal does PrecompSupplier is export {
 	has PrecompLookup $!lookup;
-  has Precompiler $!precompiler;
+	has Precompiler $!precompiler;
 
 	submethod BUILD(:$lib, :$raku, :$proc) {
     $!lookup = PrecompLookup.new(:$lib);

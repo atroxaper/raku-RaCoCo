@@ -6,7 +6,7 @@ use App::Racoco::TmpDir;
 
 plan 8;
 
-my ($sources, $lib) = create-tmp-lib('racoco-tests');
+my ($sources, $lib) = TmpDir::create-tmp-lib('racoco-tests');
 
 {
 	my $racoco-path = racoco-path(:$lib);

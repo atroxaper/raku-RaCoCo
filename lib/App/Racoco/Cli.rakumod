@@ -11,6 +11,7 @@ use App::Racoco::CoveredLinesCollector;
 use App::Racoco::Report::Report;
 use App::Racoco::Report::ReporterHtml;
 use App::Racoco::Report::ReporterBasic;
+use App::Racoco::Paths;
 use App::Racoco::X;
 
 multi sub get(:$lib) {
@@ -23,11 +24,11 @@ multi sub get(:$raku-bin-dir, :$name) {
   unless $result.IO ~~ :e & :d {
     App::Racoco::X::WrongRakuBinDirPath.new(path => $result).throw
   }
-  my $moar = $result.IO.add($name);
-  unless $moar.e {
+  my $app = $result.IO.add($name ~ ($*DISTRO.is-win ?? '.exe' !! ''));
+  unless $app.e {
     App::Racoco::X::WrongRakuBinDirPath.new(path => $result).throw
   }
-  $moar.Str
+  $app.Str
 }
 
 multi sub get(:$reporter, :$html) {
@@ -57,6 +58,19 @@ sub read-reporter(:$reporter-class, :$lib) {
   $reporter-class.read(:$lib)
 }
 
+sub rmdir($path, :$rm-path) {
+  return unless $path ~~ :d & :e;
+  for $path.dir() -> $sub-path {
+    rmdir($sub-path, :rm-path) if $sub-path.d;
+    $sub-path.unlink;
+  }
+  $path.rmdir if $rm-path;
+}
+
+sub rm-precomp(:$lib) {
+  rmdir(lib-precomp-path(:$lib), :!rm-path)
+}
+
 our sub MAIN(
   Str :lib($lib-dir) = 'lib',
   Str :$raku-bin-dir,
@@ -65,7 +79,8 @@ our sub MAIN(
   Bool :$color-blind = False,
   Bool :$silent = False,
   Bool :$append = False,
-  Int :$fail-level = 0
+  Int() :$fail-level = 0,
+  Bool :$fix-compunit = False
 ) is export {
   my $lib = get(lib => $lib-dir);
   my $moar = get(:name<moar>, :$raku-bin-dir);
@@ -84,6 +99,8 @@ our sub MAIN(
     supplier => $precomp-supplier, :$index, :$outliner, :$hashcode-reader);
   my $coverable-collector = CoverableLinesCollector.new(
     supplier => $coverable-supplier, :$lib);
+
+  rm-precomp(:$lib) if $fix-compunit && $exec;
 
   my $reporter = $exec === False
     ?? read-reporter(:$reporter-class, :$lib)

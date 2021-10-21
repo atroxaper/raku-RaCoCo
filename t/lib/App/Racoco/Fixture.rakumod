@@ -42,6 +42,10 @@ our sub fakePath($path, :$modified) {
   $result
 }
 
+our sub compiler-id() {
+	$*RAKU.compiler.id
+}
+
 my role TestKeyValueStore {
   has %.mock;
   multi method add($key, $value) { %!mock{$key} = $value }
@@ -94,7 +98,7 @@ our sub restoreErr() {
 }
 
 my $out;
-my @out-collect = [];
+my @out-collect;
 our sub capture-out() {
   $out = $*OUT;
   $*OUT = (class :: is IO::Handle {
@@ -121,12 +125,16 @@ sub cp($from, $to) {
   $from.copy($to);
 }
 
-sub create($create) {
+sub make-dir($create is copy) {
+	if ($create.basename eq 'current_compiler_id') {
+		$create = $create.parent.add(compiler-id());
+	}
   $create.mkdir;
+  $create
 }
 
-sub copy($from, $to) {
-  create($to);
+sub copy($from, $to is copy) {
+  $to = make-dir($to);
   for $from.dir() -> $ls-from {
     my $ls-to = $to.add($ls-from.basename);
     if $ls-from.d {
@@ -144,7 +152,7 @@ our sub need-restore-root-folder() {
 our sub restore-root-folder() {
   my $to = 't-resources/root-folder'.IO;
   my $from = 't-resources/root-folder-backup'.IO;
-  App::Racoco::TmpDir::rmdir($to);
+  TmpDir::rmdir($to);
   copy($from, $to);
 }
 

@@ -11,7 +11,7 @@ class CoverableOutlinerReal does CoverableOutliner is export {
   has Str $.moar;
 
   method outline(IO::Path :$path --> Positional) {
-    my $proc = $!proc.run("$!moar --dump $path", :out);
+    my $proc = $!proc.run(qq/$!moar --dump $path/, :out);
     LEAVE { $proc.out.close if $proc && $proc.out }
     return () if $proc.exitcode;
     self!parse-dump($proc.out)

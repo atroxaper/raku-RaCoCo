@@ -1,11 +1,22 @@
 unit module App::Racoco::RunProc;
 
 class RunProc is export {
-  method run(|c --> Proc) {
-    my $proc = shell(|c);
-    if $proc.exitcode != 0 {
-    	$*ERR.say: "Fail execute: {c.List[0]}";
-    }
-    $proc
-  }
+	method run(:%vars, |c --> Proc) {
+		my $comand = self!tweak-command(c.list[0], :%vars);
+		my $proc = shell($comand, |c.hash);
+		if $proc.exitcode != 0 {
+			$*ERR.say: "Fail execute: { $comand }";
+		}
+		$proc
+	}
+
+	method !tweak-command($command, :%vars) {
+	  return $command unless %vars.elems;
+		if $*DISTRO.is-win {
+			my $vars-str = %vars.kv.map(-> $k, $v { "$k=$v&&" }).join(' set ');
+			qq[cmd /S /C "set $vars-str $command"]
+		} else {
+		  %vars.kv.map(-> $k, $v { "$k=$v" }).join(' ') ~ ' ' ~ $command
+		}
+	}
 }

@@ -8,7 +8,7 @@ use App::Racoco::TmpDir;
 
 plan 5;
 
-my ($sources, $lib) = create-tmp-lib('racoco-test');
+my ($sources, $lib) = TmpDir::create-tmp-lib('racoco-test');
 my $report-path = report-basic-path(:$lib);
 
 my %coverable-lines = %{
@@ -76,7 +76,7 @@ my $report-expect = Report.new(fileReportData => (
 }
 
 {
-  my ($, $lib) = create-tmp-lib('racoco-test-not-exists-report');
+  my ($, $lib) = TmpDir::create-tmp-lib('racoco-test-not-exists-report');
   throws-like { ReporterBasic.read(:$lib) }, App::Racoco::X::CannotReadReport,
     'no report file, no reporter', message => /$lib/;
 }

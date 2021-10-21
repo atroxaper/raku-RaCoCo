@@ -1,27 +1,27 @@
-unit module App::Racoco::TmpDir;
+unit module TmpDir;
 
 my @tmp-dirs;
 
-our sub create-tmp-dir($name --> IO::Path:D) is export {
+our sub create-tmp-dir($name --> IO::Path:D) {
   mkdir register-dir($*TMPDIR.add($name))
 }
 
-our sub create-tmp-lib($name) is export {
+our sub create-tmp-lib($name) {
 	my $dir = create-tmp-dir($name);
 	my $lib = create-dir($dir.add('lib'));
 	$dir, $lib
 }
 
-our sub create-dir(IO() $path --> IO::Path:D) is export {
+our sub create-dir(IO() $path --> IO::Path:D) {
   mkdir register-dir($path)
 }
 
-our sub register-dir(IO() $path --> IO::Path:D) is export {
+our sub register-dir(IO() $path --> IO::Path:D) {
   @tmp-dirs.push: $path;
   $path
 }
 
-our sub clean-up() is export {
+our sub clean-up() {
   for @tmp-dirs.reverse -> $path {
     rmdir($path)
   }
