@@ -130,5 +130,6 @@ sub USAGE() is export {
 		--append                       do not clean coverage data before run tests and append its result to the previous one
 		--html                         produce simple html page to visualize results
 		--color-blind                  use more readable colors than green/red pare
+		--fix-compunit                 erase <library>/.precomp directory before run tests
 	END
 }
