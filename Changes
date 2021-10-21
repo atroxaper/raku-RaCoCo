@@ -1,4 +1,10 @@
 Version history:
 
+1.4.1		2021-10-21	'Second public release'
+	- add --fix-compunit flag
+	- fix tests for all three platforms
+	- improve CI
+	- Update README
+
 1.3.1   2021-03-14  'The first public release'
 	- Production ready code coverage tool
