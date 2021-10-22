@@ -71,6 +71,13 @@ sub rm-precomp(:$lib) {
   rmdir(lib-precomp-path(:$lib), :!rm-path)
 }
 
+sub check-ambiguous-precomp(:$lib) {
+  my $path = lib-precomp-path(:$lib);
+  if $path.dir().grep(*.d).elems > 1 {
+    App::Racoco::X::AmbiguousPrecompContent.new(:$path).throw
+  }
+}
+
 our sub MAIN(
   Str :lib($lib-dir) = 'lib',
   Str :$raku-bin-dir,
@@ -88,6 +95,9 @@ our sub MAIN(
   my $exec = $exec-command;
   my $reporter-class = get(:reporter, :$html);
 
+  rm-precomp(:$lib) if $fix-compunit;
+  check-ambiguous-precomp(:$lib);
+
   my $proc = RunProc.new;
   my $covered-collector = CoveredLinesCollector.new(
     :$exec, :$lib, :$proc, print-test-log => !$silent, :$append);
@@ -99,8 +109,6 @@ our sub MAIN(
     supplier => $precomp-supplier, :$index, :$outliner, :$hashcode-reader);
   my $coverable-collector = CoverableLinesCollector.new(
     supplier => $coverable-supplier, :$lib);
-
-  rm-precomp(:$lib) if $fix-compunit && $exec;
 
   my $reporter = $exec === False
     ?? read-reporter(:$reporter-class, :$lib)
