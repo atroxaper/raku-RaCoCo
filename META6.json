@@ -38,5 +38,6 @@
 		"report-file.html"
 	],
 	"license": "Artistic-2.0",
+	"tags": [ "COVERAGE" ],
 	"source-url": "git://github.com/atroxaper/raku-RaCoCo.git"
 }
