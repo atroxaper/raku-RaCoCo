@@ -2,6 +2,8 @@ name: Ubuntu
 
 on:
   push:
+    branches: [ master, dev ]
+  pull_request:
     branches: [ master ]
 
   workflow_dispatch:
@@ -24,22 +26,5 @@ jobs:
         run: zef install --/test --test-depends --deps-only .
       - name: Install App::Prove6
         run: zef install --/test App::Prove6
-      - name: Run RaCoCo
-        run: raku -Ilib bin/racoco --exec='prove6 t xt'
-      - name: Discover Code Coverage
-        run: |
-          coverage=`head -1 .racoco/report.txt | sed 's/\..*//'`
-          echo $coverage
-          echo "COVERAGE=$coverage%" >> $GITHUB_ENV
-      - name: Create Code Coverage Badge
-        uses: schneegans/dynamic-badges-action@v1.1.0
-        with:
-          auth: ${{ secrets.GIST_COCO_TOCKEN }}
-          gistID: bbe5dc9c78db69d256b11c2ea562a42f
-          filename: racoco-ubuntu-coco.json
-          namedLogo: Ubuntu
-          logoColor: 969da4
-          label: Coverage
-          labelColor: 343a41
-          message: ${{ env.COVERAGE }}
-          color: 5cb45a
+      - name: Run Tests
+        run: prove6 t xt

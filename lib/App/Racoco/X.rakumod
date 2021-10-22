@@ -3,7 +3,7 @@ unit module App::Racoco::X;
 class WrongLibPath is Exception {
   has $.path;
 
-  method message() { "Library path ｢$!path｣ doest not exists." }
+  method message() { "Library path ｢$!path｣ does not exists." }
   method backtrace() { '' }
 }
 
