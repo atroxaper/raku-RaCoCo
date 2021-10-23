@@ -11,7 +11,7 @@ sub from-meta(:$lib) {
   return Nil unless $path.e;
   my $line-with-name = $path.slurp.lines.grep(* ~~ /'"name"'/).first;
   return Nil unless $line-with-name;
-  ($line-with-name.split(':').[*-1].trim ~~ / <-['",]>+/).Str
+  ($line-with-name.split(' ').[*-1].trim ~~ / <-['",]>+/).Str
 }
 
 sub from-path(:$lib) {
