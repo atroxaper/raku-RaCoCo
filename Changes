@@ -1,6 +1,9 @@
 Version history:
 
-1.4.3		2021-10-22	'Bugfix release'
+1.4.4		2021-10-23	'Bugfix release'
+	- Fix #6 Warn in CoveredLinesCollector.rakumod
+
+1.4.3		2021-10-23	'Bugfix release'
 	- Fix project name getter for html page
 	- Fix JS of report.html
 	- Make .precomp directory check as ambiguous be before run tests
