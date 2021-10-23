@@ -48,13 +48,21 @@ If you use zef, then `zef install App::RaCoCo`, or `pakku add App::RaCoCo` if yo
 
 You may specify the following parameters:
 * **--lib** - path to directory with target source files (`'./lib'` by default);
+
 * **--raku-bin-dir** - path to directory with raku and moar binaries (`$*EXECUTABLE.parent` by default);
+
 * **--exec** - command, which need to be executed to run tests. For example, you may pass `'prove --exec raku'` to the `exec` parameter to say `prove` to manage your tests, or use `--/exec` parameter to not run tests and use coverage data from the previous run (`prove6` by default);
+
 * **--fail-level** - integer number - if coverage will be less than it then `racoco` will exit with non-zero exitcode;
+
 * **--silent** - hide test result output;
+
 * **--append** - do not clean coverage data before this `racoco` run and append its result to the previous one;
+
 * **--html** - produce simple html page to visualize results;
+
 * **--color-blind** - addition to `--html` parameter - use more readable colors than green/red pare;
+
 * **--fix-compunit** - erase `<library>/.precomp` directory before run tests. See [details below](#common-difficult-cases).
 
 # COMMON DIFFICULT CASES

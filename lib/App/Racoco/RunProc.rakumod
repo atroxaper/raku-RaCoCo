@@ -11,12 +11,12 @@ class RunProc is export {
 	}
 
 	method !tweak-command($command, :%vars) {
-	  return $command unless %vars.elems;
+		return $command unless %vars.elems;
 		if $*DISTRO.is-win {
 			my $vars-str = %vars.kv.map(-> $k, $v { "$k=$v&&" }).join(' set ');
 			qq[cmd /S /C "set $vars-str $command"]
 		} else {
-		  %vars.kv.map(-> $k, $v { "$k=$v" }).join(' ') ~ ' ' ~ $command
+			%vars.kv.map(-> $k, $v { "$k=$v" }).join(' ') ~ ' ' ~ $command
 		}
 	}
 }
