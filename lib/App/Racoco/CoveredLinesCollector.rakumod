@@ -48,7 +48,7 @@ class CoveredLinesCollector is export {
       .unique
       .map(-> $h { .[0] => .[2] with $h.words})
       .classify({ $_.key })
-      .map({ $_.key => $_.value.map({$_.value.Int or -1}).grep(* ne -1).Set })
+      .map({ $_.key => $_.value.map({ (($_.value // 0).Int // 0) }).grep(* > 0).Set })
       .Hash
   }
 }
