@@ -63,16 +63,14 @@ You may specify the following parameters:
 
 * **--color-blind** - addition to `--html` parameter - use more readable colors than green/red pare;
 
-* **--fix-compunit** - erase `<library>/.precomp` directory before run tests. See [details below](#common-difficult-cases).
+* **--fix-compunit** - erase `<library>/.precomp` directory before run tests. See [details below](#notes).
 
-# COMMON DIFFICULT CASES
+# NOTES
 
-* It is common practise to not include `use lib 'lib'` line in test files. In such case we need to run tests with command like `prove6 -Ilib`. As RaCoCo uses just `prove6` command by default, then we will need to run it like `racoco --exec='prove6 -Ilib'`.
-* If `<library>/.precomp` directory has more than one directory with compiled sources, then RaCoCo cannot be sure which one need to be analysed. The situation arises, for example, after updating raku compiler. You need to clean `.precomp` directory or delete only the old directories inside. Alternatively, you can run RaCoCo with `--fix-compunit` flag ones to erase `.precomp` directory automatically.
-
-# NOTE
-
-RaCoCo application works only with MoarVM backended Raku compiler.
+* RaCoCo application works only with MoarVM backended Raku compiler;
+* It is common practise to not include `use lib 'lib'` line in test files. In such case we need to run tests with command like `prove6 -Ilib`. As RaCoCo uses just `prove6` command by default, then we will need to run it like `racoco --exec='prove6 -Ilib'`;
+* If `<library>/.precomp` directory has more than one directory with compiled sources, then RaCoCo cannot be sure which one need to be analysed. The situation arises, for example, after updating raku compiler. You need to clean `.precomp` directory or delete only the old directories inside. Alternatively, you can run RaCoCo with `--fix-compunit` flag ones to erase `.precomp` directory automatically;
+* Unfortunately, the current Rakudo implementation may produce a little different coverage log from run to run. Probably, it is because of some runtime optimisations.
 
 # AUTHOR
 
