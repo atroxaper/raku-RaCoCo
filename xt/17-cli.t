@@ -33,12 +33,12 @@ sub do-test(&code) {
 
 do-test {
   App::Racoco::Cli::MAIN();
-  is Fixture::get-out, 'Coverage: 62.5%', 'simple run ok';
+  is Fixture::get-out, 'Coverage: 75%', 'simple run ok';
 };
 
 do-test {
   App::Racoco::Cli::MAIN(lib => 'lib', raku-bin-dir => $*EXECUTABLE.parent.Str);
-  is Fixture::get-out, 'Coverage: 62.5%', 'pass lib and raku-bin-dir';
+  is Fixture::get-out, 'Coverage: 75%', 'pass lib and raku-bin-dir';
 };
 
 do-test {
@@ -60,14 +60,14 @@ do-test {
 
 do-test {
   App::Racoco::Cli::MAIN(:silent);
-  is Fixture::get-out, 'Coverage: 62.5%', 'pass silent';
+  is Fixture::get-out, 'Coverage: 75%', 'pass silent';
 };
 
 do-test {
   App::Racoco::Cli::MAIN();
   App::Racoco::Cli::MAIN(:append, exec => 'echo "foo"');
   my $on-screen = Fixture::get-out().lines.map(*.trim).grep(*.chars).join(' ');
-  is $on-screen, "Coverage: 62.5% Coverage: 62.5%", 'pass append';
+  is $on-screen, "Coverage: 75% Coverage: 75%", 'pass append';
 };
 
 do-test {

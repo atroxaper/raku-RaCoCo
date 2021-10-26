@@ -1,3 +1,3 @@
 sub mod2() is export {
-  'mod2'
+  return 'mod2'
 }

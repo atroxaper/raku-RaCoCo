@@ -35,8 +35,8 @@ do-test {
   is-deeply %coveredLines,
     %{
       'Module2.rakumod' => (1, 2).Set,
-      'Module3.rakumod' => (1, 2, 5).Set  # actual hit must be (1, 2, 3, 5)
-    },                                    # probably it is optimisation issue
+      'Module3.rakumod' => (1, 2, 3, 5).Set
+    },
     'coverage ok';
 };
 

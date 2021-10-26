@@ -1,7 +1,7 @@
 sub mod3($arg) is export {
   if $arg {
-    'mod3'
+    return 'mod3'
   } else {
-    '3dom'
+    return '3dom'
   }
 }
