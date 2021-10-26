@@ -8,6 +8,8 @@ use App::Racoco::Paths;
 
 plan 5;
 
+Fixture::restore-root-folder();
+
 my ($proc, $precompiler, $lib, $our-precomp);
 
 multi sub setUp(:$fake) {

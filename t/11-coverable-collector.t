@@ -6,6 +6,8 @@ use App::Racoco::Fixture;
 
 plan 1;
 
+Fixture::restore-root-folder();
+
 my $sources = Fixture::root-folder();
 my $lib = $sources.add('lib');
 

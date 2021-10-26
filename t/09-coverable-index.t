@@ -9,6 +9,8 @@ use App::Racoco::TmpDir;
 
 plan 6;
 
+Fixture::restore-root-folder();
+
 my $sources = Fixture::root-folder();
 my $lib = $sources.add('lib');
 my $index-path = index-path(:$lib);

@@ -8,6 +8,8 @@ use App::Racoco::Fixture;
 
 plan 4;
 
+Fixture::restore-root-folder();
+
 my $supplier;
 
 sub setUp(
