@@ -68,12 +68,13 @@ sub rmdir($path, :$rm-path) {
 }
 
 sub rm-precomp(:$lib) {
-  rmdir(lib-precomp-path(:$lib), :!rm-path)
+  my $path = lib-precomp-path(:$lib);
+  rmdir($path, :!rm-path) if $path.e;
 }
 
 sub check-ambiguous-precomp(:$lib) {
   my $path = lib-precomp-path(:$lib);
-  if $path.dir().grep(*.d).elems > 1 {
+  if $path.e and $path.dir().grep(*.d).elems > 1 {
     App::Racoco::X::AmbiguousPrecompContent.new(:$path).throw
   }
 }
