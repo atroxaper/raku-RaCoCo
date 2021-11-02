@@ -1,5 +1,8 @@
 Version history:
 
+1.4.5		2021-11-03	'Bugfix release'
+	- Fix fail when run on library with not existed .precomp directory (#10)
+
 1.4.4		2021-10-23	'Bugfix release'
 	- Fix #6 Warn in CoveredLinesCollector.rakumod
 

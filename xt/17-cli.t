@@ -6,7 +6,7 @@ use App::Racoco::Fixture;
 use App::Racoco::Paths;
 use App::Racoco::X;
 
-plan 14;
+plan 16;
 
 Fixture::restore-root-folder();
 Fixture::capture-out;
@@ -29,6 +29,15 @@ sub do-test(&code) {
     'MAIN with wrong raku bin dir ok', message => /'not-exists'/;
   throws-like { App::Racoco::Cli::MAIN(raku-bin-dir => 'lib') }, App::Racoco::X::WrongRakuBinDirPath,
     'MAIN with empty raku bin dir ok', message => /'lib'/;
+}
+
+do-test {
+  lives-ok { App::Racoco::Cli::MAIN(lib => 'no-precomp') }, 'lives with no precomp';
+}
+
+do-test {
+  lives-ok { App::Racoco::Cli::MAIN(lib => 'no-precomp', :fix-compunit) },
+  'lives with no precomp fix-compunit';
 }
 
 do-test {
