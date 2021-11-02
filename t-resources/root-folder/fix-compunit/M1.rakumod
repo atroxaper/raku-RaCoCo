@@ -1,3 +1,3 @@
 sub m1() is export {
-  'm1'
+  return 'm1'
 }
