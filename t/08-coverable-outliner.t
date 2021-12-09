@@ -5,28 +5,42 @@ use App::Racoco::Coverable::CoverableOutliner;
 use App::Racoco::RunProc;
 use App::Racoco::Paths;
 use App::Racoco::Fixture;
+use TestResources;
 
-plan 2;
+plan 1;
 
-Fixture::restore-root-folder();
+my ($lib, $outliner, $subtest);
+sub setup($lib-name, $proc, :$subtest, :$plan!) {
+	plan $plan;
+	TestResources::prepare($subtest);
+	$lib = TestResources::exam-directory.add($lib-name);
+	$outliner = CoverableOutlinerReal.new(:moar<moar>, :$proc);
+}
 
-my $proc = RunProc.new;
-my $path = lib-precomp-path(lib => Fixture::root-folder().add('lib'))
-  .add(Fixture::compiler-id())
-  .add('B8').add('B8FF02892916FF59F7FBD4E617FCCD01F6BCA576');
-
-my $outliner = CoverableOutlinerReal.new(:moar<moar>, :$proc);
-if !$*DISTRO.is-win {
+$subtest = '01-real-outline';
+subtest $subtest, {
+	setup('lib', RunProc.new, :$subtest, :1plan);
+	my $path = lib-precomp-path(:$lib).add(Fixture::compiler-id())
+    .add('B8').add('B8FF02892916FF59F7FBD4E617FCCD01F6BCA576');
 	is $outliner.outline(:$path), (1, 2), 'coverable outline ok';
-} else {
-	skip "Can't use moar --dump in tests on Windows", 1;
 }
 
-{
-  Fixture::suppressErr;
-  LEAVE { Fixture::restoreErr }
-  is CoverableOutlinerReal.new(:moar<moar>, :proc(Fixture::failProc)).outline(:$path), (),
-    'fail moar proc';
-}
+
+#Fixture::restore-root-folder();
+#
+#
+#
+#if !$*DISTRO.is-win {
+#
+#} else {
+#	skip "Can't use moar --dump in tests on Windows", 1;
+#}
+#
+#{
+#  Fixture::suppressErr;
+#  LEAVE { Fixture::restoreErr }
+#  is CoverableOutlinerReal.new(:moar<moar>, :proc(Fixture::failProc)).outline(:$path), (),
+#    'fail moar proc';
+#}
 
 done-testing
