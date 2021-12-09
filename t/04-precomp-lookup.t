@@ -3,26 +3,13 @@ use lib 'lib';
 use lib 't/lib';
 use App::Racoco::Precomp::PrecompLookup;
 use App::Racoco::Paths;
-use App::Racoco::Sha;
 use App::Racoco::X;
 use App::Racoco::Fixture;
-use App::Racoco::TmpDir;
 use TestResources;
 
 plan 4;
 
-Fixture::restore-root-folder();
-
-my $sources = Fixture::root-folder();
-my ($file-name, $lib, $lookup);
-
-sub setUp($file, $lib-name) {
-  $file-name = $file;
-  $lib = $sources.add($lib-name);
-  $lookup = PrecompLookup.new(:$lib);
-}
-
-my $subtest;
+my ($sources, $lib, $file-name, $lookup, $subtest);
 sub setup($file, $lib-name, :$subtest, :$plan!) {
 	plan $plan;
 	TestResources::prepare($subtest);
