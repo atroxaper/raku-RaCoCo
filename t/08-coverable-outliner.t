@@ -7,7 +7,7 @@ use App::Racoco::Paths;
 use App::Racoco::Fixture;
 use TestResources;
 
-plan 1;
+plan 2;
 
 my ($lib, $path, $outliner, $subtest);
 sub setup($lib-name, $proc, :$subtest, :$plan!) {
@@ -32,22 +32,5 @@ subtest $subtest, {
   LEAVE { Fixture::restoreErr }
   is $outliner.outline(:$path), (), 'fail moar proc';
 }
-
-#Fixture::restore-root-folder();
-#
-#
-#
-#if !$*DISTRO.is-win {
-#
-#} else {
-#	skip "Can't use moar --dump in tests on Windows", 1;
-#}
-#
-#{
-#  Fixture::suppressErr;
-#  LEAVE { Fixture::restoreErr }
-#  is CoverableOutlinerReal.new(:moar<moar>, :proc(Fixture::failProc)).outline(:$path), (),
-#    'fail moar proc';
-#}
 
 done-testing
