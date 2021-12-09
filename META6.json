@@ -31,7 +31,8 @@
     "App::Racoco::Report::ReporterHtml": "lib/App/Racoco/Report/ReporterHtml.rakumod",
     "App::Racoco::RunProc": "lib/App/Racoco/RunProc.rakumod",
     "App::Racoco::Sha": "lib/App/Racoco/Sha.rakumod",
-    "App::Racoco::X": "lib/App/Racoco/X.rakumod"
+    "App::Racoco::X": "lib/App/Racoco/X.rakumod",
+    "TestResources": "lib/TestResources.pm6"
   },
   "resources": [
     "report.html",
