@@ -52,31 +52,43 @@ my role TestKeyValueStore {
   method get($path) { %!mock{$path} }
 }
 
-our sub testPrecompSupplier() {
+our sub testPrecompSupplier(*@data) {
+	my $supplier =
 	class PreSupplier does PrecompSupplier does TestKeyValueStore {
 		method supply(Str :$file-name --> IO::Path) { self.get($file-name) }
-	}.new
+	}.new;
+	for @data -> $file-name, $precomp { $supplier.add($file-name, $precomp) }
+	return $supplier;
 }
 
-our sub testOutliner() {
+our sub testOutliner(**@data) {
+	my $outliner =
 	class Outliner does CoverableOutliner does TestKeyValueStore {
 		method outline(IO::Path :$path --> Positional) { self.get($path) }
-	}.new
+	}.new;
+	for @data -> $file-name, @lines { $outliner.add($file-name, @lines) }
+	return $outliner;
 }
 
-our sub testIndex() {
+our sub testIndex(*@data) {
+  my $index =
   class Index does CoverableIndex does TestKeyValueStore {
 		method put(Coverable :$coverable) {
 			self.add($coverable.file-name, $coverable)
 		}
 		method retrieve(Str :$file-name --> Coverable) { self.get($file-name) // Nil }
-	}.new
+	}.new;
+	for @data -> $coverable { $index.put(:$coverable) }
+	return $index;
 }
 
-our sub testHashcodeReader() {
+our sub testHashcodeReader(*@data) {
+  my $reader =
   class Reader does PrecompHashcodeReader does TestKeyValueStore {
 		method read(IO() :$path --> Str) { self.get($path) }
-	}.new
+	}.new;
+	for @data -> $file-name, $hashcode { $reader.add($file-name, $hashcode) }
+	return $reader;
 }
 
 our sub testLinesSupplier() {
