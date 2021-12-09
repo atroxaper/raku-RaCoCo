@@ -50,31 +50,14 @@ my class LibPrecompLocation does PrecompLocation {
 	}
 }
 
-my class OurPrecompLocation does PrecompLocation {
-	has $.lib;
-
-	method lookup(Str $file-name --> IO::Path) {
-		with our-precomp-path(:$!lib) -> $path {
-			my $found = $path.add(file-precomp-path(path => $file-name.IO));
-			return $found if $found.e
-		}
-		Nil
-	}
-}
-
 class PrecompLookup is export {
-  has PrecompLocation @!find-locations;
+  has PrecompLocation $!location;
 
   submethod BUILD(IO() :$lib) {
-    @!find-locations =
-    	LibPrecompLocation.new(:$lib),
-    	OurPrecompLocation.new(:$lib);
+    $!location = LibPrecompLocation.new(:$lib);
   }
 
   method lookup(Str :$file-name --> IO::Path) {
-    for @!find-locations -> $location {
-    	return $_ with $location.lookup($file-name)
-    }
-    return Nil
+    $!location.lookup($file-name)
   }
 }
