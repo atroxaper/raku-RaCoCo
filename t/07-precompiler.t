@@ -32,15 +32,15 @@ subtest $subtest, {
     'fake run ok';
 }
 
-#$subtest = '02-real-compile';
-#subtest $subtest, {
-#	setup(RunProc.new, :$subtest, :2plan);
-#  my $file-name = 'Module3.rakumod';
-#  my $out-path = $our-precomp.add('5F')
-#  	.add('5FB62D3D27EB6AAE0FD30F0E99F9EB7D3907F2F8');
-#  is $precompiler.compile(:$file-name), $out-path, 'precomp ok';
-#  ok $out-path.e, 'precomp exists';
-#}
+$subtest = '02-real-compile';
+subtest $subtest, {
+	setup(RunProc.new, :$subtest, :2plan);
+  my $file-name = 'Module3.rakumod';
+  my $out-path = $our-precomp.add('5F')
+  	.add('5FB62D3D27EB6AAE0FD30F0E99F9EB7D3907F2F8');
+  is $precompiler.compile(:$file-name), $out-path, 'precomp ok';
+  ok $out-path.e, 'precomp exists';
+}
 
 #Fixture::restore-root-folder();
 #
