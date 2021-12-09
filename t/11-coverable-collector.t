@@ -3,27 +3,32 @@ use lib 'lib';
 use lib 't/lib';
 use App::Racoco::CoverableLinesCollector;
 use App::Racoco::Fixture;
+use TestResources;
 
 plan 1;
 
-Fixture::restore-root-folder();
+my ($lib, $collector, $subtest);
+sub setup($lib-name, @suplier-data, :$subtest, :$plan!) {
+	plan $plan;
+	TestResources::prepare($subtest);
+	$lib = TestResources::exam-directory.add($lib-name);
+	my $supplier = Fixture::testLinesSupplier(|@suplier-data);
+	$collector = CoverableLinesCollector.new(:$lib, :$supplier);
+}
 
-my $sources = Fixture::root-folder();
-my $lib = $sources.add('lib');
+$subtest = '01-iter-and-collect-fake';
+subtest $subtest, {
+	setup('lib', :$subtest, :1plan, (
+	  'Sub'.IO.add('Module.rakumod').Str, (1, 2, 3),
+    'Sub'.IO.add('Submodule.rakumod').Str, (25, 28),
+    'Module.rakumod', (14,)
+  ));
 
-my $linesSupplier = Fixture::testLinesSupplier();
-$linesSupplier.add('Module.rakumod', (1, 2, 3));
-$linesSupplier.add('Module2.rakumod', (25, 28));
-$linesSupplier.add('Module3.rakumod', (14,));
-
-{
-  my $collector = CoverableLinesCollector.new(:$lib, :supplier($linesSupplier));
-  my %coverableLines = $collector.collect();
-  is-deeply %coverableLines,
+  is-deeply $collector.collect(),
     %{
-      'Module.rakumod' => (1, 2, 3).Set,
-      'Module2.rakumod' => (25, 28).Set,
-      'Module3.rakumod' => (14).Set,
+      'Sub'.IO.add('Module.rakumod').Str => (1, 2, 3).Set,
+      'Sub'.IO.add('Submodule.rakumod').Str => (25, 28).Set,
+      'Module.rakumod' => (14).Set,
     },
     'lines collector ok';
 }

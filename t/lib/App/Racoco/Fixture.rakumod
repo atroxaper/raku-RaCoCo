@@ -91,10 +91,13 @@ our sub testHashcodeReader(*@data) {
 	return $reader;
 }
 
-our sub testLinesSupplier() {
+our sub testLinesSupplier(**@data) {
+  my $supplier =
   class LineSupplier is CoverableLinesSupplier does TestKeyValueStore {
 		method supply(Str :$file-name) { self.get($file-name) }
-	}.new
+	}.new;
+	for @data -> $file-name, @lines { $supplier.add($file-name, @lines) }
+	return $supplier;
 }
 
 my $err;
