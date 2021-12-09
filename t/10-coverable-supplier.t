@@ -6,7 +6,7 @@ use App::Racoco::Coverable::CoverableLinesSupplier;
 use App::Racoco::Paths;
 use App::Racoco::Fixture;
 
-plan 1;
+plan 2;
 
 my ($supplier, $subtest);
 sub setup(
@@ -29,19 +29,21 @@ sub setup(
 	$supplier = CoverableLinesSupplier.new(:$index, :supplier($precomp-supplier), :$hashcode-reader, :$outliner);
 }
 
-$subtest = '01-info-from-index';
+$subtest = '01-from-index';
 subtest $subtest, {
 	setup(:file-name<info-from-index>, :1plan,
 		:123time, :hash<hashcode>, lines => (1, 2, 3), lines-c => (4, 5, 6));
 	is $supplier.supply(:file-name<info-from-index>), (4, 5, 6), 'from-index ok';
 }
 
-#
-#{
-#  setUp(:path<bad-hash>, :123time, :hash<hashcode>, lines => (1, 2, 3),
-#    index-lines => (4, 5, 6), index-hash => 'obsolete');
-#  is $supplier.supply(:file-name<bad-hash>), (1, 2, 3), 'bad-hash ok';
-#}
+$subtest = '02-obsolete-hash';
+subtest $subtest, {
+	setup(:file-name<obsolete-hash>, :1plan,
+		:123time, :hash<hashcode>, :hash-c<obsolete>,
+		lines => (1, 2, 3), lines-c => (4, 5, 6));
+	is $supplier.supply(:file-name<obsolete-hash>), (1, 2, 3), 'obsolete-hash ok';
+}
+
 #
 #{
 #  setUp(:path<bad-time>, :123time, :hash<hashcode>, lines => (1, 2, 3),
