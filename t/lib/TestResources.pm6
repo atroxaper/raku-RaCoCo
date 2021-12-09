@@ -11,12 +11,12 @@ our sub subtest-directory($subtest) {
   test-directory.add($subtest)
 }
 
-our sub exam-direcotry() {
+our sub exam-directory() {
   't-resources/'.IO.add('exam');
 }
 
 our sub prepare($subtest --> IO::Path) {
-  my $exam-directory = exam-direcotry();
+  my $exam-directory = exam-directory();
   TmpDir::rmdir($exam-directory);
   TmpDir::create-dir($exam-directory);
   copy-content(from => subtest-directory($subtest), to => $exam-directory);
