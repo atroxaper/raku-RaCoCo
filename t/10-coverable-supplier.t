@@ -5,13 +5,13 @@ use App::Racoco::Coverable::Coverable;
 use App::Racoco::Coverable::CoverableLinesSupplier;
 use App::Racoco::Fixture;
 
-plan 3;
+plan 4;
 
 my ($supplier, $subtest);
 sub setup(
 	:$hash, :$time, :@lines,
 	:$hash-c, :$time-c, :@lines-c,
-	:$file-name, :$plan!
+	:$file-name, :$use-index = True, :$plan!
 ) {
 	plan $plan;
 	my $indexed = Coverable.new(
@@ -20,7 +20,7 @@ sub setup(
 		hashcode => $hash-c // $hash,
 		lines => @lines-c // @lines
 	);
-	my $index = Fixture::testIndex($indexed);
+	my $index = Fixture::testIndex($use-index ?? $indexed !! ());
 	my $precomp = Fixture::fakePath("pre$file-name", :modified($time));
 	my $precomp-supplier = Fixture::testPrecompSupplier($file-name, $precomp);
 	my $hashcode-reader = Fixture::testHashcodeReader($precomp.Str, $hash);
@@ -51,17 +51,12 @@ subtest $subtest, {
 	is $supplier.supply(:file-name<obsolete-time>), (1, 2, 3), 'obsolete-time ok';
 }
 
-#
-#{
-#  setUp(:path<bad-time>, :123time, :hash<hashcode>, lines => (1, 2, 3),
-#    index-lines => (4, 5, 6), index-time => 122);
-#  is $supplier.supply(:file-name<bad-time>), (1, 2, 3), 'bad-time ok';
-#}
-#
-#{
-#  setUp(:path<no-index>, :123time, :hash<hashcode>, lines => (1, 2, 3),
-#    :no-index);
-#  is $supplier.supply(:file-name<no-index>), (1, 2, 3), 'no-index ok';
-#}
+$subtest = '04-empty-index';
+subtest $subtest, {
+	setup(:file-name<empty-index>, :1plan,
+		:123time, :hash<hashcode>, lines => (1, 2, 3),
+		:!use-index);
+	is $supplier.supply(:file-name<empty-index>), (1, 2, 3), 'empty-index ok';
+}
 
 done-testing
