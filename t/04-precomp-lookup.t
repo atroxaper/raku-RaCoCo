@@ -9,7 +9,7 @@ use App::Racoco::Fixture;
 use App::Racoco::TmpDir;
 use TestResources;
 
-plan 3;
+plan 4;
 
 Fixture::restore-root-folder();
 
@@ -58,17 +58,12 @@ subtest $subtest, {
   	'two precomp contents', message => /$lib/;
 }
 
-#$subtest = '04-l';
-#subtest $subtest, {
-#	setup('Module2.rakumod', 'lib', :$subtest, :1plan);
-#
-#}
-#
-#{
-#  setUp('Module2.rakumod', 'lib');
-#  my $expected = our-precomp-path(:$lib).add('C4')
-#      .add('C42D08C62F336741E9DBBDC10EFA8A4673AA820F');
-#  is $lookup.lookup(:$file-name).IO, $expected, 'lookup in our precomp';
-#}
+$subtest = '04-lookup-our-precomp';
+subtest $subtest, {
+	setup('Module2.rakumod', 'lib', :$subtest, :1plan);
+	my $expected = our-precomp-path(:$lib).add('C4')
+		.add('C42D08C62F336741E9DBBDC10EFA8A4673AA820F');
+  is $lookup.lookup(:$file-name).IO, $expected, 'lookup in our precomp';
+}
 
 done-testing
