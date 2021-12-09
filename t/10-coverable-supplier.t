@@ -3,10 +3,9 @@ use lib 'lib';
 use lib 't/lib';
 use App::Racoco::Coverable::Coverable;
 use App::Racoco::Coverable::CoverableLinesSupplier;
-use App::Racoco::Paths;
 use App::Racoco::Fixture;
 
-plan 2;
+plan 3;
 
 my ($supplier, $subtest);
 sub setup(
@@ -42,6 +41,14 @@ subtest $subtest, {
 		:123time, :hash<hashcode>, :hash-c<obsolete>,
 		lines => (1, 2, 3), lines-c => (4, 5, 6));
 	is $supplier.supply(:file-name<obsolete-hash>), (1, 2, 3), 'obsolete-hash ok';
+}
+
+$subtest = '03-obsolete-time';
+subtest $subtest, {
+	setup(:file-name<obsolete-time>, :1plan,
+		:123time, :122time-c, :hash<hashcode>,
+		lines => (1, 2, 3), lines-c => (4, 5, 6));
+	is $supplier.supply(:file-name<obsolete-time>), (1, 2, 3), 'obsolete-time ok';
 }
 
 #
