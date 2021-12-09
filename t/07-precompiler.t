@@ -7,7 +7,7 @@ use App::Racoco::Fixture;
 use App::Racoco::Paths;
 use TestResources;
 
-plan 2;
+plan 3;
 
 my ($lib, $our-precomp, $proc, $precompiler, $subtest);
 sub setup($proc-arg, :$subtest, :$plan!) {
@@ -42,38 +42,10 @@ subtest $subtest, {
   ok $out-path.e, 'precomp exists';
 }
 
-#Fixture::restore-root-folder();
-#
-#my ($proc, $precompiler, $lib, $our-precomp);
-#
-#multi sub setUp(:fake!) {
-#	setUp(Fixture::fakeProc);
-#}
-#
-#multi sub setUp(:fail!) {
-#	setUp(Fixture::failProc);
-#}
-#
-#multi sub setUp(:real!) {
-#	setUp(RunProc.new);
-#}
-#
-#multi sub setUp($proc-arg) {
-#  $lib = 'lib'.IO;
-#  $our-precomp = our-precomp-path(:$lib).IO;
-#  $proc = $proc-arg;
-#  $precompiler = Precompiler.new(:$lib, :raku<raku>, :$proc);
-#}
-#
-#Fixture::need-restore-root-folder();
-#sub do-test(&code) {
-#  indir(Fixture::root-folder, &code)
-#}
-#
-#
-#do-test {
-#  setUp(:fail);
-#  nok $precompiler.compile(:file-name<file>).defined, 'fail precomp ok';
-#};
+$subtest = '03-fail-compile';
+subtest $subtest, {
+	setup(Fixture::failProc, :$subtest, :1plan);
+	nok $precompiler.compile(:file-name<file>).defined, 'fail precomp ok';
+}
 
 done-testing
