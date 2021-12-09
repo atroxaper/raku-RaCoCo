@@ -8,7 +8,7 @@ use App::Racoco::Fixture;
 use App::Racoco::TmpDir;
 use TestResources;
 
-plan 1;
+plan 2;
 
 sub cover(Str $file-name, Str() $time, Str $hashcode, *@lines) {
   Coverable.new(
@@ -34,7 +34,24 @@ subtest $subtest, {
   nok $index.retrieve(file-name => 'NoHashcode.rakumod'), 'no-hashcode ok';
 }
 
+$subtest = '02-put-new-and-repair';
+subtest $subtest, {
+	setup('lib', :$subtest, :1plan);
 
+	my $first-c = cover('Average.rakumod', 1485726596, 'hash', 1, 2);
+	my $last-c = cover('Zorro.rakumod', 1485726596, 'hash', 3, 2, 1),
+	my $update-c = cover('Module.rakumod', 1485726595, 'updated', 7, 9, 15),
+  $index.put(coverable => $last-c);
+  $index.put(coverable => $first-c);
+  $index.put(coverable => $update-c);
+
+  is index-path(:$lib).slurp, q:to/END/.trim, 'flush ok';
+    Average.rakumod | 1485726596 | hash | 1 2
+    Empty.rakumod | 1485726595.3 | hashcode |
+    Module.rakumod | 1485726595 | updated | 7 9 15
+    Zorro.rakumod | 1485726596 | hash | 3 2 1
+    END
+}
 
 
 
@@ -54,20 +71,6 @@ subtest $subtest, {
 #}
 #
 #my $index = CoverableIndexFile.new(:$lib);
-#
-#{
-#  my ($module, $empty-lines) = (
-#    cover('Module.rakumod', 1485726595, 'hashcode', 47, 49, 50),
-#    cover('empty-lines', 1485726595.3, 'hashcode')
-#  );
-#
-#  is $index.retrieve(file-name => $module.file-name), $module, 'index get ok';
-#  is $index.retrieve(file-name => $empty-lines.file-name), $empty-lines,
-#  	'empty-lines ok';
-#
-#  nok $index.retrieve(file-name => 'bad-timestamp'), 'bad-timestamp ok';
-#  nok $index.retrieve(file-name => 'no-hashcode'), 'no-hashcode ok';
-#}
 #
 #{
 #  my ($first, $last, $rewrite-hash) = (

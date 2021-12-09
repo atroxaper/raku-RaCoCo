@@ -1,0 +1,4 @@
+Module.rakumod | 1485726595 | hashcode | 47 50 49
+Empty.rakumod | 1485726595.3 | hashcode |
+BadTimestamp.rakumod | not-numeric-value | hashcode | 1 2 3
+NoHashcode.rakumod | 1485726595
