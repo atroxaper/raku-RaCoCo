@@ -9,7 +9,7 @@ use App::Racoco::Fixture;
 use App::Racoco::TmpDir;
 use TestResources;
 
-plan 2;
+plan 3;
 
 Fixture::restore-root-folder();
 
@@ -50,28 +50,18 @@ subtest $subtest, {
 	nok $lookup.lookup(:$file-name).DEFINITE, 'cannot lookup precomp file';
 }
 
-#{
-#  my $lib = $sources.add('two-precomp-lib');
-#  my $lookup = PrecompLookup.new(:$lib);
-#  throws-like { $lookup.lookup(file-name => 'any.rakumod') },
-#  	App::Racoco::X::AmbiguousPrecompContent,
-#  	'two precomp contents', message => /$lib/;
-#}
+$subtest = '03-lookup-two-precomp-dir';
+subtest $subtest, {
+	setup('any.rakumod', 'lib', :$subtest, :1plan);
+	throws-like { $lookup.lookup(:$file-name) },
+  	App::Racoco::X::AmbiguousPrecompContent,
+  	'two precomp contents', message => /$lib/;
+}
+
+#$subtest = '04-l';
+#subtest $subtest, {
+#	setup('Module2.rakumod', 'lib', :$subtest, :1plan);
 #
-#{
-#  setUp('Module.rakumod', 'no-precomp-lib');
-#  my $actual = $lookup.lookup(:$file-name);
-#  nok $actual.DEFINITE, 'cannot lookup .precomp dir';
-#
-#  my $precomp-path = lib-precomp-path(:$lib);
-#  my $expected = $precomp-path.add(Fixture::compiler-id())
-#  	.add('B8').add('B8FF02892916FF59F7FBD4E617FCCD01F6BCA576');
-#  LEAVE { TmpDir::rmdir($precomp-path) }
-#  $expected.parent.mkdir;
-#  $expected.spurt: '';
-#
-#  $actual = $lookup.lookup(:$file-name);
-#  is $actual, $expected, 'lookup in created .precomp dir';
 #}
 #
 #{
