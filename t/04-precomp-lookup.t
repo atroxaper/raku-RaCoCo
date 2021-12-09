@@ -27,7 +27,7 @@ subtest $subtest, {
   my $actual = $lookup.lookup(:$file-name);
   isa-ok $actual, IO::Path, 'lookup is io';
   ok $actual.e, 'lookup exists';
-  ok $actual.relative.Str.starts-with($lib), 'lookup under lib';
+  ok $actual.Str.starts-with($lib), 'lookup under lib';
   is $actual, $expected, 'lookup ok';
 }
 
@@ -42,7 +42,7 @@ subtest $subtest, {
 	setup('any.rakumod', 'lib', :$subtest, :1plan);
 	throws-like { $lookup.lookup(:$file-name) },
   	App::Racoco::X::AmbiguousPrecompContent,
-  	'two precomp contents', message => /$lib/;
+  	'two precomp contents', message => / {$lib.Str} /;
 }
 
 done-testing

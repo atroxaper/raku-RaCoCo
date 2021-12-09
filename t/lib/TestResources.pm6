@@ -4,15 +4,15 @@ use App::Racoco::TmpDir;
 use App::Racoco::Fixture;
 
 our sub test-directory() {
-  't-resources/'.IO.add((callframe(4).file.IO.extension: '').basename)
+  't-resources/'.IO.add((callframe(4).file.IO.extension: '').basename).absolute.IO
 }
 
 our sub subtest-directory($subtest) {
-  test-directory.add($subtest)
+  test-directory().add($subtest)
 }
 
 our sub exam-directory() {
-  't-resources/'.IO.add('exam');
+  't-resources/'.IO.add('exam').absolute.IO;
 }
 
 our sub prepare($subtest --> IO::Path) {

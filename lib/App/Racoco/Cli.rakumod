@@ -15,7 +15,7 @@ use App::Racoco::Paths;
 use App::Racoco::X;
 
 multi sub get(:$lib) {
-  return $lib.IO if $lib.IO ~~ :e & :d;
+  return $lib.IO.absolute.IO if $lib.IO ~~ :e & :d;
   App::Racoco::X::WrongLibPath.new(path => $lib).throw
 }
 
