@@ -4,18 +4,25 @@ use lib 't/lib';
 use App::Racoco::Fixture;
 use App::Racoco::Paths;
 use App::Racoco::Precomp::PrecompHashcodeReader;
+use TestResources;
 
 plan 1;
 
-Fixture::restore-root-folder();
+my ($lib, $reader, $subtest);
+sub setup($lib-name, :$subtest, :$plan!) {
+	plan $plan;
+	TestResources::prepare($subtest);
+	$lib = TestResources::exam-directory.add($lib-name);
+	$reader = PrecompHashcodeReaderReal.new;
+}
 
-my $reader = PrecompHashcodeReaderReal.new;
-
-my $path = lib-precomp-path(lib => Fixture::root-folder().add('lib'))
-  .add(Fixture::compiler-id())
-  .add('B8').add('B8FF02892916FF59F7FBD4E617FCCD01F6BCA576');
-
-is $reader.read(:$path), '266B9F83542BC85F73639D2D300D0701AF14F9E5',
-  'hashcode ok';
+$subtest = '01-read-hash-code';
+subtest $subtest, {
+	setup('lib', :$subtest, :1plan);
+	my $expected = '266B9F83542BC85F73639D2D300D0701AF14F9E5';
+	my $path = lib-precomp-path(:$lib).add(Fixture::compiler-id())
+  	.add('B8').add('B8FF02892916FF59F7FBD4E617FCCD01F6BCA576');
+	is $reader.read(:$path), $expected, 'hashcode ok';
+}
 
 done-testing
