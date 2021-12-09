@@ -9,7 +9,7 @@ use App::Racoco::Fixture;
 use App::Racoco::TmpDir;
 use TestResources;
 
-plan 1;
+plan 2;
 
 Fixture::restore-root-folder();
 
@@ -44,12 +44,12 @@ subtest $subtest, {
   is $actual, $expected, 'lookup ok';
 }
 
-#{
-#  setUp('NotExists.rakumod', 'lib');
-#  my $actual = $lookup.lookup(:$file-name);
-#  nok $actual.DEFINITE, 'cannot lookup precomp file';
-#}
-#
+$subtest = '02-lookup-not-exist';
+subtest $subtest, {
+	setup('NotExists.rakumod', 'lib', :$subtest, :1plan);
+	nok $lookup.lookup(:$file-name).DEFINITE, 'cannot lookup precomp file';
+}
+
 #{
 #  my $lib = $sources.add('two-precomp-lib');
 #  my $lookup = PrecompLookup.new(:$lib);
