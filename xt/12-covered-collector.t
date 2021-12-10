@@ -75,4 +75,13 @@ sub collect() {
 		'no zero exitcode';
 });
 
+'07-pass-default-out-to-proc'.&test(:2plan, {
+	setup('lib', :outloud, proc => my $proc = Fixture::fakeProc);
+	collect();
+	ok $proc.c, 'proc is run';
+	is $proc.c.hash<out>, '-', 'out passed';
+});
+
+
+
 done-testing
