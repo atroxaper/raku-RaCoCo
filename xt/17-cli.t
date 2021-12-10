@@ -75,7 +75,13 @@ sub do-main(&bloc) {
   is $captured.out.text.trim, 'Coverage: 75%', 'pass lib and raku-bin-dir';
 });
 
-
+'07-pass-exec'.&test(:1plan, {
+  setup('lib');
+  my $captured = do-main({
+		APP_MAIN(exec => 'echo "foo"', :silent);
+  });
+  is $captured.out.text.trim, 'Coverage: 0%', 'pass exec';
+});
 
 #
 #do-test {
