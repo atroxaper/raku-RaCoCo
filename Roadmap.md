@@ -9,4 +9,5 @@ For v1.5.0
 
 Backlog:
 * Convert project from a tool to tool&library. Make it possible to calculate a coverage from the Raku code.
-* Move Precomp package to Coverable
+* Centrally check lib (and other paths) to be absolute.
+* Move Precomp package to Coverable.
