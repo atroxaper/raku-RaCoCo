@@ -37,4 +37,6 @@ nok $report.data(:file-name<not-exists>), 'not-exists ok';
 
 is $report.all-data.elems, 2, 'all data elems ok';
 
+#todo add test for eqv
+
 done-testing
