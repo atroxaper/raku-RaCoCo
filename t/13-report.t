@@ -9,7 +9,7 @@ sub setup(:$plan!) {
 }
 
 subtest 'report interface', {
-	setup(:3plan);
+	setup(:4plan);
 	my $data1 = FileReportData.new(
     file-name => 'Zorro.rakumod',
     green => Set(1),
@@ -25,6 +25,7 @@ subtest 'report interface', {
   my $report = Report.new(fileReportData => ($data1, $data2));
   is $report.percent, 66.6, 'percent';
   is $report.data(:file-name<Zorro.rakumod>), $data1, 'data';
+  nok $report.data(:file-name<NotExists.rakumod>), 'not exist data';
   is $report.all-data, ($data2, $data1), 'all-data';
 }
 
