@@ -8,7 +8,7 @@ use App::Racoco::Fixture;
 use TestResources;
 use TestHelper;
 
-plan 3;
+plan 4;
 
 my ($sources, $lib, $coverage-log, $collector, $*subtest, $*plan);
 sub setup($lib-name, :$exec = 'prove6', :$proc, :$append = False, ) {
@@ -46,6 +46,16 @@ sub setup($lib-name, :$exec = 'prove6', :$proc, :$append = False, ) {
 	my $lines = $coverage-log.slurp.lines;
 	ok $lines.elems > 0, 'write log';
 	is $lines[0], $expected, 'append log';
+});
+
+'04-rewrite-log'.&test(:2plan, {
+	setup('lib', proc => RunProc.new);
+	my $expected = "previous content";
+	$coverage-log.spurt("$expected$?NL");
+	indir($sources, { $collector.collect() });
+	my $lines = $coverage-log.slurp.lines;
+	ok $lines.elems > 0, 'write log';
+	isnt $lines[0], $expected, 'rewrite log';
 });
 
 #do-test {

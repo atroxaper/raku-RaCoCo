@@ -15,7 +15,6 @@ class CoveredLinesCollector is export {
   submethod TWEAK() {
     $!lib = $!lib.absolute.IO;
     $!coverage-log-path = coverage-log-path(:$!lib);
-    $!coverage-log-path.unlink unless self!need-save-log;
   }
 
   method !need-save-log() {
@@ -23,6 +22,7 @@ class CoveredLinesCollector is export {
   }
 
   method collect(--> Associative) {
+    $!coverage-log-path.unlink unless self!need-save-log;
     self!run-tests();
     self!parse-log;
   }
