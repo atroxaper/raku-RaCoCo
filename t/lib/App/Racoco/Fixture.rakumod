@@ -125,23 +125,14 @@ our sub testLinesSupplier(**@data) {
 our sub silently(&block) {
 	class Capturer is IO::Handle {
 		has @!out;
-		submethod TWEAK {
-			self.encoding: 'utf8'
-		}
-		method WRITE(Blob:D \data) {
-			@!out.push(data.decode);
-			True
-		}
-		method text() {
-			@!out.join()
-		}
+		submethod TWEAK { self.encoding: 'utf8'}
+		method WRITE(Blob:D \data) { @!out.push(data.decode); True }
+		method text() { @!out.join() }
 	}
 	class Captured {
 		has $.out;
 		has $.err;
-		method new(\out, \err) {
-			self.bless.set(out, err)
-		}
+		method new(\out, \err) { self.bless.set(out, err) }
 		method set(\out, \err) {
 			out = $!out := Capturer.new;
 			err = $!err := Capturer.new;

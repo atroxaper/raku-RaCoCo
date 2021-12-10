@@ -8,15 +8,16 @@ use App::Racoco::Fixture;
 use TestResources;
 use TestHelper;
 
-plan 1;
+plan 2;
 
-my ($lib, $coverage-log, $collector, $*subtest, $*plan);
+my ($sources, $lib, $coverage-log, $collector, $*subtest, $*plan);
 sub setup($lib-name, :$exec = 'prove6', :$proc, :$append = False, ) {
 	plan $*plan;
 	TestResources::prepare($*subtest);
-	$lib = TestResources::exam-directory.add($lib-name);
+	$sources = TestResources::exam-directory;
+	$lib = $sources.add($lib-name);
   $coverage-log = coverage-log-path(:$lib).IO;
-  $collector = CoveredLinesCollector.new(:$exec, :$proc, :$lib);
+  $collector = CoveredLinesCollector.new(:$exec, :$proc, :$lib, :!print-test-log);
 }
 
 '01-fake-collect'.&test(:1plan, {
@@ -24,16 +25,22 @@ sub setup($lib-name, :$exec = 'prove6', :$proc, :$append = False, ) {
   lives-ok { $collector.collect() }, 'collect lives ok';
 });
 
+'02-real-collect'.&test(:2plan, {
+	setup('lib', proc => RunProc.new);
+  my %coveredLines;
+  indir($sources, { %coveredLines = $collector.collect() });
+  ok $coverage-log.e, 'coverage log exists';
+  is-deeply %coveredLines,
+    %{
+      'Module2.rakumod' => (1, 2).Set,
+      'Module3.rakumod' => (1, 2, 3, 5).Set
+    },
+    'coverage ok';
+});
+
 #do-test {
 #  my $collector = CoveredLinesCollector.new(:$exec, :proc(RunProc.new), :$lib);
-#  my %coveredLines = $collector.collect();
-#  ok $coverage-log.e, 'coverage log exists';
-#  is-deeply %coveredLines,
-#    %{
-#      'Module2.rakumod' => (1, 2).Set,
-#      'Module3.rakumod' => (1, 2, 3, 5).Set
-#    },
-#    'coverage ok';
+
 #};
 #
 #do-test {
