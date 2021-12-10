@@ -6,14 +6,13 @@ use App::Racoco::Report::ReporterBasic;
 use App::Racoco::Paths;
 use TestResources;
 
-plan 3;
+plan 4;
 
-my ($lib, $report-path, $subtest);
+my ($lib, $subtest);
 sub setup($lib-name, :$subtest, :$plan!) {
 	plan $plan;
 	TestResources::prepare($subtest);
 	$lib = TestResources::exam-directory.add($lib-name);
-	$report-path = report-basic-path(:$lib);
 }
 
 $subtest = '01-read-from-file';
@@ -63,16 +62,11 @@ subtest $subtest, {
 	is $actual-path.slurp, $expected, 'report file valid';
 }
 
-#my $path = $reporter.write(:$lib);
-#  is $path, $report-path, 'correct report path';
-#  is $report-path.slurp, $report-content, 'write base report ok';
-#
-
-#
-#{
-#  my ($, $lib) = TmpDir::create-tmp-lib('racoco-test-not-exists-report');
-#  throws-like { ReporterBasic.read(:$lib) }, App::Racoco::X::CannotReadReport,
-#    'no report file, no reporter', message => /$lib/;
-#}
+$subtest = '04-missing-report-file';
+subtest $subtest, {
+	setup('lib', :$subtest, :1plan);
+	throws-like { ReporterBasic.read(:$lib) }, App::Racoco::X::CannotReadReport,
+		'no report file, no reporter', message => / $lib /;
+}
 
 done-testing
