@@ -6,7 +6,7 @@ use App::Racoco::Report::ReporterBasic;
 use App::Racoco::Paths;
 use TestResources;
 
-plan 1;
+plan 2;
 
 my ($lib, $report-path, $subtest);
 sub setup($lib-name, :$subtest, :$plan!) {
@@ -30,37 +30,29 @@ subtest $subtest, {
   ok $reporter.report eqv $expect, 'read correct data';
 }
 
+$subtest = '02-make-from-data';
+subtest $subtest, {
+	setup('lib', :$subtest, :1plan);
+	my $expected = ReporterBasic.read(:$lib).report;
+	my %coverable-lines = %{
+		'AllGreen' => (1, 3, 5).Set,
+		'AllRed' => (2, 4, 6).Set,
+		'GreenRed' => (7, 8),
+		'WithPurple' => (1, 2, 4).Set,
+		'Empty' => ().Set
+	}
+	my %covered-lines = %{
+		'AllGreen' => (1, 3, 5).Set,
+		'GreenRed' => (7),
+		'WithPurple' => (1, 3).Set,
+	}
+	my $reporter = ReporterBasic.make-from-data(:%coverable-lines, :%covered-lines);
+	ok $reporter.report eqv $expected, 'make correct data';
+}
 
-#my ($sources, $lib) = TmpDir::create-tmp-lib('racoco-test');
-#my $report-path = report-basic-path(:$lib);
-#
-#my %coverable-lines = %{
-#  'AllGreen' => (1, 3, 5).Set,
-#  'AllRed' => (2, 4, 6).Set,
-#  'GreenRed' => (7, 8),
-#  'WithPurple' => (1, 2, 4).Set,
-#  'Empty' => ().Set
-#}
-#
-#my %covered-lines = %{
-#  'AllGreen' => (1, 3, 5).Set,
-#  'GreenRed' => (7),
-#  'WithPurple' => (1, 3).Set,
-#}
-#
-#my $report-content = q:to/END/.trim;
-
-#  END
-#
-
-#
-#{
-#  my $reporter = ReporterBasic.make-from-data(:%coverable-lines, :%covered-lines);
-#  ok $reporter.report eqv $report-expect, 'make correct data';
-#  my $path = $reporter.write(:$lib);
+#my $path = $reporter.write(:$lib);
 #  is $path, $report-path, 'correct report path';
 #  is $report-path.slurp, $report-content, 'write base report ok';
-#}
 #
 
 #
