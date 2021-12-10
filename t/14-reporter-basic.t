@@ -6,7 +6,7 @@ use App::Racoco::Report::ReporterBasic;
 use App::Racoco::Paths;
 use TestResources;
 
-plan 2;
+plan 3;
 
 my ($lib, $report-path, $subtest);
 sub setup($lib-name, :$subtest, :$plan!) {
@@ -48,6 +48,19 @@ subtest $subtest, {
 	}
 	my $reporter = ReporterBasic.make-from-data(:%coverable-lines, :%covered-lines);
 	ok $reporter.report eqv $expected, 'make correct data';
+}
+
+$subtest = '03-write-report';
+subtest $subtest, {
+	setup('lib', :$subtest, :3plan);
+	my $reporter = ReporterBasic.read(:$lib);
+	my $expected-path = report-basic-path(:$lib);
+	my $expected = $expected-path.slurp;
+	$expected-path.unlink;
+	my $actual-path = $reporter.write(:$lib);
+	ok $actual-path.e, 'report file exists';
+	is $actual-path, $expected-path, 'report file path valid';
+	is $actual-path.slurp, $expected, 'report file valid';
 }
 
 #my $path = $reporter.write(:$lib);
