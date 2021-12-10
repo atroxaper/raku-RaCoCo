@@ -2,7 +2,7 @@ use Test;
 use lib 'lib';
 use App::Racoco::Report::Report;
 
-plan 2;
+plan 3;
 
 sub setup(:$plan!) {
 	plan $plan;
@@ -12,15 +12,15 @@ subtest 'report interface', {
 	setup(:3plan);
 	my $data1 = FileReportData.new(
     file-name => 'Zorro.rakumod',
-    green => <1>.Set,
-    red => <3 4 5 6 7>.Set,
-    purple => <2>.Set,
+    green => Set(1),
+    red => Set(3, 4, 5, 6, 7),
+    purple => Set(2),
   );
   my $data2 = FileReportData.new(
     file-name => 'Average.rakumod',
-    green => <1>.Set,
-    red => <2 3>.Set,
-    purple => <4 5 6>.Set
+    green => Set(1),
+    red => Set(2, 3),
+    purple => Set(4, 5, 6)
   );
   my $report = Report.new(fileReportData => ($data1, $data2));
   is $report.percent, 66.6, 'percent';
@@ -31,7 +31,7 @@ subtest 'report interface', {
 subtest 'file report data interface', {
 	setup(:6plan);
 	my $data = FileReportData.new(
-    file-name => '1/3',
+    file-name => 'Data.rakumod',
     green => <1>>>.Int.Set,
     red => <3 4 5 6 7>>>.Int.Set,
     purple => <2>>>.Int.Set,
@@ -42,6 +42,29 @@ subtest 'file report data interface', {
   is $data.color(:5line), RED, 'red';
   is $data.covered, 2, 'covered';
   is $data.coverable, 6, 'coverable';
+}
+
+subtest 'eqv file report data', {
+	setup(:5plan);
+	my &data-producer = -> :$file-name, :$green, :$red, :$purple {
+    FileReportData.new(
+      file-name => $file-name // 'Standard.rakumod',
+      green => $green // <1>>>.Int.Set,
+      red => $red // <3 4 5 6 7>>>.Int.Set,
+      purple => $purple // <2>>>.Int.Set,
+    )
+  };
+	my $expected = data-producer;
+  my $same = data-producer;
+  ok $same eqv $expected, 'same';
+  my $diff-name = data-producer(:file-name<diff>);
+  nok $diff-name eqv $expected, 'diff name';
+  my $diff-green = data-producer(green => Set(9));
+  nok $diff-green eqv $expected, 'diff green';
+  my $diff-red = data-producer(red => Set(3));
+  nok $diff-red eqv $expected, 'diff red';
+  my $diff-purple = data-producer(purple => Set(9));
+  nok $diff-purple eqv $expected, 'diff purple';
 }
 
 #my $report1 = $report.data(:file-name<1/3>);
