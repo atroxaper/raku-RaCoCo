@@ -8,16 +8,16 @@ use App::Racoco::Fixture;
 use TestResources;
 use TestHelper;
 
-plan 5;
+plan 8;
 
 my ($sources, $lib, $coverage-log, $collector, $*subtest, $*plan);
-sub setup($lib-name, :$exec = 'prove6', :$proc, :$append = False, ) {
+sub setup($lib-name, :$exec = 'prove6', :$proc, :$append = False, :outloud($print-test-log) = False) {
 	plan $*plan;
 	TestResources::prepare($*subtest);
 	$sources = TestResources::exam-directory;
 	$lib = $sources.add($lib-name);
   $coverage-log = coverage-log-path(:$lib).IO;
-  $collector = CoveredLinesCollector.new(:$exec, :$proc, :$lib, :$append, :!print-test-log);
+  $collector = CoveredLinesCollector.new(:$exec, :$proc, :$lib, :$append, :$print-test-log);
 }
 
 sub collect() {
@@ -69,12 +69,10 @@ sub collect() {
 	nok $proc.c, 'do not test without exec';
 });
 
-#
-#do-test {
-#  my $proc = Fixture::failProc;
-#  my $collector = CoveredLinesCollector.new(:$exec, :$proc, :$lib);
-#  throws-like { $collector.collect() }, App::Racoco::X::NonZeroExitCode,
-#    'no zero exitcode';
-#};
+'06-fail-collect'.&test(:1plan, {
+	setup('lib', proc => Fixture::failProc);
+	throws-like { collect() }, App::Racoco::X::NonZeroExitCode,
+		'no zero exitcode';
+});
 
 done-testing
