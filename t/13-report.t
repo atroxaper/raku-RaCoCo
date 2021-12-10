@@ -2,28 +2,30 @@ use Test;
 use lib 'lib';
 use App::Racoco::Report::Report;
 
-plan 1;
+plan 2;
 
 sub setup(:$plan!) {
 	plan $plan;
 }
 
-subtest 'report percent', {
-	setup(:1plan);
+subtest 'report interface', {
+	setup(:3plan);
 	my $data1 = FileReportData.new(
-    file-name => '1/3',
+    file-name => 'Zorro.rakumod',
     green => <1>.Set,
     red => <3 4 5 6 7>.Set,
     purple => <2>.Set,
   );
   my $data2 = FileReportData.new(
-    file-name => '4/3',
+    file-name => 'Average.rakumod',
     green => <1>.Set,
     red => <2 3>.Set,
     purple => <4 5 6>.Set
   );
   my $report = Report.new(fileReportData => ($data1, $data2));
-  is $report.percent, 66.6;
+  is $report.percent, 66.6, 'percent';
+  is $report.data(:file-name<Zorro.rakumod>), $data1, 'data';
+  is $report.all-data, ($data2, $data1), 'all-data';
 }
 
 subtest 'file report data interface', {
@@ -34,7 +36,6 @@ subtest 'file report data interface', {
     red => <3 4 5 6 7>>>.Int.Set,
     purple => <2>>>.Int.Set,
   );
-  say $data.raku;
   is $data.percent, 33.3, 'percent';
   is $data.color(:1line), GREEN, 'green';
   is $data.color(:2line), PURPLE, 'purple';
