@@ -8,7 +8,7 @@ use App::Racoco::X;
 use TestResources;
 use TestHelper;
 
-plan 11;
+plan 12;
 
 constant &APP_MAIN = &App::Racoco::Cli::MAIN;
 my ($sources, $lib, $*subtest, $*plan);
@@ -115,6 +115,14 @@ sub do-main(&bloc) {
   	APP_MAIN(:fix-compunit, :silent);
   });
   is $captured.out.text.trim, 'Coverage: 100%', 'two precomp with fix-compunit';
+});
+
+'12-two-precomp-fail'.&test(:1plan, {
+  setup('lib');
+  do-main({
+  	throws-like { APP_MAIN() }, App::Racoco::X::AmbiguousPrecompContent,
+			'two precomp fail', message => / {$lib.Str} /;
+  });
 });
 
 done-testing
