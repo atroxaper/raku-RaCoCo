@@ -8,7 +8,7 @@ use App::Racoco::X;
 use TestResources;
 use TestHelper;
 
-plan 5;
+plan 8;
 
 constant &APP_MAIN = &App::Racoco::Cli::MAIN;
 my ($sources, $lib, $*subtest, $*plan);
@@ -67,25 +67,16 @@ sub do-main(&bloc) {
   is $captured.out.text.trim, 'Coverage: 75%', 'simple run ok';
 });
 
-#do-test {
-#  APP_MAIN(:silent);
-#  is Fixture::get-out, 'Coverage: 75%', 'simple run ok';
-#};
-#
-#do-test {
-#  APP_MAIN(lib => 'lib', raku-bin-dir => $*EXECUTABLE.parent.Str);
-#  is Fixture::get-out, 'Coverage: 75%', 'pass lib and raku-bin-dir';
-#};
-#
-#do-test {
-#  APP_MAIN(exec => 'echo "foo"');
-#  is Fixture::get-out, 'Coverage: 0%', 'pass exec';
-#};
-#
-#do-test {
-#  throws-like { APP_MAIN(:!exec) }, App::Racoco::X::CannotReadReport,
-#    'no report, exception', message => /'lib'/;
-#};
+'06-with-raku-bin-dir'.&test(:1plan, {
+  setup('lib');
+  my $captured = do-main({
+		APP_MAIN(lib => 'lib', raku-bin-dir => $*EXECUTABLE.parent.Str, :silent);
+  });
+  is $captured.out.text.trim, 'Coverage: 75%', 'pass lib and raku-bin-dir';
+});
+
+
+
 #
 #do-test {
 #  my $path = coverage-log-path(:lib<lib>);
