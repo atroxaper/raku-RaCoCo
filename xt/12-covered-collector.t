@@ -8,7 +8,7 @@ use App::Racoco::Fixture;
 use TestResources;
 use TestHelper;
 
-plan 4;
+plan 5;
 
 my ($sources, $lib, $coverage-log, $collector, $*subtest, $*plan);
 sub setup($lib-name, :$exec = 'prove6', :$proc, :$append = False, ) {
@@ -20,6 +20,12 @@ sub setup($lib-name, :$exec = 'prove6', :$proc, :$append = False, ) {
   $collector = CoveredLinesCollector.new(:$exec, :$proc, :$lib, :$append, :!print-test-log);
 }
 
+sub collect() {
+	my %covered-lines;
+	indir($sources, { %covered-lines = $collector.collect() });
+	%covered-lines;
+}
+
 '01-fake-collect'.&test(:1plan, {
 	setup('lib', proc => Fixture::fakeProc);
   lives-ok { $collector.collect() }, 'collect lives ok';
@@ -27,10 +33,9 @@ sub setup($lib-name, :$exec = 'prove6', :$proc, :$append = False, ) {
 
 '02-real-collect'.&test(:2plan, {
 	setup('lib', proc => RunProc.new);
-  my %coveredLines;
-  indir($sources, { %coveredLines = $collector.collect() });
+  my %covered-lines = collect();
   ok $coverage-log.e, 'coverage log exists';
-  is-deeply %coveredLines,
+  is-deeply %covered-lines,
     %{
       'Module2.rakumod' => (1, 2).Set,
       'Module3.rakumod' => (1, 2, 3, 5).Set
@@ -42,7 +47,7 @@ sub setup($lib-name, :$exec = 'prove6', :$proc, :$append = False, ) {
 	setup('lib', proc => RunProc.new, :append);
 	my $expected = "previous content";
 	$coverage-log.spurt("$expected$?NL");
-	indir($sources, { $collector.collect() });
+	collect();
 	my $lines = $coverage-log.slurp.lines;
 	ok $lines.elems > 0, 'write log';
 	is $lines[0], $expected, 'append log';
@@ -52,31 +57,18 @@ sub setup($lib-name, :$exec = 'prove6', :$proc, :$append = False, ) {
 	setup('lib', proc => RunProc.new);
 	my $expected = "previous content";
 	$coverage-log.spurt("$expected$?NL");
-	indir($sources, { $collector.collect() });
+	collect();
 	my $lines = $coverage-log.slurp.lines;
 	ok $lines.elems > 0, 'write log';
 	isnt $lines[0], $expected, 'rewrite log';
 });
 
-#do-test {
-#	my $proc = Fixture::fakeProc;
-#  $coverage-log.spurt('');
-#  my $collector = CoveredLinesCollector.new(:append, :$exec, :$proc, :$lib);
-#  ok $coverage-log.e, 'leave log before test';
-#};
-#
-#do-test {
-#	my $proc = Fixture::fakeProc;
-#  my $collector = CoveredLinesCollector.new(:$exec, :$proc, :$lib);
-#  nok $coverage-log.e, 'delete log before test';
-#};
-#
-#do-test {
-#  my $proc = Fixture::fakeProc;
-#  my $collector = CoveredLinesCollector.new(:!exec, :$proc, :$lib);
-#  $collector.collect();
-#  nok $proc.c, 'do not test';
-#};
+'05-do-not-test-without-exec'.&test(:1plan, {
+	setup('lib', proc => my $proc = Fixture::fakeProc, :!exec);
+	collect();
+	nok $proc.c, 'do not test without exec';
+});
+
 #
 #do-test {
 #  my $proc = Fixture::failProc;
