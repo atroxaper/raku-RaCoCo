@@ -3,15 +3,25 @@ use lib 'lib';
 use lib 't/lib';
 use App::Racoco::ProjectName;
 use App::Racoco::Fixture;
-use App::Racoco::TmpDir;
+use TestResources;
 
-plan 2;
+plan 1;
 
-is project-name(lib => Fixture::root-folder().add('lib')), 'Test::Project',
-  'project name from meta ok';
+my ($lib, $subtest);
+sub setup($lib-name, :$subtest, :$plan!) {
+	plan $plan;
+	TestResources::prepare($subtest);
+	$lib = TestResources::exam-directory.add($lib-name);
+}
 
-is project-name(lib => TmpDir::create-tmp-dir('racoco-tests').add('lib')), 'racoco-tests',
-  'project name from path ok';
+$subtest = '01-from-meta';
+subtest $subtest, {
+	setup('lib', :$subtest, :1plan);
+	is project-name(:$lib), 'Test::Project';
+}
+
+#is project-name(lib => TmpDir::create-tmp-dir('racoco-tests').add('lib')), 'racoco-tests',
+#  'project name from path ok';
 
 
 done-testing
