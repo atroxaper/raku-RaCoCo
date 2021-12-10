@@ -8,7 +8,7 @@ use App::Racoco::X;
 use TestResources;
 use TestHelper;
 
-plan 2;
+plan 3;
 
 constant &APP_MAIN = &App::Racoco::Cli::MAIN;
 my ($sources, $lib, $*subtest, $*plan);
@@ -43,14 +43,14 @@ sub do-main(&bloc) {
   });
 });
 
-#{
+'03-lib-with-no-precomp-lives-ok'.&test(:1plan, {
+  setup('lib');
+  do-main({
+  	lives-ok { APP_MAIN(lib => 'no-precomp', :silent) }, 'lives with no precomp';
+  });
+});
 
-#}
-#
-#do-test {
-#  lives-ok { APP_MAIN(lib => 'no-precomp') }, 'lives with no precomp';
-#}
-#
+
 #do-test {
 #  lives-ok { APP_MAIN(lib => 'no-precomp', :fix-compunit) },
 #  'lives with no precomp fix-compunit';
