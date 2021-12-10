@@ -83,6 +83,14 @@ sub do-main(&bloc) {
   is $captured.out.text.trim, 'Coverage: 0%', 'pass exec';
 });
 
+'08-no-exec-and-no-report-fail'.&test(:1plan, {
+  setup('lib');
+  do-main({
+		throws-like { APP_MAIN(:!exec) }, App::Racoco::X::CannotReadReport,
+			'no report, exception', message => /'lib'/;
+  });
+});
+
 #
 #do-test {
 #  my $path = coverage-log-path(:lib<lib>);
