@@ -8,7 +8,7 @@ use App::Racoco::X;
 use TestResources;
 use TestHelper;
 
-plan 1;
+plan 2;
 
 constant &APP_MAIN = &App::Racoco::Cli::MAIN;
 my ($sources, $lib, $*subtest, $*plan);
@@ -31,72 +31,81 @@ sub do-main(&bloc) {
   });
 });
 
+'02-wrong-raku-bin-dir'.&test(:2plan, {
+  setup('lib');
+  do-main({
+  	throws-like { APP_MAIN(raku-bin-dir => 'not-exists') },
+  		App::Racoco::X::WrongRakuBinDirPath,
+    	'MAIN with wrong raku bin dir ok', message => /'not-exists'/;
+  	throws-like { APP_MAIN(raku-bin-dir => 'lib') },
+  		App::Racoco::X::WrongRakuBinDirPath,
+    	'MAIN with empty raku bin dir ok', message => /'lib'/;
+  });
+});
+
 #{
-#  throws-like { App::Racoco::Cli::MAIN(raku-bin-dir => 'not-exists') }, App::Racoco::X::WrongRakuBinDirPath,
-#    'MAIN with wrong raku bin dir ok', message => /'not-exists'/;
-#  throws-like { App::Racoco::Cli::MAIN(raku-bin-dir => 'lib') }, App::Racoco::X::WrongRakuBinDirPath,
-#    'MAIN with empty raku bin dir ok', message => /'lib'/;
+
 #}
 #
 #do-test {
-#  lives-ok { App::Racoco::Cli::MAIN(lib => 'no-precomp') }, 'lives with no precomp';
+#  lives-ok { APP_MAIN(lib => 'no-precomp') }, 'lives with no precomp';
 #}
 #
 #do-test {
-#  lives-ok { App::Racoco::Cli::MAIN(lib => 'no-precomp', :fix-compunit) },
+#  lives-ok { APP_MAIN(lib => 'no-precomp', :fix-compunit) },
 #  'lives with no precomp fix-compunit';
 #}
 #
 #do-test {
-#  App::Racoco::Cli::MAIN();
+#  APP_MAIN();
 #  is Fixture::get-out, 'Coverage: 75%', 'simple run ok';
 #};
 #
 #do-test {
-#  App::Racoco::Cli::MAIN(lib => 'lib', raku-bin-dir => $*EXECUTABLE.parent.Str);
+#  APP_MAIN(lib => 'lib', raku-bin-dir => $*EXECUTABLE.parent.Str);
 #  is Fixture::get-out, 'Coverage: 75%', 'pass lib and raku-bin-dir';
 #};
 #
 #do-test {
-#  App::Racoco::Cli::MAIN(exec => 'echo "foo"');
+#  APP_MAIN(exec => 'echo "foo"');
 #  is Fixture::get-out, 'Coverage: 0%', 'pass exec';
 #};
 #
 #do-test {
-#  throws-like { App::Racoco::Cli::MAIN(:!exec) }, App::Racoco::X::CannotReadReport,
+#  throws-like { APP_MAIN(:!exec) }, App::Racoco::X::CannotReadReport,
 #    'no report, exception', message => /'lib'/;
 #};
 #
 #do-test {
 #  my $path = coverage-log-path(:lib<lib>);
-#  App::Racoco::Cli::MAIN();
-#  App::Racoco::Cli::MAIN(:!exec);
+#  APP_MAIN();
+#  APP_MAIN(:!exec);
 #  ok $path.e, 'coverage log exist without exec';
 #};
 #
 #do-test {
-#  App::Racoco::Cli::MAIN(:silent);
+#  APP_MAIN(:silent);
 #  is Fixture::get-out, 'Coverage: 75%', 'pass silent';
 #};
 #
 #do-test {
-#  App::Racoco::Cli::MAIN();
-#  App::Racoco::Cli::MAIN(:append, exec => 'echo "foo"');
+#  APP_MAIN();
+#  APP_MAIN(:append, exec => 'echo "foo"');
 #  my $on-screen = Fixture::get-out().lines.map(*.trim).grep(*.chars).join(' ');
 #  is $on-screen, "Coverage: 75% Coverage: 75%", 'pass append';
 #};
 #
 #do-test {
 #  my $path = report-html-path(:lib<lib>);
-#  App::Racoco::Cli::MAIN();
+#  APP_MAIN();
 #  nok $path.e, 'nok html';
-#  App::Racoco::Cli::MAIN(:html, :!exec, :append);
+#  APP_MAIN(:html, :!exec, :append);
 #  ok $path.e, 'ok html';
 #  ok Fixture::get-out.contains(report-html-path(:lib<lib>)), 'pass html';
 #};
 #
 #do-test {
-#  App::Racoco::Cli::MAIN(
+#  APP_MAIN(
 #      lib => 'fix-compunit',
 #      :fix-compunit,
 #      exec => 'prove6 fix-compunit/t'
