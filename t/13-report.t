@@ -2,21 +2,25 @@ use Test;
 use lib 'lib';
 use App::Racoco::Report::Report;
 
-plan 3;
+plan 4;
 
 sub setup(:$plan!) {
 	plan $plan;
 }
 
+sub data-producer(:$file-name, :$green, :$red, :$purple) {
+  FileReportData.new(
+    file-name => $file-name // 'Standard.rakumod',
+    green => $green // Set(1),
+    red => $red // Set(3, 4, 5, 6, 7),
+    purple => $purple // Set(2),
+  )
+}
+
 subtest 'report interface', {
 	setup(:4plan);
-	my $data1 = FileReportData.new(
-    file-name => 'Zorro.rakumod',
-    green => Set(1),
-    red => Set(3, 4, 5, 6, 7),
-    purple => Set(2),
-  );
-  my $data2 = FileReportData.new(
+	my $data1 = data-producer(:file-name<Zorro.rakumod>);
+  my $data2 = data-producer(
     file-name => 'Average.rakumod',
     green => Set(1),
     red => Set(2, 3),
@@ -47,14 +51,6 @@ subtest 'file report data interface', {
 
 subtest 'eqv file report data', {
 	setup(:5plan);
-	my &data-producer = -> :$file-name, :$green, :$red, :$purple {
-    FileReportData.new(
-      file-name => $file-name // 'Standard.rakumod',
-      green => $green // <1>>>.Int.Set,
-      red => $red // <3 4 5 6 7>>>.Int.Set,
-      purple => $purple // <2>>>.Int.Set,
-    )
-  };
 	my $expected = data-producer;
   my $same = data-producer;
   ok $same eqv $expected, 'same';
@@ -68,20 +64,21 @@ subtest 'eqv file report data', {
   nok $diff-purple eqv $expected, 'diff purple';
 }
 
-#my $report1 = $report.data(:file-name<1/3>);
-#is $report1.percent, 33.3, '1/3 percent ok';
-#is $report1.color(:1line), GREEN, '1/3 get green ok';
-#is $report1.color(:2line), PURPLE, '1/3 purple ok';
-#is $report1.color(:5line), RED, '1/3 red ok';
-#
-#my $report2 = $report.data(:file-name<4/3>);
-#is $report2.percent, 100, '4/3 percent ok';
-#is $report2.file-name, '4/3', '4/3 file ok';
-#
-#nok $report.data(:file-name<not-exists>), 'not-exists ok';
-#
-#is $report.all-data.elems, 2, 'all data elems ok';
+subtest 'eqv report', {
+	setup(:3plan);
+  my $expected = Report.new(fileReportData =>
+    (data-producer(:file-name<first>), data-producer(:red(Set()))));
+  my $same = Report.new(fileReportData =>
+    (data-producer(:file-name<first>), data-producer(:red(Set()))));
+  ok $same eqv $expected, 'same';
 
-#todo add test for eqv
+  my $diff-elems = Report.new(fileReportData =>
+    (data-producer(:file-name<first>),));
+  nok $diff-elems eqv $expected, 'diff elems';
+
+  my $diff-elem = Report.new(fileReportData =>
+    (data-producer(:file-name<first>), data-producer(:red(Set(3)))));
+  nok $diff-elem eqv $expected, 'diff elem';
+}
 
 done-testing
