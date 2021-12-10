@@ -28,9 +28,9 @@ subtest $subtest, {
 $subtest = '02-fail-outline';
 subtest $subtest, {
 	setup('lib', Fixture::failProc, :$subtest, :1plan);
-	Fixture::suppressErr;
-  LEAVE { Fixture::restoreErr }
-  is $outliner.outline(:$path), (), 'fail moar proc';
+	my $actual;
+	Fixture::silently({ $actual = $outliner.outline(:$path) });
+  is $actual, (), 'fail moar proc';
 }
 
 done-testing

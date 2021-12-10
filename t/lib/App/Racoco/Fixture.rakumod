@@ -153,22 +153,6 @@ our sub silently(&block) {
 	return $result;
 }
 
-my $err;
-our sub suppressErr() {
-	$err = $*ERR;
-	$*ERR = (class :: is IO::Handle {
-		submethod TWEAK {
-			self.encoding: 'utf8'
-		}
-		method WRITE(Blob:D \data) {
-			True
-		}
-	}).new
-}
-our sub restoreErr() {
-	$*ERR = $err if $err
-}
-
 my $out;
 my @out-collect;
 our sub capture-out() {
