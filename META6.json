@@ -32,8 +32,8 @@
     "App::Racoco::RunProc": "lib/App/Racoco/RunProc.rakumod",
     "App::Racoco::Sha": "lib/App/Racoco/Sha.rakumod",
     "App::Racoco::X": "lib/App/Racoco/X.rakumod",
-    "TestHelper": "lib/TestHelper.pm6",
-    "TestResources": "lib/TestResources.pm6"
+    "TestHelper": "lib/TestHelper.rakumod",
+    "TestResources": "lib/TestResources.rakumod"
   },
   "resources": [
     "report.html",

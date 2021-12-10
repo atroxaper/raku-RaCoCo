@@ -1,9 +1,9 @@
 use Test;
-use lib 't/lib';
 use lib 'lib';
-use TestHelper;
 use App::Racoco::ProjectName;
+use lib 't/lib';
 use App::Racoco::Fixture;
+use TestHelper;
 use TestResources;
 
 plan 2;
