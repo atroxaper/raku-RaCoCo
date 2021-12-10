@@ -8,7 +8,7 @@ use App::Racoco::X;
 use TestResources;
 use TestHelper;
 
-plan 4;
+plan 5;
 
 constant &APP_MAIN = &App::Racoco::Cli::MAIN;
 my ($sources, $lib, $*subtest, $*plan);
@@ -59,8 +59,16 @@ sub do-main(&bloc) {
   });
 });
 
+'05-simple-run'.&test(:1plan, {
+  setup('lib');
+  my $captured = do-main({
+  	APP_MAIN(:silent);
+  });
+  is $captured.out.text.trim, 'Coverage: 75%', 'simple run ok';
+});
+
 #do-test {
-#  APP_MAIN();
+#  APP_MAIN(:silent);
 #  is Fixture::get-out, 'Coverage: 75%', 'simple run ok';
 #};
 #
