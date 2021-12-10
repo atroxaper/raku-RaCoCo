@@ -8,7 +8,7 @@ use App::Racoco::X;
 use TestResources;
 use TestHelper;
 
-plan 8;
+plan 9;
 
 constant &APP_MAIN = &App::Racoco::Cli::MAIN;
 my ($sources, $lib, $*subtest, $*plan);
@@ -91,26 +91,15 @@ sub do-main(&bloc) {
   });
 });
 
-#
-#do-test {
-#  my $path = coverage-log-path(:lib<lib>);
-#  APP_MAIN();
-#  APP_MAIN(:!exec);
-#  ok $path.e, 'coverage log exist without exec';
-#};
-#
-#do-test {
-#  APP_MAIN(:silent);
-#  is Fixture::get-out, 'Coverage: 75%', 'pass silent';
-#};
-#
-#do-test {
-#  APP_MAIN();
-#  APP_MAIN(:append, exec => 'echo "foo"');
-#  my $on-screen = Fixture::get-out().lines.map(*.trim).grep(*.chars).join(' ');
-#  is $on-screen, "Coverage: 75% Coverage: 75%", 'pass append';
-#};
-#
+'09-append'.&test(:1plan, {
+  setup('lib');
+  my $captured = do-main({
+  	APP_MAIN(:silent);
+  	APP_MAIN(:append, exec => 'echo "foo"', :silent);
+  });
+  is $captured.out.text.trim, "Coverage: 75%{$?NL}Coverage: 75%", 'pass append';
+});
+
 #do-test {
 #  my $path = report-html-path(:lib<lib>);
 #  APP_MAIN();
