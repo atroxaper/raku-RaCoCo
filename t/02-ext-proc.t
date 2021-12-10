@@ -6,7 +6,7 @@ use App::Racoco::Fixture;
 use TestResources;
 use TestHelper;
 
-plan 2;
+plan 3;
 
 my ($test-file, $*subtest, $*plan);
 sub setup() {
@@ -37,21 +37,11 @@ sub setup() {
 	is $result.exitcode, 0, 'exitcode 0';
 });
 
-#{
-#	my $out = $test-file.open(:w);
-#	LEAVE { .close with $out }
-#	my $result = RunProc.new
-#			.run(qq/raku -e "q[{$test-file}].IO.spurt(q[no vars and out])"/);
-#	ok $test-file.e, 'run spurt into file';
-#	is $test-file.slurp.trim, 'no vars and out',
-#			'say into file without any params';
-#	is $result.exitcode, 0, 'exitcode 0';
-#}
-#
-#{
-#  my $actual;
-#  Fixture::silently({ $actual = RunProc.new.run(q/not-exists/, :!err) });
-#	nok $actual, 'run not-exists ok';
-#}
+'03-run-not-exists'.&test(:1plan, {
+	setup();
+	my $actual;
+  Fixture::silently({ $actual = RunProc.new.run(q/not-exists/, :!err) });
+	nok $actual, 'run not-exists ok';
+});
 
 done-testing
