@@ -8,7 +8,7 @@ use App::Racoco::X;
 use TestResources;
 use TestHelper;
 
-plan 3;
+plan 4;
 
 constant &APP_MAIN = &App::Racoco::Cli::MAIN;
 my ($sources, $lib, $*subtest, $*plan);
@@ -51,11 +51,14 @@ sub do-main(&bloc) {
 });
 
 
-#do-test {
-#  lives-ok { APP_MAIN(lib => 'no-precomp', :fix-compunit) },
-#  'lives with no precomp fix-compunit';
-#}
-#
+'04-lib-with-no-precomp-lives-ok-with-fix-compunit'.&test(:1plan, {
+  setup('lib');
+  do-main({
+  	lives-ok { APP_MAIN(lib => 'no-precomp', :fix-compunit, :silent) },
+			'lives with no precomp fix-compunit';
+  });
+});
+
 #do-test {
 #  APP_MAIN();
 #  is Fixture::get-out, 'Coverage: 75%', 'simple run ok';
