@@ -8,7 +8,7 @@ use App::Racoco::Fixture;
 use TestResources;
 use TestHelper;
 
-plan 2;
+plan 3;
 
 my ($sources, $lib, $coverage-log, $collector, $*subtest, $*plan);
 sub setup($lib-name, :$exec = 'prove6', :$proc, :$append = False, ) {
@@ -17,7 +17,7 @@ sub setup($lib-name, :$exec = 'prove6', :$proc, :$append = False, ) {
 	$sources = TestResources::exam-directory;
 	$lib = $sources.add($lib-name);
   $coverage-log = coverage-log-path(:$lib).IO;
-  $collector = CoveredLinesCollector.new(:$exec, :$proc, :$lib, :!print-test-log);
+  $collector = CoveredLinesCollector.new(:$exec, :$proc, :$lib, :$append, :!print-test-log);
 }
 
 '01-fake-collect'.&test(:1plan, {
@@ -38,11 +38,16 @@ sub setup($lib-name, :$exec = 'prove6', :$proc, :$append = False, ) {
     'coverage ok';
 });
 
-#do-test {
-#  my $collector = CoveredLinesCollector.new(:$exec, :proc(RunProc.new), :$lib);
+'03-append-log'.&test(:2plan, {
+	setup('lib', proc => RunProc.new, :append);
+	my $expected = "previous content";
+	$coverage-log.spurt("$expected$?NL");
+	indir($sources, { $collector.collect() });
+	my $lines = $coverage-log.slurp.lines;
+	ok $lines.elems > 0, 'write log';
+	is $lines[0], $expected, 'append log';
+});
 
-#};
-#
 #do-test {
 #	my $proc = Fixture::fakeProc;
 #  $coverage-log.spurt('');
