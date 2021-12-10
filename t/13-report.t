@@ -26,6 +26,23 @@ subtest 'report percent', {
   is $report.percent, 66.6;
 }
 
+subtest 'file report data interface', {
+	setup(:6plan);
+	my $data = FileReportData.new(
+    file-name => '1/3',
+    green => <1>>>.Int.Set,
+    red => <3 4 5 6 7>>>.Int.Set,
+    purple => <2>>>.Int.Set,
+  );
+  say $data.raku;
+  is $data.percent, 33.3, 'percent';
+  is $data.color(:1line), GREEN, 'green';
+  is $data.color(:2line), PURPLE, 'purple';
+  is $data.color(:5line), RED, 'red';
+  is $data.covered, 2, 'covered';
+  is $data.coverable, 6, 'coverable';
+}
+
 #my $report1 = $report.data(:file-name<1/3>);
 #is $report1.percent, 33.3, '1/3 percent ok';
 #is $report1.color(:1line), GREEN, '1/3 get green ok';
