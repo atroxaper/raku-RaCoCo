@@ -5,7 +5,6 @@ use App::Racoco::Coverable::Coverable;
 use App::Racoco::Coverable::CoverableIndex;
 use App::Racoco::Paths;
 use App::Racoco::Fixture;
-use App::Racoco::TmpDir;
 use TestResources;
 
 plan 3;

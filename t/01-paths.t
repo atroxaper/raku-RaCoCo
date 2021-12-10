@@ -2,7 +2,6 @@ use Test;
 use lib 'lib';
 use App::Racoco::Paths;
 use lib 't/lib';
-use App::Racoco::TmpDir;
 use TestResources;
 use TestHelper;
 

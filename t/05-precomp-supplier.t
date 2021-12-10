@@ -4,7 +4,6 @@ use lib 't/lib';
 use App::Racoco::Precomp::PrecompSupplier;
 use App::Racoco::Paths;
 use App::Racoco::Fixture;
-use App::Racoco::TmpDir;
 use TestResources;
 
 plan 3;
