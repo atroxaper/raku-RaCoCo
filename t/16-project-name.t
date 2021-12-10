@@ -5,7 +5,7 @@ use App::Racoco::ProjectName;
 use App::Racoco::Fixture;
 use TestResources;
 
-plan 1;
+plan 2;
 
 my ($lib, $subtest);
 sub setup($lib-name, :$subtest, :$plan!) {
@@ -20,8 +20,10 @@ subtest $subtest, {
 	is project-name(:$lib), 'Test::Project';
 }
 
-#is project-name(lib => TmpDir::create-tmp-dir('racoco-tests').add('lib')), 'racoco-tests',
-#  'project name from path ok';
-
+$subtest = '02-from-path';
+subtest $subtest, {
+	setup('lib', :$subtest, :1plan);
+	is project-name(:$lib), 'exam';
+}
 
 done-testing
