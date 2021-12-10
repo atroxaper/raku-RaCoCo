@@ -8,7 +8,7 @@ use App::Racoco::X;
 use TestResources;
 use TestHelper;
 
-plan 9;
+plan 10;
 
 constant &APP_MAIN = &App::Racoco::Cli::MAIN;
 my ($sources, $lib, $*subtest, $*plan);
@@ -100,15 +100,15 @@ sub do-main(&bloc) {
   is $captured.out.text.trim, "Coverage: 75%{$?NL}Coverage: 75%", 'pass append';
 });
 
-#do-test {
-#  my $path = report-html-path(:lib<lib>);
-#  APP_MAIN();
-#  nok $path.e, 'nok html';
-#  APP_MAIN(:html, :!exec, :append);
-#  ok $path.e, 'ok html';
-#  ok Fixture::get-out.contains(report-html-path(:lib<lib>)), 'pass html';
-#};
-#
+'10-pass-html'.&test(:2plan, {
+  setup('lib');
+  my $captured = do-main({
+  	APP_MAIN(:html, :silent);
+  });
+  ok report-html-path(:$lib).e, 'ok html';
+  ok $captured.out.text.contains(report-html-path(:$lib)), 'pass html';
+});
+
 #do-test {
 #  APP_MAIN(
 #      lib => 'fix-compunit',
