@@ -33,9 +33,9 @@ my $test-file = $sources.add('file');
 }
 
 {
-	Fixture::suppressErr;
-  LEAVE { Fixture::restoreErr }
-	nok RunProc.new.run(q/not-exists/, :!err), 'run not-exists ok';
+  my $actual;
+  Fixture::silently({ $actual = RunProc.new.run(q/not-exists/, :!err) });
+	nok $actual, 'run not-exists ok';
 }
 
 done-testing
