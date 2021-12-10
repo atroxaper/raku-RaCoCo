@@ -8,7 +8,7 @@ use App::Racoco::X;
 use TestResources;
 use TestHelper;
 
-plan 10;
+plan 11;
 
 constant &APP_MAIN = &App::Racoco::Cli::MAIN;
 my ($sources, $lib, $*subtest, $*plan);
@@ -109,13 +109,12 @@ sub do-main(&bloc) {
   ok $captured.out.text.contains(report-html-path(:$lib)), 'pass html';
 });
 
-#do-test {
-#  APP_MAIN(
-#      lib => 'fix-compunit',
-#      :fix-compunit,
-#      exec => 'prove6 fix-compunit/t'
-#  );
-#  is Fixture::get-out.trim, 'Coverage: 100%', 'two precomp with fix-compunit';
-#}
+'11-fix-compunit'.&test(:1plan, {
+  setup('lib');
+  my $captured = do-main({
+  	APP_MAIN(:fix-compunit, :silent);
+  });
+  is $captured.out.text.trim, 'Coverage: 100%', 'two precomp with fix-compunit';
+});
 
 done-testing
