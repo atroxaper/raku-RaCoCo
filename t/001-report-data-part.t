@@ -5,7 +5,7 @@ use lib 't/lib';
 use TestResources;
 use TestHelper;
 
-plan 1;
+plan 2;
 
 my ($*plan, $*subtest);
 sub setup() {
@@ -22,11 +22,25 @@ sub files(*@raw) {
 
 '01-read-from-str'.&test(:2plan, {
 	setup();
-	my $str = 'ModuleName.raku | 43% | 1 0 2 3 3 1 | 4 1';
-	my $value;
-	lives-ok { $value = DataPart.read($str) }, 'read from str';
-	ok $value, 'read defined';
+	my $part;
+	lives-ok { $part = DataPart.read('ModuleName.raku | 43% | 1 0 2 3 3 1 | 4 1') }, 'read from str';
+	ok $part, 'read defined';
 });
+
+'02-construct'.&test(:1plan, {
+	setup();
+	my $part;
+	my $coverable = set 1, 2, 3, 5;
+	my $covered = bag 2, 2, 2, 3, 4;
+	lives-ok { $part = DataPart.new(:$coverable, :$covered) }, 'constructed';
+	ok $part, 'constructed defined';
+});
+
+#'02-validate-read'.&test(:1plan, {
+#	setup();
+#	my $part = DataPart.read('ModuleName.raku | 43% | 1 0 2 3 3 1 5 0 | 4 1');
+#	is $part.percent, 66.6, 'percent';
+#});
 
 #'01-'.&test(:1plan, {
 #	setup();
