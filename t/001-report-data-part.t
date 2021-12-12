@@ -27,12 +27,12 @@ sub files(*@raw) {
 	ok $part, 'read defined';
 });
 
-'02-construct'.&test(:1plan, {
+'02-construct'.&test(:2plan, {
 	setup();
 	my $part;
 	my $coverable = set 1, 2, 3, 5;
 	my $covered = bag 2, 2, 2, 3, 4;
-	lives-ok { $part = DataPart.new(:$coverable, :$covered) }, 'constructed';
+	lives-ok { $part = DataPart.new('ModuleName.rakumod', :$coverable, :$covered) }, 'constructed';
 	ok $part, 'constructed defined';
 });
 
