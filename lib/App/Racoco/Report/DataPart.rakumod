@@ -5,7 +5,7 @@ enum COLOR is export <GREEN RED NO>;
 #| From what file the data is.
 has Str $!file-name is built;
 #| Percent of covered lines.
-has Num $.percent;
+has Rat $.percent;
 #| Amount of covered lines.
 has Int $.covered-amount;
 #| Amount of coverable lines.
@@ -36,13 +36,13 @@ method read(DataPart:U: Str $str --> DataPart) {
 	my $split = $str.split('|')>>.trim;
 	self.bless(
 		file-name => $split[0],
-		percent => $split[1].substr(0, *-1).Num,
+		percent => $split[1].substr(0, *-1).Rat,
 		data => Hash[UInt, Any].new($split[2].split(' ', :skip-empty)>>.Int),
 		purple-lines => Hash[UInt, Any].new(($split[3] // '').split(' ', :skip-empty)>>.Int)
 	);
 }
 
-method percent(--> Num) {
+method percent(--> Rat) {
 	$!percent //= min 100, (($!covered-amount / $!coverable-amount) * 100 * 10).Int / 10;
 }
 

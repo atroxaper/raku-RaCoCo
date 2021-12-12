@@ -5,7 +5,7 @@ use lib 't/lib';
 use TestResources;
 use TestHelper;
 
-plan 3;
+plan 4;
 
 my ($*plan, $*subtest);
 sub setup() {
@@ -43,26 +43,45 @@ sub files(*@raw) {
 	my $part = DataPart.read('ModuleName.raku | 42.8% | 1 0 2 3 | 4 1');
 	is $part.percent, 42.8, 'percent';
 	is $part.coverable-amount, 2, 'coverable-amount';
-	is $part.covered-amount, 2, 'coverable-amount';
+	is $part.covered-amount, 2, 'covered-amount';
 	is $part.color-of(:1line), RED, '1 red';
 	is $part.color-of(:2line), GREEN, '2 green';
-	is $part.color-of(:4line), GREEN, '5 purple-green';
+	is $part.color-of(:4line), GREEN, '4 purple-green';
 	is $part.color-of(:8line), NO, '8 no';
-	is $part.hit-times-of(:1line), 0, '1-1';
+	is $part.hit-times-of(:1line), 0, '1-0';
 	is $part.hit-times-of(:2line), 3, '2-3';
 	is $part.hit-times-of(:4line), 1, '4-1';
 	nok $part.hit-times-of(:8line), '8-?';
 });
 
-#'01-'.&test(:1plan, {
-#	setup();
-#	ok True;
-#	my %boo = files('foo', '1 2 3 | 2 2 2 3 4', 'bar', '4 5 6|');
-#	say %boo;
-#	my ($coverable, $covered) = %boo<foo>;
-#	say 'purple';
-#	say $covered.grep({!$coverable{.key}});
-#
-#});
+'04-interface-after-construct'.&test(:21plan, {
+	setup();
+	my $part = DataPart.new(
+		'ModuleName.raku',
+		coverable => set(1, 2, 3, 5, 6, 7, 8),
+		covered => bag(2, 2, 2, 3, 4)
+	);
+	is $part.percent, 42.8, 'percent';
+	is $part.coverable-amount, 7, 'coverable-amount';
+	is $part.covered-amount, 3, 'covered-amount';
+	is $part.color-of(:1line), RED, '1 red';
+	is $part.color-of(:2line), GREEN, '2 green';
+	is $part.color-of(:3line), GREEN, '3 green';
+	is $part.color-of(:4line), GREEN, '4 purple-green';
+	is $part.color-of(:5line), RED, '5 red';
+	is $part.color-of(:6line), RED, '6 red';
+	is $part.color-of(:7line), RED, '7 red';
+	is $part.color-of(:8line), RED, '8 red';
+	is $part.color-of(:9line), NO, '9 no';
+	is $part.hit-times-of(:1line), 0, '1-0';
+	is $part.hit-times-of(:2line), 3, '2-3';
+	is $part.hit-times-of(:3line), 1, '1-1';
+	is $part.hit-times-of(:4line), 1, '4-1';
+	is $part.hit-times-of(:5line), 0, '5-0';
+	is $part.hit-times-of(:6line), 0, '6-0';
+	is $part.hit-times-of(:7line), 0, '7-0';
+	is $part.hit-times-of(:8line), 0, '8-0';
+	nok $part.hit-times-of(:9line), '9-?';
+});
 
 done-testing
