@@ -5,7 +5,7 @@ use lib 't/lib';
 use TestResources;
 use TestHelper;
 
-plan 2;
+plan 3;
 
 my ($*plan, $*subtest);
 sub setup() {
@@ -20,10 +20,12 @@ sub files(*@raw) {
 	}).List;
 }
 
-'01-read-from-str'.&test(:2plan, {
+'01-read-from-str'.&test(:4plan, {
 	setup();
 	my $part;
-	lives-ok { $part = DataPart.read('ModuleName.raku | 43% | 1 0 2 3 3 1 | 4 1') }, 'read from str';
+	lives-ok { $part = DataPart.read('ModuleName.raku | 43% | 1 0 2 3 3 1 | 4 1') }, 'read from str with purple';
+	ok $part, 'read defined with purple';
+	lives-ok { $part = DataPart.read('ModuleName.raku | 100% | 1 3 4 0 3 4 5 0') }, 'read from str';
 	ok $part, 'read defined';
 });
 
@@ -36,11 +38,21 @@ sub files(*@raw) {
 	ok $part, 'constructed defined';
 });
 
-#'02-validate-read'.&test(:1plan, {
-#	setup();
-#	my $part = DataPart.read('ModuleName.raku | 43% | 1 0 2 3 3 1 5 0 | 4 1');
-#	is $part.percent, 66.6, 'percent';
-#});
+'03-interface-after-read'.&test(:11plan, {
+	setup();
+	my $part = DataPart.read('ModuleName.raku | 42.8% | 1 0 2 3 | 4 1');
+	is $part.percent, 42.8, 'percent';
+	is $part.coverable-amount, 2, 'coverable-amount';
+	is $part.covered-amount, 2, 'coverable-amount';
+	is $part.color-of(:1line), RED, '1 red';
+	is $part.color-of(:2line), GREEN, '2 green';
+	is $part.color-of(:4line), GREEN, '5 purple-green';
+	is $part.color-of(:8line), NO, '8 no';
+	is $part.hit-times-of(:1line), 0, '1-1';
+	is $part.hit-times-of(:2line), 3, '2-3';
+	is $part.hit-times-of(:4line), 1, '4-1';
+	nok $part.hit-times-of(:8line), '8-?';
+});
 
 #'01-'.&test(:1plan, {
 #	setup();
