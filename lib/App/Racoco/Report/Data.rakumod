@@ -2,6 +2,7 @@ unit class App::Racoco::Report::Data is export;
 
 use App::Racoco::Paths;
 use App::Racoco::Report::DataPart;
+use App::Racoco::Misc;
 use App::Racoco::X;
 
 constant HEADER = 'RaCoCo report v2:';
@@ -49,4 +50,11 @@ method write(:$lib!) {
 			HEADER,
 			LEGEND,
 			$!parts.values.sort(*.file-name)
+}
+
+method percent(--> Rat) {
+	percent(
+		([+] $!parts.values.map(*.covered-amount)),
+		([+] $!parts.values.map(*.coverable-amount))
+	)
 }

@@ -8,7 +8,7 @@ use lib 't/lib';
 use TestResources;
 use TestHelper;
 
-plan 7;
+plan 8;
 
 my ($lib);
 sub setup($lib-name?) {
@@ -83,6 +83,11 @@ sub setup($lib-name?) {
 	lives-ok { $data = Data.new(:%coverable, :%covered) }, 'construct';
 	$data.write(:$lib);
 	is report-data-path(:$lib).slurp, report-data-path(:$lib).parent.add('expected.txt').slurp, 'good write';
+});
+
+'08-percent'.&test(:1plan, {
+	setup('lib');
+	is Data.read(:$lib).percent, 29.4, 'percent';
 });
 
 done-testing
