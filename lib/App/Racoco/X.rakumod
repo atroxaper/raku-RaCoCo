@@ -25,7 +25,7 @@ class AmbiguousPrecompContent is Exception {
   method backtrace() { '' }
 }
 
-class CannotReadReport is Exception {
+class CannotReadReport is Exception is export {
   has $.path;
 
   method message() { "Cannot find report file for library path ｢$!path｣." }

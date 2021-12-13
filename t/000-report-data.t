@@ -2,11 +2,12 @@ use Test;
 use lib 'lib';
 use App::Racoco::Report::DataPart;
 use App::Racoco::Report::Data;
+use App::Racoco::X;
 use lib 't/lib';
 use TestResources;
 use TestHelper;
 
-plan 1;
+plan 2;
 
 my ($lib);
 sub setup($lib-name) {
@@ -29,11 +30,12 @@ sub setup($lib-name) {
 	nok $data.for(file-name => 'NotExists'), 'not exists';
 });
 
-#'read-not-exist'.&test(:1plan, {
-#	setup();
-#
-#});
-#
+'02-read-not-exist'.&test(:1plan, {
+	setup('lib');
+	throws-like { Data.read(:$lib) }, CannotReadReport,
+		'read from not existed file', message => / $lib /;
+});
+
 #'read-bad-header'.&test(:1plan, {
 #	setup();
 #
