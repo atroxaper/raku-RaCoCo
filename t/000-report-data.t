@@ -46,15 +46,15 @@ sub setup($lib-name?) {
 	nok $data.for(file-name => 'ModuleName1.rakumod'), 'not exists';
 });
 
-#'04-read-carrupt'.&test(:5plan, {
-#	setup('lib');
-#	my ($data);
-#	lives-ok { $data = Data.read(:$lib) }, 'read from file';
-#	ok $data, 'read defined';
-#	ok $data.for(file-name => 'ModuleName1.rakumod'), 'part 1 read';
-#	ok $data.for(file-name => 'ModuleName2.r'), 'part 2 read';
-#	nok $data.for(file-name => ''), 'part 3 not read';
-#});
+'04-read-corrupt'.&test(:5plan, {
+	setup('lib');
+	my ($data);
+	lives-ok { $data = Data.read(:$lib) }, 'read from file';
+	ok $data, 'read defined';
+	ok $data.for(file-name => 'ModuleName1.rakumod'), 'part 1 read';
+	ok $data.for(file-name => 'ModuleName2.r'), 'part 2 read';
+	nok $data.for(file-name => ''), 'part 3 not read';
+});
 
 #'05-get-all-parts'.&test(:1plan, {
 #	setup('lib');
