@@ -2,7 +2,6 @@ use Test;
 use lib 'lib';
 use App::Racoco::Report::DataPart;
 use lib 't/lib';
-use TestResources;
 use TestHelper;
 
 plan 6;
@@ -29,9 +28,10 @@ sub setup() {
 	ok $part, 'constructed defined';
 });
 
-'03-interface-after-read'.&test(:11plan, {
+'03-interface-after-read'.&test(:12plan, {
 	setup();
 	my $part = DataPart.read('ModuleName.rakumod | 42.8% | 1 0 2 3 | 4 1');
+	is $part.file-name(), 'ModuleName.rakumod', 'file-name';
 	is $part.percent, 42.8, 'percent';
 	is $part.coverable-amount, 2, 'coverable-amount';
 	is $part.covered-amount, 2, 'covered-amount';

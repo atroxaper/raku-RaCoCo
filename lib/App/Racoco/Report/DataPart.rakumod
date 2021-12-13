@@ -1,9 +1,9 @@
-unit class DataPart;
+unit class App::Racoco::Report::DataPart is export;
 
 enum COLOR is export <GREEN RED NO>;
 
 #| From what file the data is.
-has Str $!file-name is built;
+has Str $.file-name is built;
 #| Percent of covered lines.
 has Rat $.percent;
 #| Amount of covered lines.
@@ -17,7 +17,7 @@ has Map $!data is built;
 #| which is not coverable, but covered.
 has Map $!purple-lines is built;
 
-method new(DataPart:U: Str $file-name, Set :$coverable, Bag :$covered --> DataPart) {
+method new(::?CLASS:U: Str $file-name, Set :$coverable, Bag :$covered --> ::?CLASS) {
 	my $purple-lines := Hash[UInt, Any].new: $covered.hash.grep({!$coverable{.key}});
 	my $covered-amount = $covered.elems;
 	my $coverable-amount = $coverable.elems;
@@ -33,7 +33,7 @@ method new(DataPart:U: Str $file-name, Set :$coverable, Bag :$covered --> DataPa
 	);
 }
 
-method read(DataPart:U: Str $str --> DataPart) {
+method read(::?CLASS:U: Str $str --> ::?CLASS) {
 	my $split = $str.split('|')>>.trim;
 	self.bless(
 		file-name => $split[0],
