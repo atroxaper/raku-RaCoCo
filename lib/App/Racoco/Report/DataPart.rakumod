@@ -19,7 +19,7 @@ has Map $!data is built;
 #| which is not coverable, but covered.
 has Map $!purple-lines is built;
 
-method new(::?CLASS:U: Str $file-name, Set :$coverable, Bag :$covered --> ::?CLASS) {
+method new(::?CLASS:U: Str $file-name, Set :$coverable!, Bag :$covered! --> ::?CLASS) {
 	my $purple-lines := Hash[UInt, Any].new: $covered.hash.grep({!$coverable{.key}});
 	my $covered-amount = $covered.elems;
 	my $coverable-amount = $coverable.elems;

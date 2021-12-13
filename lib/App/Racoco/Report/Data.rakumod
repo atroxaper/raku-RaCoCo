@@ -9,6 +9,17 @@ constant LEGEND = 'Filename | Coverage% | line hit-time line hit-time ... [| lin
 
 has $!parts is built;
 
+method new(::?CLASS:U: :%coverable, :%covered --> ::?CLASS) {
+	my $parts = %coverable.map(-> $c {
+		DataPart.new(
+			$c.key,
+			coverable => $c.value,
+			covered => %covered{$c.key} // bag()
+		)
+	}).map({.file-name => $_}).Map;
+	self.bless(:$parts)
+}
+
 method read(::?CLASS:U: :$lib! --> ::?CLASS) {
 	my $path = report-data-path(:$lib);
 	CannotReadReport.new(path => $lib).throw unless $path.e;

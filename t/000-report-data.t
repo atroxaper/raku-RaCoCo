@@ -8,7 +8,7 @@ use lib 't/lib';
 use TestResources;
 use TestHelper;
 
-plan 6;
+plan 7;
 
 my ($lib);
 sub setup($lib-name?) {
@@ -72,13 +72,17 @@ sub setup($lib-name?) {
 	is report-data-path(:$lib).slurp, report-data-path(:$lib).parent.add('expected.txt').slurp, 'good write';
 });
 
-#'06-construct'.&test(:1plan, {
-#	setup('lib');
-#	my %coverable = 'ModuleName1.rakumod', set(1, 2, 3, 5, 6, 7, 8), 'ModuleName2.r', set();
-#	my %covered = 'ModuleName2.rakumod', bag(2, 2, 2, 3, 4), 'ModuleName2.r', set();
-#	my ($data);
-#	lives-ok { $data = Data.new(:%coverable, :%covered) }, 'construct';
-#
-#});
+'07-construct'.&test(:2plan, {
+	setup('lib');
+	my %coverable =
+		'ModuleName1.rakumod', set(1, 2, 3, 5, 6, 7, 8),
+		'ModuleName2.r', set(),
+		'ModuleName3.rakumod', set(1, 2);
+	my %covered = 'ModuleName1.rakumod', bag(2, 2, 2, 3, 4), 'ModuleName2.r', bag();
+	my ($data);
+	lives-ok { $data = Data.new(:%coverable, :%covered) }, 'construct';
+	$data.write(:$lib);
+	is report-data-path(:$lib).slurp, report-data-path(:$lib).parent.add('expected.txt').slurp, 'good write';
+});
 
 done-testing
