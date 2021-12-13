@@ -8,7 +8,7 @@ use TestHelper;
 
 plan 3;
 
-my ($test-file, $*subtest, $*plan);
+my ($test-file);
 sub setup() {
 	plan $*plan;
 	TestResources::prepare($*subtest);

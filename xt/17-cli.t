@@ -11,7 +11,7 @@ use TestHelper;
 plan 12;
 
 constant &APP_MAIN = &App::Racoco::Cli::MAIN;
-my ($sources, $lib, $*subtest, $*plan);
+my ($sources, $lib);
 sub setup($lib-name) {
 	plan $*plan;
 	TestResources::prepare($*subtest);

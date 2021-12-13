@@ -10,7 +10,7 @@ use TestHelper;
 
 plan 8;
 
-my ($sources, $lib, $coverage-log, $collector, $*subtest, $*plan);
+my ($sources, $lib, $coverage-log, $collector);
 sub setup($lib-name, :$exec = 'prove6', :$proc, :$append = False, :outloud($print-test-log) = False) {
 	plan $*plan;
 	TestResources::prepare($*subtest);

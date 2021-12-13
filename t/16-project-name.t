@@ -8,7 +8,7 @@ use TestResources;
 
 plan 2;
 
-my ($lib, $*subtest, $*plan);
+my ($lib);
 sub setup($lib-name) {
 	plan $*plan;
 	TestResources::prepare($*subtest);
