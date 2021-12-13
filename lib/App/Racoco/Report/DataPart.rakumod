@@ -71,7 +71,8 @@ method Str(--> Str) {
 }
 
 method gist(--> Str) {
-	$!file-name ~ ' | ' ~
-	self.percent ~ '% | ' ~
-	($!data, $!purple-lines).map(*.sort.map({(.key, .value)})).grep(*.chars).join(' | ')
+	join ' | ',
+	$!file-name,
+	self.percent ~ '%',
+	($!data, $!purple-lines).map(*.sort.map({(.key, .value)}).Str).grep(*.chars)
 }

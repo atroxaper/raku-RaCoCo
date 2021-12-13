@@ -9,7 +9,7 @@ constant LEGEND = 'Filename | Coverage% | line hit-time line hit-time ... [| lin
 
 has $!parts is built;
 
-method read(:$lib!) {
+method read(::?CLASS:U: :$lib! --> ::?CLASS) {
 	my $path = report-data-path(:$lib);
 	CannotReadReport.new(path => $lib).throw unless $path.e;
 
@@ -21,9 +21,13 @@ method read(:$lib!) {
 		.map({DataPart.read($_)})
 		.grep(*.file-name.chars)
 		.map({.file-name => $_}).Map;
-	self.new(:$parts)
+	self.bless(:$parts)
 }
 
 method for(:$file-name --> DataPart) {
 	$!parts{$file-name} // Nil
+}
+
+method get-all-parts(--> Positional) {
+	$!parts.values.sort(*.file-name).List
 }

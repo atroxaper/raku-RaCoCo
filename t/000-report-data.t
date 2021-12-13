@@ -7,7 +7,7 @@ use lib 't/lib';
 use TestResources;
 use TestHelper;
 
-plan 4;
+plan 5;
 
 my ($lib);
 sub setup($lib-name?) {
@@ -56,9 +56,13 @@ sub setup($lib-name?) {
 	nok $data.for(file-name => ''), 'part 3 not read';
 });
 
-#'05-get-all-parts'.&test(:1plan, {
-#	setup('lib');
-#
-#});
+'05-get-all-parts'.&test(:4plan, {
+	setup('lib');
+	my $parts := Data.read(:$lib).get-all-parts;
+	ok $parts ~~ Positional, 'all parts are Positional';
+	is $parts.elems, 2, 'read only two from corrupt';
+	is $parts[0], 'ModuleName1.rakumod | 42.8% | 1 0 2 3 3 1 5 0 6 0 7 0 8 0 | 4 1';
+	is $parts[1], 'ModuleName2.r | 0%';
+});
 
 done-testing
