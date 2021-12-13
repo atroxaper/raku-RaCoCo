@@ -7,17 +7,8 @@ use TestHelper;
 
 plan 6;
 
-my ($*plan, $*subtest);
 sub setup() {
 	plan $*plan;
-}
-
-sub files(*@raw) {
-	@raw.map(-> $file-name, $numbers {
-		my ($coverable, $covered) = $numbers.split('|')
-			.map(*.trim.split(' ', :skip-empty).Bag).List;
-		$file-name => ($coverable.Set, $covered);
-	}).List;
 }
 
 '01-read-from-str'.&test(:4plan, {
