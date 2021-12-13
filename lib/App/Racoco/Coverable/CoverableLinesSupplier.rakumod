@@ -12,7 +12,7 @@ class CoverableLinesSupplier is export {
   has CoverableOutliner $.outliner;
   has PrecompHashcodeReader $.hashcode-reader;
 
-  method supply(Str :$file-name --> Set) {
+  method supply(Str :$file-name --> Positional) {
     my $precomp-path = $!supplier.supply(:$file-name);
 		return () unless $precomp-path;
     my $coverable = $!index.retrieve(:$file-name);
@@ -20,7 +20,7 @@ class CoverableLinesSupplier is export {
 			$coverable = self!calc-coverable($file-name, $precomp-path);
     	$!index.put(:$coverable);
     }
-    $coverable.lines.Set
+    $coverable.lines
   }
 
   method !is-coverable-actual($coverable, $precomp-path) {

@@ -8,9 +8,9 @@ use App::Racoco::Coverable::CoverableOutliner;
 use App::Racoco::Coverable::CoverableLinesSupplier;
 use App::Racoco::CoverableLinesCollector;
 use App::Racoco::CoveredLinesCollector;
-use App::Racoco::Report::Report;
 use App::Racoco::Report::ReporterHtml;
 use App::Racoco::Report::ReporterBasic;
+use App::Racoco::Report::Data;
 use App::Racoco::Paths;
 use App::Racoco::X;
 
@@ -36,11 +36,11 @@ multi sub get(:$reporter, :$html) {
   return ReporterBasic;
 }
 
-sub print-simple-coverage(Report $report) {
+sub print-simple-coverage(Data $report) {
   say "Coverage: {$report.percent}%"
 }
 
-sub check-fail-level(Int $fail-level, Report $report) {
+sub check-fail-level(Int $fail-level, Data $report) {
   if $report.percent < $fail-level {
     exit max(1, ($fail-level - $report.percent).Int);
   }
@@ -48,14 +48,14 @@ sub check-fail-level(Int $fail-level, Report $report) {
 
 subset BoolOrStr where Bool | Str;
 
-sub calculate-reporter(:$covered-collector, :$coverable-collector, :$reporter-class) {
-  my %covered-lines = $covered-collector.collect();
-  my %coverable-lines = $coverable-collector.collect();
-  $reporter-class.make-from-data(:%coverable-lines, :%covered-lines)
+sub calculate-report(:$covered-collector, :$coverable-collector) {
+  my %covered = $covered-collector.collect();
+  my %coverable = $coverable-collector.collect();
+  Data.new(:%coverable, :%covered)
 }
 
-sub read-reporter(:$reporter-class, :$lib) {
-  $reporter-class.read(:$lib)
+sub read-report(:$lib) {
+  Data.read(:$lib)
 }
 
 sub rmdir($path, :$rm-path) {
@@ -94,7 +94,7 @@ our sub MAIN(
   my $moar = get(:name<moar>, :$raku-bin-dir);
   my $raku = get(:name<raku>, :$raku-bin-dir);
   my $exec = $exec-command;
-  my $reporter-class = get(:reporter, :$html);
+  #my $reporter-class = get(:reporter, :$html);
 
   rm-precomp(:$lib) if $fix-compunit;
   check-ambiguous-precomp(:$lib);
@@ -111,13 +111,13 @@ our sub MAIN(
   my $coverable-collector = CoverableLinesCollector.new(
     supplier => $coverable-supplier, :$lib);
 
-  my $reporter = $exec === False
-    ?? read-reporter(:$reporter-class, :$lib)
-    !! calculate-reporter(:$covered-collector, :$coverable-collector, :$reporter-class);
-  $reporter.color-blind = $color-blind if $html;
-  $reporter.write(:$lib);
-  print-simple-coverage($reporter.report);
-  check-fail-level($fail-level, $reporter.report);
+  my $report = $exec === False
+    ?? read-report(:$lib)
+    !! calculate-report(:$covered-collector, :$coverable-collector);
+#  $reporter.color-blind = $color-blind if $html;
+#  $reporter.write(:$lib);
+  print-simple-coverage($report);
+  check-fail-level($fail-level, $report);
 
   CATCH {
     when App::Racoco::X::NonZeroExitCode {

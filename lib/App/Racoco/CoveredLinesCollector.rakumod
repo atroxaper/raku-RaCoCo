@@ -45,7 +45,6 @@ class CoveredLinesCollector is export {
     $!coverage-log-path.lines
       .grep(*.starts-with($prefix))
       .map(*.substr($prefix-len))
-      #.unique
       .map(-> $h { .[0] => .[2] with $h.words})
       .classify({ $_.key })
       .map({ $_.key => $_.value.map({ (($_.value // 0).Int // 0) }).grep(* > 0).Bag })

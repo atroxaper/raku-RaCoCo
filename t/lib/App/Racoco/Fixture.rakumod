@@ -79,10 +79,10 @@ our sub testOutliner(**@data) {
 	my $outliner =
 			class Outliner does CoverableOutliner does TestKeyValueStore {
 				method outline(IO::Path :$path --> Positional) {
-					self.get($path)
+					self.get($path)<>
 				}
 			}.new;
-	for @data -> $file-name, @lines { $outliner.add($file-name, @lines) }
+	for @data -> $file-name, $lines { $outliner.add($file-name, $lines) }
 	return $outliner;
 }
 
