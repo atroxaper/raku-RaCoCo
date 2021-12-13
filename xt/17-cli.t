@@ -97,7 +97,7 @@ sub do-main(&bloc) {
   	APP_MAIN(:silent);
   	APP_MAIN(:append, exec => 'echo "foo"', :silent);
   });
-  is $captured.out.text.trim, "Coverage: 75%{$?NL}Coverage: 75%", 'pass append';
+  is $captured.out.text.lines.join, "Coverage: 75%Coverage: 75%", 'pass append';
 });
 
 '10-pass-html'.&test(:2plan, {
