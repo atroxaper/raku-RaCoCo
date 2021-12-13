@@ -1,45 +1,31 @@
 use Test;
 use lib 'lib';
+use App::Racoco::Report::Data;
 use lib 't/lib';
 use App::Racoco::Report::Report;
 use App::Racoco::Report::ReporterHtml;
 use App::Racoco::ModuleNames;
 use App::Racoco::Paths;
-use App::Racoco::TmpDir;
 use App::Racoco::Fixture;
+use TestResources;
+use TestHelper;
 
-plan 49;
+plan 1;
 
-my $lib = Fixture::root-folder.add('lib-for-report');
-my $mod = 'RootModule.rakumod';
-my $mod1 = 'RootModule'.IO.add('SubModule1.rakumod').Str;
-my $mod2 = 'RootModule'.IO.add('SubModule2.rakumod').Str;
-
-my %coverable-lines = %{
-  $mod => (1, 2, 3, 4).Set,
-  $mod1 => (1, 2, 3, 4).Set,
-  $mod2 => (1, 2).Set,
+my ($lib, $data);
+sub setup($lib-name) {
+	plan $*plan;
+	TestResources::prepare($*subtest);
+	$lib = TestResources::exam-directory.add($lib-name);
 }
 
-my %covered-lines = %{
-  $mod => (1, 2, 3, 4).Set,
-  $mod1 => (1, 2).Set,
-  $mod2 => (3, 4).Set,
-}
-
-my $report-expect = Report.new(fileReportData => (
-  FileReportData.new(:file-name($mod), green => (1, 2, 3, 4), red => (), purple => ()),
-  FileReportData.new(:file-name($mod1), green => (1, 2), red => (3, 4), purple => ()),
-  FileReportData.new(:file-name($mod2), green => (), red => (1, 2), purple => (3, 4)),
-));
-
-sub check-page($file-name, $page-name, :$color-blind = False) {
-  my $data = $report-expect.data(:$file-name);
+sub check-page($data, $file-name, $page-name, :$color-blind = False) {
+  my $part = $data.for(:$file-name);
   my $page = (report-html-data-path(:$lib).add($page-name) ~ '.html').IO;
   ok $page.e, $page-name ~ ' exists';
   my $content = $page.slurp;
   for 1..4 -> $line {
-    my $color = ($data.color(:$line).key // 'no').lc;
+    my $color = ($part.color-of(:$line).key // 'no').lc;
     ok $content ~~ /"<span class=\"coverage-$color\">line$line\</span>"/,
        "$page-name line$line ok";
   }
@@ -51,64 +37,50 @@ sub check-page($file-name, $page-name, :$color-blind = False) {
 }
 
 sub check-main-page($content, $file-name, $page-name) {
-  my $data = $report-expect.data(:$file-name);
+  my $part = $data.for(:$file-name);
   my $module-name = module-name(path => $file-name);
   my $link = $page-name ~ '.html';
-  my $line = $content.lines.grep(* ~~ /$module-name/).first;
+  my $line = $content.lines.first(* ~~ /$module-name/);
   ok $line, 'line with ' ~ $module-name ~ ' exists';
-  ok $line ~~ /{$data.percent}/, $module-name ~ ' percent ok';
-  ok $line ~~ /{$data.coverable}/, $module-name ~ ' coverable ok';
-  ok $line ~~ /{$data.covered}/, $module-name ~ ' covered ok';
+  ok $line ~~ /{$part.percent}/, $module-name ~ ' percent ok';
+  ok $line ~~ /{$part.coverable-amount}/, $module-name ~ ' coverable ok';
+  ok $line ~~ /{$part.covered-amount}/, $module-name ~ ' covered ok';
   ok $line ~~ /"href=\"./report-data/$link\""/, $module-name ~ ' link ok';
 }
 
-Fixture::need-restore-root-folder();
-sub do-test(&code) {
-  indir(Fixture::root-folder, &code)
-}
-
-do-test {
-  my $reporter = ReporterHtml.make-from-data(:%coverable-lines, :%covered-lines);
-  ok $reporter.report eqv $report-expect, 'make correct data';
-  $reporter.write(:$lib);
-  ok report-basic-path(:$lib).e, 'basic report exists';
-  my $read-reporter = ReporterHtml.read(:$lib);
-  ok $read-reporter.report eqv $report-expect, 'read correct data';
-  TmpDir::rmdir(report-html-data-path(:$lib));
-};
-
-do-test {
-  my $reporter = ReporterHtml.make-from-data(:%coverable-lines, :%covered-lines);
-  my $wrote-page = $reporter.write(:$lib);
-
+'01-render'.&test(:37plan, {
+	setup('lib');
+  $data = Data.read(:$lib);
+  indir($lib.parent, { ReporterHtml.new.do(:$lib, :$data) });
   is report-html-data-path(:$lib).dir.elems, 3, 'data dir with pages';
-  check-page($mod, 'RootModule');
-  check-page($mod1, 'RootModule-SubModule1');
-  check-page($mod2, 'RootModule-SubModule2');
+  my $file-name-page-name = $data.get-all-parts
+    .map(*.file-name)
+    .map({$_ => .split('/').join('-').substr(0, *-8)}).Map;
+
+  $file-name-page-name
+    .map({check-page($data, .key, .value)});
+
   my $with-esc = report-html-data-path(:$lib).add('RootModule.html').slurp;
   ok $with-esc ~~ /'&quot;&amp;&lt;&gt;'/, 'escape ok';
 
   ok report-html-path(:$lib).e, 'html report exists';
-  is $wrote-page, report-html-path(:$lib), 'html report path ok';
-  my $main-content = $wrote-page.slurp;
-
-  check-main-page($main-content, $mod, 'RootModule');
-  check-main-page($main-content, $mod1, 'RootModule-SubModule1');
-  check-main-page($main-content, $mod2, 'RootModule-SubModule2');
+  my $main-content = report-html-path(:$lib).slurp;
+  $file-name-page-name
+    .map({check-main-page($main-content, .key, .value)});
   nok $main-content ~~ /'%%'/, 'main page has no placeholders';
-};
+});
 
-do-test {
-  my $reporter = ReporterHtml.make-from-data(:%coverable-lines, :%covered-lines);
-  $reporter.color-blind = True;
-  $reporter.write(:$lib);
-  check-page($mod, 'RootModule', :color-blind);
-}
-
-do-test {
-  my ($, $lib) = TmpDir::create-tmp-lib('racoco-test-not-exists-report');
-  throws-like { ReporterHtml.read(:$lib) }, App::Racoco::X::CannotReadReport,
-    'no report, exception', message => /'lib'/;
-};
+#do-test {
+#  my $reporter = ReporterHtml.make-from-data(:%coverable-lines, :%covered-lines);
+#  $reporter.color-blind = True;
+#  $reporter.write(:$lib);
+#  check-page($mod, 'RootModule', :color-blind);
+#}
+#
+#do-test {
+#  my ($, $lib) = TmpDir::create-tmp-lib('racoco-test-not-exists-report');
+#  throws-like { ReporterHtml.read(:$lib) }, App::Racoco::X::CannotReadReport,
+#    'no report, exception', message => /'lib'/;
+#};
 
 done-testing

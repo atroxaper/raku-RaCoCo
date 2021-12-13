@@ -117,6 +117,7 @@ our sub MAIN(
 #  $reporter.color-blind = $color-blind if $html;
 #  $reporter.write(:$lib);
   print-simple-coverage($report);
+  $report.write(:$lib);
   check-fail-level($fail-level, $report);
 
   CATCH {
