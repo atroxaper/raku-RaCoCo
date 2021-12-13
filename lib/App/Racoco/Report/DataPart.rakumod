@@ -18,11 +18,12 @@ has Map $!data is built;
 has Map $!purple-lines is built;
 
 method new(DataPart:U: Str $file-name, Set :$coverable, Bag :$covered --> DataPart) {
-	my Map $purple-lines := $covered.hash.grep({!$coverable{.key}}).Map;
+	my $purple-lines := Hash[UInt, Any].new: $covered.hash.grep({!$coverable{.key}});
 	my $covered-amount = $covered.elems;
 	my $coverable-amount = $coverable.elems;
 	my $data := $covered.hash;
 	$coverable.grep({!$covered{.key}}).map({$data{.key} = 0});
+	$data{$purple-lines.keys}:delete;
 	self.bless(
 		:$file-name,
 		:$covered-amount,
@@ -47,7 +48,7 @@ method percent(--> Rat) {
 }
 
 method covered-amount(--> Int) {
-	$!covered-amount //= $!data.grep(*.value != 0).elems + $!purple-lines.grep(*.value != 0).elems;
+	$!covered-amount //= [+] ($!data, $!purple-lines).map(*.grep(*.value != 0).elems)
 }
 
 method coverable-amount(--> Int) {
@@ -63,4 +64,14 @@ method color-of(Int :$line --> COLOR) {
 
 method hit-times-of(Int :$line --> Int) {
 	$!data{$line} // $!purple-lines{$line} // Nil
+}
+
+method Str() {
+	self.gist
+}
+
+method gist() {
+	$!file-name ~ ' | ' ~
+	self.percent ~ '% | ' ~
+	($!data, $!purple-lines).map(*.sort.map({(.key, .value)})).grep(*.chars).join(' | ')
 }

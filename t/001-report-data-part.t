@@ -5,7 +5,7 @@ use lib 't/lib';
 use TestResources;
 use TestHelper;
 
-plan 4;
+plan 5;
 
 my ($*plan, $*subtest);
 sub setup() {
@@ -23,9 +23,9 @@ sub files(*@raw) {
 '01-read-from-str'.&test(:4plan, {
 	setup();
 	my $part;
-	lives-ok { $part = DataPart.read('ModuleName.raku | 43% | 1 0 2 3 3 1 | 4 1') }, 'read from str with purple';
+	lives-ok { $part = DataPart.read('ModuleName.rakumod | 43% | 1 0 2 3 3 1 | 4 1') }, 'read from str with purple';
 	ok $part, 'read defined with purple';
-	lives-ok { $part = DataPart.read('ModuleName.raku | 100% | 1 3 4 0 3 4 5 0') }, 'read from str';
+	lives-ok { $part = DataPart.read('ModuleName.rakumod | 100% | 1 3 4 0 3 4 5 0') }, 'read from str';
 	ok $part, 'read defined';
 });
 
@@ -40,7 +40,7 @@ sub files(*@raw) {
 
 '03-interface-after-read'.&test(:11plan, {
 	setup();
-	my $part = DataPart.read('ModuleName.raku | 42.8% | 1 0 2 3 | 4 1');
+	my $part = DataPart.read('ModuleName.rakumod | 42.8% | 1 0 2 3 | 4 1');
 	is $part.percent, 42.8, 'percent';
 	is $part.coverable-amount, 2, 'coverable-amount';
 	is $part.covered-amount, 2, 'covered-amount';
@@ -57,7 +57,7 @@ sub files(*@raw) {
 '04-interface-after-construct'.&test(:21plan, {
 	setup();
 	my $part = DataPart.new(
-		'ModuleName.raku',
+		'ModuleName.rakumod',
 		coverable => set(1, 2, 3, 5, 6, 7, 8),
 		covered => bag(2, 2, 2, 3, 4)
 	);
@@ -82,6 +82,28 @@ sub files(*@raw) {
 	is $part.hit-times-of(:7line), 0, '7-0';
 	is $part.hit-times-of(:8line), 0, '8-0';
 	nok $part.hit-times-of(:9line), '9-?';
+});
+
+'05-to-str'.&test(:3plan, {
+	setup();
+	my $part = DataPart.new(
+		'ModuleName.rakumod',
+		coverable => set(1, 2, 3, 5, 6, 7, 8),
+		covered => bag(2, 2, 2, 3, 4)
+	);
+	is $part.Str, 'ModuleName.rakumod | 42.8% | 1 0 2 3 3 1 5 0 6 0 7 0 8 0 | 4 1', 'Str with purple';
+	$part = DataPart.new(
+		'ModuleName.rakumod',
+		coverable => set(1, 2, 3, 5, 6, 7, 8),
+		covered => bag(2, 2, 2, 3)
+	);
+	is $part.Str, 'ModuleName.rakumod | 28.5% | 1 0 2 3 3 1 5 0 6 0 7 0 8 0', 'Str';
+	$part = DataPart.new(
+		'ModuleName.rakumod',
+		coverable => set(1, 2, 3),
+		covered => bag()
+	);
+	is $part.Str, 'ModuleName.rakumod | 0% | 1 0 2 0 3 0', 'Str no covered';
 });
 
 done-testing
