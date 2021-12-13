@@ -2,7 +2,6 @@ use Test;
 use lib 'lib';
 use App::Racoco::Report::Data;
 use lib 't/lib';
-use App::Racoco::Report::Report;
 use App::Racoco::Report::ReporterHtml;
 use App::Racoco::ModuleNames;
 use App::Racoco::Paths;
