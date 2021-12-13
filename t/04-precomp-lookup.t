@@ -7,7 +7,7 @@ use App::Racoco::X;
 use App::Racoco::Fixture;
 use TestResources;
 
-plan 3;
+plan 4;
 
 my ($sources, $lib, $file-name, $lookup, $subtest);
 sub setup($file, $lib-name, :$subtest, :$plan!) {
@@ -43,6 +43,14 @@ subtest $subtest, {
 	throws-like { $lookup.lookup(:$file-name) },
   	App::Racoco::X::AmbiguousPrecompContent,
   	'two precomp contents', message => / {$lib.Str} /;
+}
+
+$subtest = '04-lookup-our-precomp';
+subtest $subtest, {
+	setup('Module2.rakumod', 'lib', :$subtest, :1plan);
+	my $expected = our-precomp-path(:$lib).add('C4')
+		.add('C42D08C62F336741E9DBBDC10EFA8A4673AA820F');
+  is $lookup.lookup(:$file-name).IO, $expected, 'lookup in our precomp';
 }
 
 done-testing
