@@ -41,6 +41,10 @@ our sub report-basic-path(IO() :$lib --> IO::Path:D) is export {
 	racoco-path(:$lib).add(REPORT-TXT)
 }
 
+our sub report-data-path(IO() :$lib --> IO::Path:D) is export {
+	racoco-path(:$lib).add(REPORT-TXT)
+}
+
 our sub report-html-data-path(IO() :$lib --> IO::Path:D) is export {
 	mkdir racoco-path(:$lib).add(REPORT-DATA)
 }
