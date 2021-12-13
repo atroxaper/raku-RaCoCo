@@ -8,8 +8,6 @@ use App::Racoco::Coverable::CoverableOutliner;
 use App::Racoco::Coverable::CoverableLinesSupplier;
 use App::Racoco::CoverableLinesCollector;
 use App::Racoco::CoveredLinesCollector;
-use App::Racoco::Report::ReporterHtml;
-use App::Racoco::Report::ReporterBasic;
 use App::Racoco::Report::Data;
 use App::Racoco::Paths;
 use App::Racoco::X;
@@ -29,11 +27,6 @@ multi sub get(:$raku-bin-dir, :$name) {
     App::Racoco::X::WrongRakuBinDirPath.new(path => $result).throw
   }
   $app.Str
-}
-
-multi sub get(:$reporter, :$html) {
-  return ReporterHtml if $html;
-  return ReporterBasic;
 }
 
 sub print-simple-coverage(Data $report) {
@@ -94,7 +87,6 @@ our sub MAIN(
   my $moar = get(:name<moar>, :$raku-bin-dir);
   my $raku = get(:name<raku>, :$raku-bin-dir);
   my $exec = $exec-command;
-  #my $reporter-class = get(:reporter, :$html);
 
   rm-precomp(:$lib) if $fix-compunit;
   check-ambiguous-precomp(:$lib);
@@ -114,8 +106,7 @@ our sub MAIN(
   my $report = $exec === False
     ?? read-report(:$lib)
     !! calculate-report(:$covered-collector, :$coverable-collector);
-#  $reporter.color-blind = $color-blind if $html;
-#  $reporter.write(:$lib);
+
   print-simple-coverage($report);
   $report.write(:$lib);
   check-fail-level($fail-level, $report);

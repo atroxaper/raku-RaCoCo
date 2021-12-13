@@ -8,7 +8,7 @@ use App::Racoco::X;
 use TestResources;
 use TestHelper;
 
-plan 12;
+plan 11;
 
 constant &APP_MAIN = &App::Racoco::Cli::MAIN;
 my ($sources, $lib);
@@ -100,16 +100,7 @@ sub do-main(&bloc) {
   is $captured.out.text.lines.join, "Coverage: 75%Coverage: 75%", 'pass append';
 });
 
-'10-pass-html'.&test(:2plan, {
-  setup('lib');
-  my $captured = do-main({
-  	APP_MAIN(:html, :silent);
-  });
-  ok report-html-path(:$lib).e, 'ok html';
-  ok $captured.out.text.contains(report-html-path(:$lib)), 'pass html';
-});
-
-'11-fix-compunit'.&test(:1plan, {
+'10-fix-compunit'.&test(:1plan, {
   setup('lib');
   my $captured = do-main({
   	APP_MAIN(:fix-compunit, :silent);
@@ -117,7 +108,7 @@ sub do-main(&bloc) {
   is $captured.out.text.trim, 'Coverage: 100%', 'two precomp with fix-compunit';
 });
 
-'12-two-precomp-fail'.&test(:1plan, {
+'11-two-precomp-fail'.&test(:1plan, {
   setup('lib');
   do-main({
   	throws-like { APP_MAIN() }, App::Racoco::X::AmbiguousPrecompContent,
