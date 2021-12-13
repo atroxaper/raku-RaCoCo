@@ -14,9 +14,13 @@ method read(:$lib!) {
 	CannotReadReport.new(path => $lib).throw unless $path.e;
 
 	my $lines := $path.slurp.lines;
-	$lines[0];
-	$lines[1];
-	my $parts = $lines.skip(2).map({DataPart.read($_)}).map({.file-name => $_}).Map;
+	if $lines[0] ne HEADER || $lines[1] ne LEGEND {
+		return self.new(parts => {});
+	}
+	my $parts = $lines.skip(2)
+		.map({DataPart.read($_)})
+		.grep(*.file-name.chars)
+		.map({.file-name => $_}).Map;
 	self.new(:$parts)
 }
 

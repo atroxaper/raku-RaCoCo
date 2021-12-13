@@ -7,13 +7,15 @@ use lib 't/lib';
 use TestResources;
 use TestHelper;
 
-plan 2;
+plan 4;
 
 my ($lib);
-sub setup($lib-name) {
+sub setup($lib-name?) {
 	plan $*plan;
-	TestResources::prepare($*subtest);
-	$lib = TestResources::exam-directory.add($lib-name);
+	if $lib-name {
+		TestResources::prepare($*subtest);
+		$lib = TestResources::exam-directory.add($lib-name);
+	}
 }
 
 '01-read-from-file'.&test(:6plan, {
@@ -36,13 +38,26 @@ sub setup($lib-name) {
 		'read from not existed file', message => / $lib /;
 });
 
-#'read-bad-header'.&test(:1plan, {
-#	setup();
-#
+'03-read-bad-header'.&test(:3plan, {
+	setup('lib');
+	my ($data);
+	lives-ok { $data = Data.read(:$lib) }, 'read from file';
+	ok $data, 'read defined';
+	nok $data.for(file-name => 'ModuleName1.rakumod'), 'not exists';
+});
+
+#'04-read-carrupt'.&test(:5plan, {
+#	setup('lib');
+#	my ($data);
+#	lives-ok { $data = Data.read(:$lib) }, 'read from file';
+#	ok $data, 'read defined';
+#	ok $data.for(file-name => 'ModuleName1.rakumod'), 'part 1 read';
+#	ok $data.for(file-name => 'ModuleName2.r'), 'part 2 read';
+#	nok $data.for(file-name => ''), 'part 3 not read';
 #});
 
-#'read-carrupt'.&test(:1plan, {
-#	setup();
+#'05-get-all-parts'.&test(:1plan, {
+#	setup('lib');
 #
 #});
 

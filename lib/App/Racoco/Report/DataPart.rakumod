@@ -36,9 +36,9 @@ method new(::?CLASS:U: Str $file-name, Set :$coverable, Bag :$covered --> ::?CLA
 method read(::?CLASS:U: Str $str --> ::?CLASS) {
 	my $split = $str.split('|')>>.trim;
 	self.bless(
-		file-name => $split[0],
-		percent => $split[1].substr(0, *-1).Rat,
-		data => Hash[UInt, Any].new($split[2].split(' ', :skip-empty)>>.Int),
+		file-name => $split[0] // '',
+		percent => ($split[1] // '0%').substr(0, *-1).Rat,
+		data => Hash[UInt, Any].new(($split[2] // '').split(' ', :skip-empty)>>.Int),
 		purple-lines => Hash[UInt, Any].new(($split[3] // '').split(' ', :skip-empty)>>.Int)
 	);
 }
