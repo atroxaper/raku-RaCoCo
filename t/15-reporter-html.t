@@ -10,7 +10,7 @@ use App::Racoco::Fixture;
 use TestResources;
 use TestHelper;
 
-plan 1;
+plan 2;
 
 my ($lib, $data);
 sub setup($lib-name) {
@@ -51,7 +51,7 @@ sub check-main-page($content, $file-name, $page-name) {
 '01-render'.&test(:37plan, {
 	setup('lib');
   $data = Data.read(:$lib);
-  indir($lib.parent, { ReporterHtml.new.do(:$lib, :$data) });
+  Fixture::silently({ indir($lib.parent, { ReporterHtml.new.do(:$lib, :$data) }) });
   is report-html-data-path(:$lib).dir.elems, 3, 'data dir with pages';
   my $file-name-page-name = $data.get-all-parts
     .map(*.file-name)
@@ -70,17 +70,13 @@ sub check-main-page($content, $file-name, $page-name) {
   nok $main-content ~~ /'%%'/, 'main page has no placeholders';
 });
 
-#do-test {
-#  my $reporter = ReporterHtml.make-from-data(:%coverable-lines, :%covered-lines);
-#  $reporter.color-blind = True;
-#  $reporter.write(:$lib);
-#  check-page($mod, 'RootModule', :color-blind);
-#}
-#
-#do-test {
-#  my ($, $lib) = TmpDir::create-tmp-lib('racoco-test-not-exists-report');
-#  throws-like { ReporterHtml.read(:$lib) }, App::Racoco::X::CannotReadReport,
-#    'no report, exception', message => /'lib'/;
-#};
+'02-color-blind'.&test(:7plan, {
+	setup('lib');
+	$data = Data.read(:$lib);
+	my $reporter = ReporterHtml.new;
+	$reporter.color-blind = True;
+  Fixture::silently({ indir($lib.parent, { $reporter.do(:$lib, :$data) }) });
+  check-page($data, 'RootModule.rakumod', 'RootModule', :color-blind);
+});
 
 done-testing
