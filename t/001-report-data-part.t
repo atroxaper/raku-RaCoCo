@@ -4,7 +4,7 @@ use App::Racoco::Report::DataPart;
 use lib 't/lib';
 use TestHelper;
 
-plan 6;
+plan 7;
 
 sub setup() {
 	plan $*plan;
@@ -117,6 +117,16 @@ sub setup() {
 	is $part1, $part2, 'eq';
 	isnt $part1, $part3, 'ne';
 
+});
+
+'07-bad-percent'.&test(:1plan, {
+	setup();
+	my $part = DataPart.new(
+		'ModuleName.rakumod',
+		coverable => set(),
+		covered => bag(2, 2, 2, 3, 4)
+	);
+	is $part.percent, 100, 'bad-percent';
 });
 
 done-testing

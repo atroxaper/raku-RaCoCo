@@ -1,5 +1,7 @@
 unit class App::Racoco::Report::DataPart is export;
 
+use App::Racoco::Misc;
+
 enum COLOR is export <GREEN RED NO>;
 
 #| From what file the data is.
@@ -44,7 +46,7 @@ method read(::?CLASS:U: Str $str --> ::?CLASS) {
 }
 
 method percent(--> Rat) {
-	$!percent //= min 100, (($!covered-amount / $!coverable-amount) * 100 * 10).Int / 10;
+	$!percent // percent($!covered-amount, $!coverable-amount);
 }
 
 method covered-amount(--> Int) {
