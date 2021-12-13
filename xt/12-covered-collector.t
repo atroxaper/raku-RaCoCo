@@ -8,7 +8,7 @@ use App::Racoco::Fixture;
 use TestResources;
 use TestHelper;
 
-plan 8;
+plan 9;
 
 my ($sources, $lib, $coverage-log, $collector);
 sub setup($lib-name, :$exec = 'prove6', :$proc, :$append = False, :outloud($print-test-log) = False) {
@@ -31,16 +31,13 @@ sub collect() {
   lives-ok { $collector.collect() }, 'collect lives ok';
 });
 
-'02-real-collect'.&test(:2plan, {
+'02-real-collect'.&test(:4plan, {
 	setup('lib', proc => RunProc.new);
   my %covered-lines = collect();
   ok $coverage-log.e, 'coverage log exists';
-  is-deeply %covered-lines,
-    %{
-      'Module2.rakumod' => (1, 2).Set,
-      'Module3.rakumod' => (1, 2, 3, 5).Set
-    },
-    'coverage ok';
+  is %covered-lines.elems, 2, 'covered elems';
+  ok %covered-lines<Module2.rakumod>.Set === set(1, 2), 'covered module 2';
+  ok %covered-lines<Module3.rakumod>.Set === set(1, 2, 3, 5), 'covered module 3';
 });
 
 '03-append-log'.&test(:2plan, {
@@ -87,6 +84,15 @@ sub collect() {
 	collect();
 	ok $proc.c, 'proc is run';
 	is $proc.c.hash<out>, False, 'out passed';
+});
+
+'09-parse-log'.&test(:2plan, {
+	setup('lib', proc => Fixture::fakeProc, :!exec);
+	my $path = coverage-log-path(:$lib);
+	$path.spurt: $path.slurp.subst('lib/', $lib ~ '/', :g);
+	my %covered-lines = collect();
+	ok %covered-lines<source-file1.rakumod> === bag(1, 2, 2, 1, 3, 5), 'parse 1 ok';
+	ok %covered-lines<source-file2.rakumod> === bag(1, 1, 1, 1), 'parse 2 ok';
 });
 
 done-testing

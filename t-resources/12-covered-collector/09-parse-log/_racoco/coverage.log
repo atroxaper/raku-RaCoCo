@@ -1,0 +1,21 @@
+HIT  src/vm/moar/ModuleLoader.nqp  133
+HIT  src/vm/moar/ModuleLoader.nqp  5
+HIT  lib/source-file1.rakumod (MyModuleName)  1
+HIT  lib/source-file1.rakumod (MyModuleName)  2
+HIT  lib/source-file1.rakumod (MyModuleName)  2
+HIT  gen/moar/World.nqp  5240
+HIT  gen/moar/World.nqp  5240
+HIT  lib/source-file1.rakumod (MyModuleName)  1
+HIT  lib/source-file1.rakumod (MyModuleName)  3
+HIT  lib/source-file2.rakumod (MyModuleName)  1
+HIT  lib/source-file2.rakumod (MyModuleName)  1
+HIT  gen/moar/World.nqp  5240
+HIT  gen/moar/World.nqp  5240
+HIT  lib/source-file2.rakumod (MyModuleName)  1
+HIT  lib/source-file2.rakumod (MyModuleName)  1
+HIT  lib/source-file1.rakumod (MyModuleName)  5
+HIT  gen/moar/World.nqp  5240
+HIT  gen/moar/World.nqp  5240
+
+12 22 31 51
+14

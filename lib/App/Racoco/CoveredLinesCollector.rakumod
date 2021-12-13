@@ -40,15 +40,15 @@ class CoveredLinesCollector is export {
 
   method !parse-log(--> Associative) {
     return %{} unless $!coverage-log-path.e;
-    my $prefix = 'HIT  ' ~ $!lib;
-    my $prefix-len = $prefix.chars + '/'.chars;
+    my $prefix = 'HIT  ' ~ $!lib ~ '/';
+    my $prefix-len = $prefix.chars;
     $!coverage-log-path.lines
       .grep(*.starts-with($prefix))
       .map(*.substr($prefix-len))
-      .unique
+      #.unique
       .map(-> $h { .[0] => .[2] with $h.words})
       .classify({ $_.key })
-      .map({ $_.key => $_.value.map({ (($_.value // 0).Int // 0) }).grep(* > 0).Set })
+      .map({ $_.key => $_.value.map({ (($_.value // 0).Int // 0) }).grep(* > 0).Bag })
       .Hash
   }
 }
