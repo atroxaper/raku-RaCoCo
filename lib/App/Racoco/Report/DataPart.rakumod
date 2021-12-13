@@ -66,11 +66,11 @@ method hit-times-of(Int :$line --> Int) {
 	$!data{$line} // $!purple-lines{$line} // Nil
 }
 
-method Str() {
+method Str(--> Str) {
 	self.gist
 }
 
-method gist() {
+method gist(--> Str) {
 	$!file-name ~ ' | ' ~
 	self.percent ~ '% | ' ~
 	($!data, $!purple-lines).map(*.sort.map({(.key, .value)})).grep(*.chars).join(' | ')

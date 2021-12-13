@@ -5,7 +5,7 @@ use lib 't/lib';
 use TestResources;
 use TestHelper;
 
-plan 5;
+plan 6;
 
 my ($*plan, $*subtest);
 sub setup() {
@@ -91,19 +91,41 @@ sub files(*@raw) {
 		coverable => set(1, 2, 3, 5, 6, 7, 8),
 		covered => bag(2, 2, 2, 3, 4)
 	);
-	is $part.Str, 'ModuleName.rakumod | 42.8% | 1 0 2 3 3 1 5 0 6 0 7 0 8 0 | 4 1', 'Str with purple';
+	is $part, 'ModuleName.rakumod | 42.8% | 1 0 2 3 3 1 5 0 6 0 7 0 8 0 | 4 1', 'Str with purple';
 	$part = DataPart.new(
 		'ModuleName.rakumod',
 		coverable => set(1, 2, 3, 5, 6, 7, 8),
 		covered => bag(2, 2, 2, 3)
 	);
-	is $part.Str, 'ModuleName.rakumod | 28.5% | 1 0 2 3 3 1 5 0 6 0 7 0 8 0', 'Str';
+	is $part, 'ModuleName.rakumod | 28.5% | 1 0 2 3 3 1 5 0 6 0 7 0 8 0', 'Str';
 	$part = DataPart.new(
 		'ModuleName.rakumod',
 		coverable => set(1, 2, 3),
 		covered => bag()
 	);
-	is $part.Str, 'ModuleName.rakumod | 0% | 1 0 2 0 3 0', 'Str no covered';
+	is $part, 'ModuleName.rakumod | 0% | 1 0 2 0 3 0', 'Str no covered';
+});
+
+'06-cmp'.&test(:2plan, {
+	setup();
+	my $part1 = DataPart.new(
+		'ModuleName.rakumod',
+		coverable => set(1, 2, 3, 5, 6, 7, 8),
+		covered => bag(2, 2, 2, 3, 4)
+	);
+	my $part2 = DataPart.new(
+		'ModuleName.rakumod',
+		coverable => set(1, 2, 3, 5, 6, 7, 8),
+		covered => bag(2, 2, 2, 3, 4)
+	);
+	my $part3 = DataPart.new(
+		'ModuleName.rakumod',
+		coverable => set(1, 2, 3, 5, 6, 7, 8),
+		covered => bag(2, 2, 2, 3, 4, 7)
+	);
+	is $part1, $part2, 'eq';
+	isnt $part1, $part3, 'ne';
+
 });
 
 done-testing
