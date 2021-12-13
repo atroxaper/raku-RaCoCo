@@ -31,3 +31,11 @@ method for(:$file-name --> DataPart) {
 method get-all-parts(--> Positional) {
 	$!parts.values.sort(*.file-name).List
 }
+
+method write(:$lib!) {
+	report-data-path(:$lib).spurt:
+		join $?NL,
+			HEADER,
+			LEGEND,
+			$!parts.values.sort(*.file-name)
+}

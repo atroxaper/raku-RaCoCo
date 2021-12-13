@@ -2,12 +2,13 @@ use Test;
 use lib 'lib';
 use App::Racoco::Report::DataPart;
 use App::Racoco::Report::Data;
+use App::Racoco::Paths;
 use App::Racoco::X;
 use lib 't/lib';
 use TestResources;
 use TestHelper;
 
-plan 5;
+plan 6;
 
 my ($lib);
 sub setup($lib-name?) {
@@ -64,5 +65,20 @@ sub setup($lib-name?) {
 	is $parts[0], 'ModuleName1.rakumod | 42.8% | 1 0 2 3 3 1 5 0 6 0 7 0 8 0 | 4 1';
 	is $parts[1], 'ModuleName2.r | 0%';
 });
+
+'06-write-to-file'.&test(:2plan, {
+	setup('lib');
+	lives-ok { Data.read(:$lib).write(:$lib) }, 'write';
+	is report-data-path(:$lib).slurp, report-data-path(:$lib).parent.add('expected.txt').slurp, 'good write';
+});
+
+#'06-construct'.&test(:1plan, {
+#	setup('lib');
+#	my %coverable = 'ModuleName1.rakumod', set(1, 2, 3, 5, 6, 7, 8), 'ModuleName2.r', set();
+#	my %covered = 'ModuleName2.rakumod', bag(2, 2, 2, 3, 4), 'ModuleName2.r', set();
+#	my ($data);
+#	lives-ok { $data = Data.new(:%coverable, :%covered) }, 'construct';
+#
+#});
 
 done-testing
