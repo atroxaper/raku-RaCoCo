@@ -119,16 +119,18 @@ sub do-main(&bloc) {
 '12-custom-reporter'.&test(:1plan, {
 	setup('lib');
 	my $captured = do-main({ APP_MAIN(:silent, reporter => ('custom-one',)) });
-	is $captured.out.text.trim.lines.join(''), 'Coverage: 75%CustomOne: 75%',
+	is $captured.out.text.trim.lines.join('|'), 'Coverage: 75%|CustomOne: 75%',
 		'custom-one reporter';
 });
 
-#'reporter not exist'.&test(:1plan, {
-#	setup();
-#
-#});
+'13-two-custom-reporters'.&test(:1plan, {
+	setup('lib');
+	my $captured = do-main({ APP_MAIN(:silent, reporter => ('custom-one','two')) });
+	is $captured.out.text.trim.lines.join('|'), 'Coverage: 75%|CustomOne: 75%|Done',
+		'two custom reporters';
+});
 
-#'two reporters'.&test(:1plan, {
+#'reporter not exist'.&test(:1plan, {
 #	setup();
 #
 #});
