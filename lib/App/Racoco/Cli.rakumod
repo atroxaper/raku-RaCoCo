@@ -52,6 +52,28 @@ sub read-report(:$lib) {
   Data.read(:$lib)
 }
 
+sub reporter-classes(@reporter, :$html, :$color-blind) {
+  my @result;
+  if $color-blind && $html {
+    @reporter.push: 'html-color-blind' if $html;
+  } elsif $html {
+    @reporter.push: 'html' if $html;
+  }
+
+  for @reporter -> $r-name {
+    my $r-compunit-name = Reporter.^name ~ $r-name.split('-').map(*.tc).join('');
+    try require ::($r-compunit-name);
+    my $require = ::($r-compunit-name);
+    if $require ~~ Failure {
+      $require.so;
+      note "Cannot use $r-compunit-name package as reporter.";
+      next;
+    }
+    @result.push: $r-compunit-name;
+  }
+  @result
+}
+
 sub rmdir($path, :$rm-path) {
   return unless $path ~~ :d & :e;
   for $path.dir() -> $sub-path {
@@ -89,6 +111,7 @@ our sub MAIN(
   my $moar = get(:name<moar>, :$raku-bin-dir);
   my $raku = get(:name<raku>, :$raku-bin-dir);
   my $exec = $exec-command;
+  my @reporter-classes = reporter-classes(@reporter, :$html, :$color-blind);
 
   rm-precomp(:$lib) if $fix-compunit;
   check-ambiguous-precomp(:$lib);
@@ -111,23 +134,7 @@ our sub MAIN(
 
   print-simple-coverage($report);
   $report.write(:$lib);
-
-  if $color-blind && $html {
-    @reporter.push: 'html-color-blind' if $html;
-  } elsif $html {
-    @reporter.push: 'html' if $html;
-  }
-
-  for @reporter -> $r-name {
-    my $r-compunit-name = Reporter.^name ~ $r-name.split('-').map(*.tc).join('');
-    try require ::($r-compunit-name);
-    if ::($r-compunit-name) ~~ Failure {
-      note "Cannot use $r-compunit-name package as reporter.";
-      next;
-    }
-    ::($r-compunit-name).new.do(:$lib, data => $report);
-  }
-
+  @reporter-classes.map({ ::($_).new.do(:$lib, data => $report) });
   check-fail-level($fail-level, $report);
 
   CATCH {
