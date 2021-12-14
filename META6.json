@@ -18,7 +18,7 @@
     "App::Racoco::Coverable::CoverableOutliner": "lib/App/Racoco/Coverable/CoverableOutliner.rakumod",
     "App::Racoco::CoverableLinesCollector": "lib/App/Racoco/CoverableLinesCollector.rakumod",
     "App::Racoco::CoveredLinesCollector": "lib/App/Racoco/CoveredLinesCollector.rakumod",
-    "App::Racoco::Misc": "lib/App/Racoco/Misc.pm6",
+    "App::Racoco::Misc": "lib/App/Racoco/Misc.rakumod",
     "App::Racoco::ModuleNames": "lib/App/Racoco/ModuleNames.rakumod",
     "App::Racoco::Paths": "lib/App/Racoco/Paths.rakumod",
     "App::Racoco::Precomp::PrecompHashcodeReader": "lib/App/Racoco/Precomp/PrecompHashcodeReader.rakumod",
