@@ -3,6 +3,7 @@ use lib 'lib';
 use App::Racoco::Report::Data;
 use lib 't/lib';
 use App::Racoco::Report::ReporterHtml;
+use App::Racoco::Report::ReporterHtmlColorBlind;
 use App::Racoco::ModuleNames;
 use App::Racoco::Paths;
 use App::Racoco::Fixture;
@@ -72,8 +73,7 @@ sub check-main-page($content, $file-name, $page-name) {
 '02-color-blind'.&test(:7plan, {
 	setup('lib');
 	$data = Data.read(:$lib);
-	my $reporter = ReporterHtml.new;
-	$reporter.color-blind = True;
+	my $reporter = ReporterHtmlColorBlind.new;
   Fixture::silently({ indir($lib.parent, { $reporter.do(:$lib, :$data) }) });
   check-page($data, 'RootModule.rakumod', 'RootModule', :color-blind);
 });
