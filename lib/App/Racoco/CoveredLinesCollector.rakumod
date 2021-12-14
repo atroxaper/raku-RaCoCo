@@ -40,7 +40,7 @@ class CoveredLinesCollector is export {
 
   method !parse-log(--> Associative) {
     return %{} unless $!coverage-log-path.e;
-    my $prefix = 'HIT  ' ~ $!lib ~ '/';
+    my $prefix = 'HIT  ' ~ $!lib ~ $*SPEC.dir-sep;
     my $prefix-len = $prefix.chars;
     $!coverage-log-path.lines
       .grep(*.starts-with($prefix))
