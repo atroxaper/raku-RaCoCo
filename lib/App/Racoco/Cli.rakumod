@@ -8,6 +8,7 @@ use App::Racoco::Coverable::CoverableOutliner;
 use App::Racoco::Coverable::CoverableLinesSupplier;
 use App::Racoco::CoverableLinesCollector;
 use App::Racoco::CoveredLinesCollector;
+use App::Racoco::Report::Reporter;
 use App::Racoco::Report::Data;
 use App::Racoco::Paths;
 use App::Racoco::X;
@@ -76,6 +77,7 @@ our sub MAIN(
   Str :lib($lib-dir) = 'lib',
   Str :$raku-bin-dir,
   BoolOrStr :exec($exec-command) = 'prove6',
+  :@reporter,
   Bool :$html = False,
   Bool :$color-blind = False,
   Bool :$silent = False,
@@ -109,6 +111,17 @@ our sub MAIN(
 
   print-simple-coverage($report);
   $report.write(:$lib);
+
+  for @reporter -> $r-name {
+    my $r-compunit-name = Reporter.^name ~ $r-name.split('-').map(*.tc).join('');
+    try require ::($r-compunit-name);
+    if ::($r-compunit-name) ~~ Failure {
+      note "Cannot use $r-compunit-name package";
+      next;
+    }
+    ::($r-compunit-name).new.do(:$lib, data => $report);
+  }
+
   check-fail-level($fail-level, $report);
 
   CATCH {
