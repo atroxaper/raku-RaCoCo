@@ -91,8 +91,8 @@ sub collect() {
 	my $path = coverage-log-path(:$lib);
 	$path.spurt: $path.slurp.subst('lib/', $lib ~ '/', :g);
 	my %covered-lines = collect();
-	ok %covered-lines<source-file1.rakumod> === bag(1, 2, 2, 1, 3, 5), 'parse 1 ok';
-	ok %covered-lines<source-file2.rakumod> === bag(1, 1, 1, 1), 'parse 2 ok';
+	is %covered-lines<source-file1.rakumod>.WHICH, bag(1, 2, 2, 1, 3, 5).WHICH, 'parse 1 ok';
+	is %covered-lines<source-file2.rakumod>.WHICH, bag(1, 1, 1, 1).WHICH, 'parse 2 ok';
 });
 
 done-testing
