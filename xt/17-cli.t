@@ -139,13 +139,24 @@ sub do-main(&bloc) {
 		'not-exist-reporter';
 });
 
-'15-pass-html'.&test(:2plan, {
+'15-pass-html'.&test(:3plan, {
   setup('lib');
   my $captured = do-main({
   	APP_MAIN(:html, :silent);
   });
   ok report-html-path(:$lib).e, 'ok html';
   ok $captured.out.text.contains(report-html-path(:$lib)), 'pass html';
+  ok report-html-data-path(:$lib).dir()[0].slurp ~~ /'color-blind'/, 'no color-blind';
+});
+
+'16-pass-html-color-blind'.&test(:3plan, {
+  setup('lib');
+  my $captured = do-main({
+  	APP_MAIN(:html, :color-blind, :silent);
+  });
+  ok report-html-path(:$lib).e, 'ok html';
+	ok $captured.out.text.contains(report-html-path(:$lib)), 'pass html';
+	nok report-html-data-path(:$lib).dir()[0].slurp ~~ /'color-blind'/, 'color-blind';
 });
 
 done-testing

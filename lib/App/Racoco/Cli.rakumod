@@ -95,24 +95,28 @@ our sub MAIN(
 
   my $proc = RunProc.new;
   my $covered-collector = CoveredLinesCollector.new(
-    :$exec, :$lib, :$proc, print-test-log => !$silent, :$append);
+      :$exec, :$lib, :$proc, print-test-log => !$silent, :$append);
   my $precomp-supplier = PrecompSupplierReal.new(:$proc, :$lib, :$raku);
   my $index = CoverableIndexFile.new(:$lib);
   my $outliner = CoverableOutlinerReal.new(:$proc, :$moar);
   my $hashcode-reader = PrecompHashcodeReaderReal.new;
   my $coverable-supplier = CoverableLinesSupplier.new(
-    supplier => $precomp-supplier, :$index, :$outliner, :$hashcode-reader);
+      supplier => $precomp-supplier, :$index, :$outliner, :$hashcode-reader);
   my $coverable-collector = CoverableLinesCollector.new(
-    supplier => $coverable-supplier, :$lib);
+      supplier => $coverable-supplier, :$lib);
 
   my $report = $exec === False
-    ?? read-report(:$lib)
-    !! calculate-report(:$covered-collector, :$coverable-collector);
+      ?? read-report(:$lib)
+      !! calculate-report(:$covered-collector, :$coverable-collector);
 
   print-simple-coverage($report);
   $report.write(:$lib);
 
-  @reporter.push: 'html' if $html;
+  if $color-blind && $html {
+    @reporter.push: 'html-color-blind' if $html;
+  } elsif $html {
+    @reporter.push: 'html' if $html;
+  }
 
   for @reporter -> $r-name {
     my $r-compunit-name = Reporter.^name ~ $r-name.split('-').map(*.tc).join('');
