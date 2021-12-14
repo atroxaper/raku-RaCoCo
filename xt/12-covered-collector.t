@@ -16,8 +16,8 @@ sub setup($lib-name, :$exec = 'prove6', :$proc, :$append = False, :outloud($prin
 	TestResources::prepare($*subtest);
 	$sources = TestResources::exam-directory;
 	$lib = $sources.add($lib-name);
-  $coverage-log = coverage-log-path(:$lib).IO;
-  $collector = CoveredLinesCollector.new(:$exec, :$proc, :$lib, :$append, :$print-test-log);
+	$coverage-log = coverage-log-path(:$lib).IO;
+	$collector = CoveredLinesCollector.new(:$exec, :$proc, :$lib, :$append, :$print-test-log);
 }
 
 sub collect() {
@@ -28,16 +28,16 @@ sub collect() {
 
 '01-fake-collect'.&test(:1plan, {
 	setup('lib', proc => Fixture::fakeProc);
-  lives-ok { $collector.collect() }, 'collect lives ok';
+	lives-ok { $collector.collect() }, 'collect lives ok';
 });
 
 '02-real-collect'.&test(:4plan, {
 	setup('lib', proc => RunProc.new);
-  my %covered-lines = collect();
-  ok $coverage-log.e, 'coverage log exists';
-  is %covered-lines.elems, 2, 'covered elems';
-  ok %covered-lines<Module2.rakumod>.Set === set(1, 2), 'covered module 2';
-  ok %covered-lines<Module3.rakumod>.Set === set(1, 2, 3, 5), 'covered module 3';
+	my %covered-lines = collect();
+	ok $coverage-log.e, 'coverage log exists';
+	is %covered-lines.elems, 2, 'covered elems';
+	ok %covered-lines<Module2.rakumod>.Set === set(1, 2), 'covered module 2';
+	ok %covered-lines<Module3.rakumod>.Set === set(1, 2, 3, 5), 'covered module 3';
 });
 
 '03-append-log'.&test(:2plan, {
@@ -69,7 +69,7 @@ sub collect() {
 '06-fail-collect'.&test(:1plan, {
 	setup('lib', proc => Fixture::failProc);
 	throws-like { collect() }, App::Racoco::X::NonZeroExitCode,
-		'no zero exitcode';
+			'no zero exitcode';
 });
 
 '07-pass-default-out-to-proc'.&test(:2plan, {
@@ -89,10 +89,10 @@ sub collect() {
 '09-parse-log'.&test(:2plan, {
 	setup('lib', proc => Fixture::fakeProc, :!exec);
 	my $path = coverage-log-path(:$lib);
-	$path.spurt: $path.slurp.subst('lib/', $lib ~ '/', :g);
+	$path.spurt: $path.slurp.subst('lib/', $lib ~ '/', :g).subst('/', $*SPEC.dir-sep, :g);
 	my %covered-lines = collect();
-	is %covered-lines<source-file1.rakumod>.WHICH, bag(1, 2, 2, 1, 3, 5).WHICH, 'parse 1 ok';
-	is %covered-lines<source-file2.rakumod>.WHICH, bag(1, 1, 1, 1).WHICH, 'parse 2 ok';
+	ok %covered-lines<source-file1.rakumod> === bag(1, 2, 2, 1, 3, 5), 'parse 1 ok';
+	ok %covered-lines<source-file2.rakumod> === bag(1, 1, 1, 1), 'parse 2 ok';
 });
 
 done-testing
