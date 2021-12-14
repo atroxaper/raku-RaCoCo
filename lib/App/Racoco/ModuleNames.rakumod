@@ -3,11 +3,14 @@ use App::Racoco::Sha;
 
 our sub module-parts(IO() :$path is copy --> Positional) is export {
 	my @parts;
+	my $last-len = $path.Str.chars + 1;
 	$path .= extension('');
-	while $path ne '.' {
+	while $path ne '.' && $path.Str.chars < $last-len {
 		@parts.push: $path.basename;
+		$last-len = $path.Str.chars;
 		$path .= parent;
 	}
+	@parts.pop if $path.Str.chars == $last-len;
 	@parts.reverse.List;
 }
 
