@@ -35,17 +35,6 @@ sub collect() {
 	setup('lib', proc => RunProc.new);
 	my %covered-lines = collect();
 	ok $coverage-log.e, 'coverage log exists';
-
-note %covered-lines;
-my $prefix = 'HIT  ' ~ $lib ~ $*SPEC.dir-sep;
-my $prefix-len = $prefix.chars;
-note 'prefix: ', $prefix;
-note 'prefix-len: ', $prefix-len;
-note coverage-log-path(:$lib).lines
-	.grep(*.starts-with($prefix))
-	.join($?NL);
-
-
 	is %covered-lines.elems, 2, 'covered elems';
 	ok %covered-lines<Module2.rakumod>.Set === set(1, 2), 'covered module 2';
 	ok %covered-lines<Module3.rakumod>.Set === set(1, 2, 3, 5), 'covered module 3';
@@ -97,13 +86,14 @@ note coverage-log-path(:$lib).lines
 	is $proc.c.hash<out>, False, 'out passed';
 });
 
-'09-parse-log'.&test(:2plan, {
+'09-parse-log'.&test(:3plan, {
 	setup('lib', proc => Fixture::fakeProc, :!exec);
 	my $path = coverage-log-path(:$lib);
 	$path.spurt: $path.slurp.subst('lib/', $lib ~ '/', :g).subst('/', $*SPEC.dir-sep, :g);
 	my %covered-lines = collect();
-	ok %covered-lines<source-file1.rakumod> === bag(1, 2, 2, 1, 3, 5), 'parse 1 ok';
-	ok %covered-lines<source-file2.rakumod> === bag(1, 1, 1, 1), 'parse 2 ok';
+	is %covered-lines.elems, 2, 'filter corrupt';
+	ok %covered-lines<MyModuleName1.rakumod> === bag(1, 2, 2, 1, 3, 5), 'parse 1 ok';
+	ok %covered-lines<MyModuleName2.rakumod> === bag(1, 1, 1, 1), 'parse 2 ok';
 });
 
 done-testing

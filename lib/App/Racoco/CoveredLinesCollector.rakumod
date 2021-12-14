@@ -2,6 +2,7 @@ unit module App::Racoco::CoveredLinesCollector;
 
 use App::Racoco::RunProc;
 use App::Racoco::Paths;
+use App::Racoco::Misc;
 use App::Racoco::X;
 
 class CoveredLinesCollector is export {
@@ -42,11 +43,13 @@ class CoveredLinesCollector is export {
     return %{} unless $!coverage-log-path.e;
     my $prefix = 'HIT  ' ~ $!lib ~ $*SPEC.dir-sep;
     my $prefix-len = $prefix.chars;
+    my $real-module-names = collect-all-module-names-in(:$!lib).Set;
     $!coverage-log-path.lines
       .grep(*.starts-with($prefix))
       .map(*.substr($prefix-len))
       .map(-> $h { .[0] => .[2] with $h.words})
       .classify({ $_.key })
+      .grep({ $real-module-names{$_.key} })
       .map({ $_.key => $_.value.map({ (($_.value // 0).Int // 0) }).grep(* > 0).Bag })
       .Hash
   }
