@@ -35,7 +35,17 @@ sub collect() {
 	setup('lib', proc => RunProc.new);
 	my %covered-lines = collect();
 	ok $coverage-log.e, 'coverage log exists';
+
 note %covered-lines;
+my $prefix = 'HIT  ' ~ $lib ~ $*SPEC.dir-sep;
+my $prefix-len = $prefix.chars;
+note 'prefix: ', $prefix;
+note 'prefix-len: ', $prefix-len;
+note coverage-log-path(:$lib).lines
+	.grep(*.starts-with($prefix))
+	.join($?NL);
+
+
 	is %covered-lines.elems, 2, 'covered elems';
 	ok %covered-lines<Module2.rakumod>.Set === set(1, 2), 'covered module 2';
 	ok %covered-lines<Module3.rakumod>.Set === set(1, 2, 3, 5), 'covered module 3';
