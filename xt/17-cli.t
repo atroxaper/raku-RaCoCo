@@ -8,7 +8,7 @@ use App::Racoco::X;
 use TestResources;
 use TestHelper;
 
-plan 11;
+plan 14;
 
 constant &APP_MAIN = &App::Racoco::Cli::MAIN;
 my ($sources, $lib);
@@ -130,9 +130,13 @@ sub do-main(&bloc) {
 		'two custom reporters';
 });
 
-#'reporter not exist'.&test(:1plan, {
-#	setup();
-#
-#});
+'14-not-exists-reporter'.&test(:2plan, {
+	setup('lib');
+	my $captured = do-main({ APP_MAIN(:silent, reporter => ('not-exists','two')) });
+	is $captured.err.text.trim, 'Cannot use App::Racoco::Report::ReporterNotExists package as reporter.',
+		'second reporter works';
+	is $captured.out.text.trim.lines.join('|'), 'Coverage: 75%|Done',
+		'not-exist-reporter';
+});
 
 done-testing

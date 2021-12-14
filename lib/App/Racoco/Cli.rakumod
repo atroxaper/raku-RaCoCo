@@ -116,7 +116,7 @@ our sub MAIN(
     my $r-compunit-name = Reporter.^name ~ $r-name.split('-').map(*.tc).join('');
     try require ::($r-compunit-name);
     if ::($r-compunit-name) ~~ Failure {
-      note "Cannot use $r-compunit-name package";
+      note "Cannot use $r-compunit-name package as reporter.";
       next;
     }
     ::($r-compunit-name).new.do(:$lib, data => $report);
