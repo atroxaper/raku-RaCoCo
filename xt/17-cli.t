@@ -139,4 +139,13 @@ sub do-main(&bloc) {
 		'not-exist-reporter';
 });
 
+'15-pass-html'.&test(:2plan, {
+  setup('lib');
+  my $captured = do-main({
+  	APP_MAIN(:html, :silent);
+  });
+  ok report-html-path(:$lib).e, 'ok html';
+  ok $captured.out.text.contains(report-html-path(:$lib)), 'pass html';
+});
+
 done-testing

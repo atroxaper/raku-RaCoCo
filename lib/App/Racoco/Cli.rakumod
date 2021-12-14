@@ -112,6 +112,8 @@ our sub MAIN(
   print-simple-coverage($report);
   $report.write(:$lib);
 
+  @reporter.push: 'html' if $html;
+
   for @reporter -> $r-name {
     my $r-compunit-name = Reporter.^name ~ $r-name.split('-').map(*.tc).join('');
     try require ::($r-compunit-name);
