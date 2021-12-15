@@ -20,8 +20,7 @@ $subtest = '01-read-hash-code';
 subtest $subtest, {
 	setup('lib', :$subtest, :1plan);
 	my $expected = '266B9F83542BC85F73639D2D300D0701AF14F9E5';
-	my $path = lib-precomp-path(:$lib).add(Fixture::compiler-id())
-  	.add('B8').add('B8FF02892916FF59F7FBD4E617FCCD01F6BCA576');
+	my $path = $lib.parent.add('precompiled');
 	is $reader.read(:$path), $expected, 'hashcode ok';
 }
 
