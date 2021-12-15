@@ -3,6 +3,7 @@ use lib 'lib';
 use App::Racoco::Misc;
 use App::Racoco::RunProc;
 use lib 't/lib';
+use App::Racoco::Fixture;
 use TestResources;
 use TestHelper;
 
