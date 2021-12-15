@@ -9,7 +9,9 @@
   "auth": "zef:atroxaper",
   "depends": [],
   "build-depends": [],
-  "test-depends": [],
+  "test-depends": [
+    "App::Prove6"
+  ],
   "provides": {
     "App::Racoco::Cli": "lib/App/Racoco/Cli.rakumod",
     "App::Racoco::Coverable::Coverable": "lib/App/Racoco/Coverable/Coverable.rakumod",
@@ -30,9 +32,7 @@
     "App::Racoco::Report::ReporterHtml": "lib/App/Racoco/Report/ReporterHtml.rakumod",
     "App::Racoco::RunProc": "lib/App/Racoco/RunProc.rakumod",
     "App::Racoco::Sha": "lib/App/Racoco/Sha.rakumod",
-    "App::Racoco::X": "lib/App/Racoco/X.rakumod",
-    "TestHelper": "lib/TestHelper.rakumod",
-    "TestResources": "lib/TestResources.rakumod"
+    "App::Racoco::X": "lib/App/Racoco/X.rakumod"
   },
   "resources": [
     "report.html",
