@@ -11,6 +11,7 @@ my role PrecompLocation {
 
 my class LibPrecompLocation does PrecompLocation {
 	has IO::Path $.lib;
+	has Str $.compiler-id;
 	has IO::Path $!compiler-precomp-path;
 
 	method lookup(Str $file-name --> IO::Path) {
@@ -23,30 +24,10 @@ my class LibPrecompLocation does PrecompLocation {
 
 	method !lookup-compiler-precomp-path(--> IO::Path) {
 		return $_ with $!compiler-precomp-path;
-		my $lib-precomp = lib-precomp-path(:$!lib);
-		return Nil unless $lib-precomp.e;
-		$!compiler-precomp-path = self!add-compiler-hashcode($lib-precomp);
-		$!compiler-precomp-path
-	}
-
-	method !add-compiler-hashcode(IO::Path $lib-precomp-path --> IO::Path) {
-		my $compiler-hashcode = self!lookup-compiler-hashcode($lib-precomp-path);
-		with $compiler-hashcode {
-			return $lib-precomp-path.add($_)
-		}
-		Nil
-	}
-
-	method !lookup-compiler-hashcode(IO::Path $lib-precomp-path --> Str) {
-		my @compiler-ids = $lib-precomp-path.dir().grep(*.d);
-    self!check-compiler-amount(@compiler-ids, $lib-precomp-path);
-    @compiler-ids.elems == 1 ?? @compiler-ids[0].basename !! Nil
-	}
-
-	method !check-compiler-amount(@compiler-ids, $path) {
-		if @compiler-ids.elems > 1 {
-			App::Racoco::X::AmbiguousPrecompContent.new(:$path).throw
-		}
+		return Nil unless $!compiler-id;
+		my $result = lib-precomp-path(:$!lib).add($!compiler-id);
+		return Nil unless $result.e;
+		$!compiler-precomp-path = $result
 	}
 }
 
@@ -65,9 +46,9 @@ my class OurPrecompLocation does PrecompLocation {
 class PrecompLookup is export {
   has PrecompLocation @!find-locations;
 
-  submethod BUILD(IO() :$lib) {
+  submethod BUILD(IO() :$lib!, Str :$compiler-id!) {
     @!find-locations =
-    	LibPrecompLocation.new(:$lib),
+    	LibPrecompLocation.new(:$lib, :$compiler-id),
     	OurPrecompLocation.new(:$lib);
   }
 

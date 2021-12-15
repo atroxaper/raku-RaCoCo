@@ -11,6 +11,8 @@ use TestHelper;
 
 plan 4;
 
+say $*EXECUTABLE.parent.Str;
+
 my ($sources, $lib, $file-name, $lookup);
 sub setup($file, $lib-name) {
 	plan $*plan;
@@ -18,7 +20,7 @@ sub setup($file, $lib-name) {
 	$sources = TestResources::exam-directory;
 	$lib = $sources.add($lib-name);
 	$file-name = $file;
-	$lookup = PrecompLookup.new(:$lib);
+	$lookup = PrecompLookup.new(:$lib, compiler-id => Fixture::compiler-id);
 }
 
 '01-lookup-in-precomp'.&test(:4plan, {
@@ -38,10 +40,11 @@ sub setup($file, $lib-name) {
 });
 
 '03-lookup-two-precomp-dir'.&test(:1plan, {
-	setup('any.rakumod', 'lib');
-	throws-like { $lookup.lookup(:$file-name) },
-  	App::Racoco::X::AmbiguousPrecompContent,
-  	'two precomp contents', message => / {$lib.Str} /;
+	setup('Module.rakumod', 'lib');
+	my $expected = lib-precomp-path(:$lib).add(Fixture::compiler-id())
+    .add(file-precomp-path(:$lib, path => $file-name));
+  my $actual = $lookup.lookup(:$file-name);
+  is $actual, $expected, 'lookup ok';
 });
 
 '04-lookup-our-precomp'.&test(:1plan, {
