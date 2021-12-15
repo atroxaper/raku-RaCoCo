@@ -5,7 +5,7 @@ For v1.5.0
 * Remove `--fix-compunit` behaviour.
 * Do --append through report.txt instead of coverage.log
 * Do not store our precomp information in the index
-* Fix sha calculation
+* ~~Fix sha calculation~~
 * ~~Add possibility to write own reporter as a plugin.~~
 * ~~Add line hit count into the report~~
 * ~~Make tests (in `t` and `xt`) great again;~~
