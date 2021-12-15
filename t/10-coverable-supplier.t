@@ -4,59 +4,58 @@ use lib 't/lib';
 use App::Racoco::Coverable::Coverable;
 use App::Racoco::Coverable::CoverableLinesSupplier;
 use App::Racoco::Fixture;
+use TestHelper;
 
 plan 4;
 
-my ($supplier, $subtest);
+my ($supplier, $index, $file-name);
 sub setup(
 	:$hash, :$time, :@lines,
 	:$hash-c, :$time-c, :@lines-c,
-	:$file-name, :$use-index = True, :$plan!
+	:$file, :$use-index = True
 ) {
-	plan $plan;
+	plan $*plan;
+	$file-name = $file;
 	my $indexed = Coverable.new(
 		:$file-name,
 		timestamp => Instant.from-posix($time-c // $time),
 		hashcode => $hash-c // $hash,
 		lines => @lines-c // @lines
 	);
-	my $index = Fixture::testIndex($use-index ?? $indexed !! ());
-	my $precomp = Fixture::fakePath("pre$file-name", :modified($time));
+	$index = Fixture::testIndex($use-index ?? $indexed !! ());
+	my $precomp = Fixture::fakePath($file-name, :modified($time));
 	my $precomp-supplier = Fixture::testPrecompSupplier($file-name, $precomp);
 	my $hashcode-reader = Fixture::testHashcodeReader($precomp.Str, $hash);
 	my $outliner = Fixture::testOutliner($precomp.Str, @lines);
 	$supplier = CoverableLinesSupplier.new(:$index, :supplier($precomp-supplier), :$hashcode-reader, :$outliner);
 }
 
-$subtest = '01-from-index';
-subtest $subtest, {
-	setup(:file-name<info-from-index>, :1plan,
+'01-from-index'.&test(:1plan, {
+	setup(:file<info-from-index>,
 		:123time, :hash<hashcode>, lines => (1, 2, 3), lines-c => (4, 5, 6));
 	is $supplier.supply(:file-name<info-from-index>), (4, 5, 6), 'from-index ok';
-}
+});
 
-$subtest = '02-obsolete-hash';
-subtest $subtest, {
-	setup(:file-name<obsolete-hash>, :1plan,
+'02-obsolete-hash'.&test(:2plan, {
+	setup(:file<obsolete-hash>,
 		:123time, :hash<hashcode>, :hash-c<obsolete>,
 		lines => (1, 2, 3), lines-c => (4, 5, 6));
-	is $supplier.supply(:file-name<obsolete-hash>), (1, 2, 3), 'obsolete-hash ok';
-}
+	is $supplier.supply(:$file-name), (1, 2, 3), 'obsolete-hash ok';
+	is $index.retrieve(:$file-name).lines, (1, 2, 3), 'after index';
+});
 
-$subtest = '03-obsolete-time';
-subtest $subtest, {
-	setup(:file-name<obsolete-time>, :1plan,
+'03-obsolete-time-never-mind'.&test(:1plan, {
+	setup(:file<obsolete-time>,
 		:123time, :122time-c, :hash<hashcode>,
 		lines => (1, 2, 3), lines-c => (4, 5, 6));
-	is $supplier.supply(:file-name<obsolete-time>), (1, 2, 3), 'obsolete-time ok';
-}
+	is $supplier.supply(:$file-name), (4, 5, 6), 'obsolete-time ok';
+});
 
-$subtest = '04-empty-index';
-subtest $subtest, {
-	setup(:file-name<empty-index>, :1plan,
+'04-empty-index'.&test(:1plan, {
+	setup(:file<empty-index>,
 		:123time, :hash<hashcode>, lines => (1, 2, 3),
 		:!use-index);
-	is $supplier.supply(:file-name<empty-index>), (1, 2, 3), 'empty-index ok';
-}
+	is $supplier.supply(:$file-name), (1, 2, 3), 'empty-index ok';
+});
 
 done-testing

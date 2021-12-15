@@ -25,7 +25,6 @@ class CoverableLinesSupplier is export {
 
   method !is-coverable-actual($coverable, $precomp-path) {
     $coverable && $precomp-path &&
-    $coverable.timestamp >= $precomp-path.modified &&
     $coverable.hashcode eq $!hashcode-reader.read(path => $precomp-path)
   }
 
