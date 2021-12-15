@@ -6,7 +6,7 @@ use App::Racoco::Coverable::CoverableLinesSupplier;
 use App::Racoco::Fixture;
 use TestHelper;
 
-plan 4;
+plan 6;
 
 my ($supplier, $index, $file-name);
 sub setup(
@@ -57,5 +57,15 @@ sub setup(
 		:!use-index);
 	is $supplier.supply(:$file-name), (1, 2, 3), 'empty-index ok';
 });
+
+'05-moarvm-from-index-and-outline-good'.&test(:2plan, {
+	setup(:file<moarvm-hash>,
+		:123time, :hash<hashcode>, :hash-c<MOARVM>,
+		lines => (1, 2, 3), lines-c => (4, 5, 6));
+	is $supplier.supply(:$file-name), (1, 2, 3), 'outline';
+	is $index.retrieve(:$file-name).hashcode, 'hashcode', 'after index';
+});
+
+
 
 done-testing
