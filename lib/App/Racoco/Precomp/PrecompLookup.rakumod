@@ -15,7 +15,7 @@ my class LibPrecompLocation does PrecompLocation {
 
 	method lookup(Str $file-name --> IO::Path) {
 		with self!lookup-compiler-precomp-path() -> $path {
-			my $found = $path.add(file-precomp-path(path => $file-name.IO));
+			my $found = $path.add(file-precomp-path(:$!lib, path => $file-name.IO));
 			return $found if $found.e
 		}
 		Nil
@@ -55,7 +55,7 @@ my class OurPrecompLocation does PrecompLocation {
 
 	method lookup(Str $file-name --> IO::Path) {
 		with our-precomp-path(:$!lib) -> $path {
-			my $found = $path.add(file-precomp-path(path => $file-name.IO));
+			my $found = $path.add(file-precomp-path(:$!lib, path => $file-name.IO));
 			return $found if $found.e
 		}
 		Nil

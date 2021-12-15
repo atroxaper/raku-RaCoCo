@@ -2,6 +2,7 @@ use Test;
 use lib 'lib';
 use lib 't/lib';
 use App::Racoco::Precomp::PrecompLookup;
+use App::Racoco::ModuleNames;
 use App::Racoco::Paths;
 use App::Racoco::X;
 use App::Racoco::Fixture;
@@ -23,7 +24,7 @@ $subtest = '01-lookup-in-precomp';
 subtest $subtest, {
 	setup('Module.rakumod', 'lib', :$subtest, :4plan);
 	my $expected = lib-precomp-path(:$lib).add(Fixture::compiler-id())
-    .add('B8').add('B8FF02892916FF59F7FBD4E617FCCD01F6BCA576');
+    .add(file-precomp-path(:$lib, path => $file-name));
   my $actual = $lookup.lookup(:$file-name);
   isa-ok $actual, IO::Path, 'lookup is io';
   ok $actual.e, 'lookup exists';
@@ -48,8 +49,7 @@ subtest $subtest, {
 $subtest = '04-lookup-our-precomp';
 subtest $subtest, {
 	setup('Module2.rakumod', 'lib', :$subtest, :1plan);
-	my $expected = our-precomp-path(:$lib).add('C4')
-		.add('C42D08C62F336741E9DBBDC10EFA8A4673AA820F');
+	my $expected = our-precomp-path(:$lib).add(file-precomp-path(:$lib, path => $file-name));
   is $lookup.lookup(:$file-name).IO, $expected, 'lookup in our precomp';
 }
 

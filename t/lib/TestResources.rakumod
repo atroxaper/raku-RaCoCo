@@ -1,5 +1,6 @@
 unit module TestResources;
 
+use App::Racoco::ModuleNames;
 use App::Racoco::TmpDir;
 use App::Racoco::Fixture;
 
@@ -52,6 +53,13 @@ sub fix-name(IO::Path $path --> IO::Path) {
     return $path.parent.add('.' ~ $basename.substr(1));
   } elsif $basename eq 'current_compiler_id' {
     return $path.parent.add(Fixture::compiler-id());
+  } elsif $basename.starts-with('precomp_') {
+    my ($lib, $module-name) = $basename.split('_')[1, 2];
+    $module-name .= subst('::', '/', :g);
+    $lib = exam-directory().add($lib);
+    my $precomp-path = file-precomp-path(:$lib, path => $module-name);
+    try $path.parent.add($precomp-path.parent).mkdir;
+    return $path.parent.add($precomp-path);
   }
   return $path;
 }
