@@ -14,8 +14,7 @@ sub setup($lib-name, $proc, :$subtest, :$plan!) {
 	plan $plan;
 	TestResources::prepare($subtest);
 	$lib = TestResources::exam-directory.add($lib-name);
-	$path = lib-precomp-path(:$lib).add(Fixture::compiler-id())
-    .add('B8').add('B8FF02892916FF59F7FBD4E617FCCD01F6BCA576');
+	$path = $lib.parent.add('precompiled');
 	$outliner = CoverableOutlinerReal.new(:moar<moar>, :$proc);
 }
 
