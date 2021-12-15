@@ -11,7 +11,7 @@ my role PrecompLocation {
 
 my class LibPrecompLocation does PrecompLocation {
 	has IO::Path $.lib;
-	has Str $.compiler-id;
+	has Block $.compiler-id;
 	has IO::Path $!compiler-precomp-path;
 
 	method lookup(Str $file-name --> IO::Path) {
@@ -24,8 +24,9 @@ my class LibPrecompLocation does PrecompLocation {
 
 	method !lookup-compiler-precomp-path(--> IO::Path) {
 		return $_ with $!compiler-precomp-path;
-		return Nil unless $!compiler-id;
-		my $result = lib-precomp-path(:$!lib).add($!compiler-id);
+		my $id = $!compiler-id();
+		return Nil unless $id;
+		my $result = lib-precomp-path(:$!lib).add($id);
 		return Nil unless $result.e;
 		$!compiler-precomp-path = $result
 	}
@@ -46,7 +47,7 @@ my class OurPrecompLocation does PrecompLocation {
 class PrecompLookup is export {
   has PrecompLocation @!find-locations;
 
-  submethod BUILD(IO() :$lib!, Str :$compiler-id!) {
+  submethod BUILD(IO() :$lib!, Block :$compiler-id!) {
     @!find-locations =
     	LibPrecompLocation.new(:$lib, :$compiler-id),
     	OurPrecompLocation.new(:$lib);

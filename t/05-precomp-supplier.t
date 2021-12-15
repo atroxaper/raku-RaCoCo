@@ -20,7 +20,7 @@ sub setup($file, $lib-name) {
 	$file-name = $file;
 	$proc = Fixture::fakeProc;
 	$supplier = PrecompSupplierReal.new(
-		lookup => PrecompLookup.new(:$lib, compiler-id => Fixture::compiler-id),
+		lookup => PrecompLookup.new(:$lib, compiler-id => -> {Fixture::compiler-id}),
 		precompiler => Precompiler.new(:$lib, :raku<raku>, :$proc)
 	);
 }

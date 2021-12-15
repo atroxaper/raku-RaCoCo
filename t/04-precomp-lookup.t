@@ -20,7 +20,7 @@ sub setup($file, $lib-name) {
 	$sources = TestResources::exam-directory;
 	$lib = $sources.add($lib-name);
 	$file-name = $file;
-	$lookup = PrecompLookup.new(:$lib, compiler-id => Fixture::compiler-id);
+	$lookup = PrecompLookup.new(:$lib, compiler-id => -> {Fixture::compiler-id});
 }
 
 '01-lookup-in-precomp'.&test(:4plan, {

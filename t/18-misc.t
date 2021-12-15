@@ -40,7 +40,7 @@ sub setup($lib-name) {
 
 '03-compiler-id'.&test(:1plan, {
 	setup(Nil);
-	is compiler-id(raku => 'raku', proc => RunProc.new), Fixture::compiler-id, 'compiler-id ok';
+	is compiler-id(raku => 'raku', proc => RunProc.new)(), Fixture::compiler-id, 'compiler-id ok';
 });
 
 done-testing;
