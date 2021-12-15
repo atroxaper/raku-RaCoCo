@@ -66,6 +66,14 @@ sub setup(
 	is $index.retrieve(:$file-name).hashcode, 'hashcode', 'after index';
 });
 
+'06-moarvm-from-index-and-outline-moarvm'.&test(:2plan, {
+	setup(:file<moarvm-hash>,
+		:123time, :hash<MOARVM>, :hash-c<MOARVM>,
+		lines => (1, 2, 3), lines-c => (4, 5, 6));
+	is $supplier.supply(:$file-name), (1, 2, 3), 'outline';
+	is $index.retrieve(:$file-name).lines, (4, 5, 6), 'after index';
+});
+
 
 
 done-testing

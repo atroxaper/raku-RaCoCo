@@ -6,6 +6,8 @@ use App::Racoco::Coverable::CoverableIndex;
 use App::Racoco::Coverable::Coverable;
 use App::Racoco::Coverable::CoverableOutliner;
 
+constant \MOARVM = 'MOARVM';
+
 class CoverableLinesSupplier is export {
 	has PrecompSupplier $.supplier;
   has CoverableIndex $.index;
@@ -18,14 +20,15 @@ class CoverableLinesSupplier is export {
     my $coverable = $!index.retrieve(:$file-name);
     unless self!is-coverable-actual($coverable, $precomp-path) {
 			$coverable = self!calc-coverable($file-name, $precomp-path);
-    	$!index.put(:$coverable);
+    	$!index.put(:$coverable) unless $coverable.hashcode eq MOARVM;
     }
     $coverable.lines
   }
 
   method !is-coverable-actual($coverable, $precomp-path) {
     $coverable && $precomp-path &&
-    $coverable.hashcode eq $!hashcode-reader.read(path => $precomp-path)
+    $coverable.hashcode eq $!hashcode-reader.read(path => $precomp-path) &&
+    $coverable.hashcode ne MOARVM
   }
 
   method !calc-coverable($file-name, $precomp-path) {
