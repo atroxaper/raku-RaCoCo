@@ -10,7 +10,7 @@ class Precompiler is export {
 	has Str $.raku;
 
 	method compile(Str :$file-name --> IO::Path) {
-		my $file-precomp-path = file-precomp-path(path => $file-name.IO);
+		my $file-precomp-path = file-precomp-path(:$!lib, path => $file-name.IO);
 		my $out-path = our-precomp-path(:$!lib).add($file-precomp-path);
 		$out-path.parent.mkdir;
 		my $source-file = $!lib.add($file-name);

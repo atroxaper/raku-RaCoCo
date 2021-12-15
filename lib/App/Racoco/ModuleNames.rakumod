@@ -21,7 +21,7 @@ our sub module-name(IO() :$path --> Str) is export {
 
 my constant SPEC-HEADER = ':ver<*>:auth<>:api<*>';
 
-our sub file-precomp-path(IO() :$lib, IO() :$path is copy --> IO::Path) is export {
+our sub file-precomp-path(IO() :$lib!, IO() :$path! is copy --> IO::Path) is export {
 	my $sha = App::Racoco::Sha::create();
 	my $sha-value = $sha.uc($sha.uc($lib.Str ~ SPEC-HEADER) ~ module-name(:$path));
   my $two-sha-letters = $sha-value.substr(0, 2);
