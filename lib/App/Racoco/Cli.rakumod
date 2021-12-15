@@ -55,8 +55,9 @@ sub read-report(:$lib) {
   Data.read(:$lib)
 }
 
-sub reporter-classes(@reporter, :$html, :$color-blind) {
+sub reporter-classes($reporter, :$html, :$color-blind) {
   my @result;
+  my @reporter = ($reporter // '').split(',').grep(*.chars).Array;
   if $color-blind && $html {
     @reporter.push: 'html-color-blind' if $html;
   } elsif $html {
@@ -93,8 +94,8 @@ sub fix-compunit-deprecation-message() {
 our sub MAIN(
   Str :lib($lib-dir) = 'lib',
   Str :$raku-bin-dir,
-  BoolOrStr :exec($exec-command) = 'prove6',
-  :@reporter,
+  BoolOrStr :$exec = 'prove6',
+  Str :$reporter,
   Bool :$html = False,
   Bool :$color-blind = False,
   Bool :$silent = False,
@@ -107,8 +108,7 @@ our sub MAIN(
   my $lib = get(lib => $lib-dir);
   my $moar = get(:name<moar>, :$raku-bin-dir);
   my $raku = get(:name<raku>, :$raku-bin-dir);
-  my $exec = $exec-command;
-  my @reporter-classes = reporter-classes(@reporter, :$html, :$color-blind);
+  my @reporter-classes = reporter-classes($reporter, :$html, :$color-blind);
 
   my $proc = RunProc.new;
   my $covered-collector = CoveredLinesCollector.new(

@@ -116,21 +116,21 @@ sub do-main(&bloc) {
 
 '12-custom-reporter'.&test(:1plan, {
 	setup('lib');
-	my $captured = do-main({ APP_MAIN(:silent, reporter => ('custom-one',)) });
+	my $captured = do-main({ APP_MAIN(:silent, reporter => 'custom-one') });
 	is $captured.out.text.trim.lines.join('|'), 'Coverage: 75%|CustomOne: 75%',
 		'custom-one reporter';
 });
 
 '13-two-custom-reporters'.&test(:1plan, {
 	setup('lib');
-	my $captured = do-main({ APP_MAIN(:silent, reporter => ('custom-one','two')) });
+	my $captured = do-main({ APP_MAIN(:silent, reporter => 'custom-one,two') });
 	is $captured.out.text.trim.lines.join('|'), 'Coverage: 75%|CustomOne: 75%|Done',
 		'two custom reporters';
 });
 
 '14-not-exists-reporter'.&test(:2plan, {
 	setup('lib');
-	my $captured = do-main({ APP_MAIN(:silent, reporter => ('not-exists','two')) });
+	my $captured = do-main({ APP_MAIN(:silent, reporter => 'not-exists,two') });
 	is $captured.err.text.trim, 'Cannot use App::Racoco::Report::ReporterNotExists package as reporter.',
 		'second reporter works';
 	is $captured.out.text.trim.lines.join('|'), 'Coverage: 75%|Done',
