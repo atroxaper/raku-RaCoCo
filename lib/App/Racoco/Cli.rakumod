@@ -78,15 +78,6 @@ sub reporter-classes($reporter, :$html, :$color-blind) {
   @result
 }
 
-sub rmdir($path, :$rm-path) {
-  return unless $path ~~ :d & :e;
-  for $path.dir() -> $sub-path {
-    rmdir($sub-path, :rm-path) if $sub-path.d;
-    $sub-path.unlink;
-  }
-  $path.rmdir if $rm-path;
-}
-
 sub fix-compunit-deprecation-message() {
   note "--fix-compunit no longer makes sense and is deprecated";
 }
