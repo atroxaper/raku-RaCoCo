@@ -87,7 +87,7 @@ sub setup($lib-name?) {
 
 '08-percent'.&test(:1plan, {
 	setup('lib');
-	is Data.read(:$lib).percent, 29.4, 'percent';
+	is Data.read(:$lib).percent, 27.7, 'percent';
 });
 
 done-testing
