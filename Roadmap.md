@@ -2,7 +2,7 @@ For v1.5.0
 
 
 * Add `-l` option as shortcut for `--exec='prove6 -Ilib t'`;
-* Remove `--fix-compunit` behaviour.
+* ~~Remove `--fix-compunit` behaviour.~~
 * Do --append through report.txt instead of coverage.log
 * ~~Do not store our precomp information in the index~~
 * ~~Fix sha calculation~~
