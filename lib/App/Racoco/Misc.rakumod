@@ -20,5 +20,5 @@ our sub collect-all-module-names-in(:$lib, :$collect is raw = [], :prefix($prefi
 }
 
 our sub compiler-id(:$raku!, :$proc! --> Block) is export {
-	autorun("$raku -e 'print \$*RAKU.compiler.id'", :$proc, :out);
+	autorun($raku ~ ' -e "print \$*RAKU.compiler.id"', :$proc, :out);
 }

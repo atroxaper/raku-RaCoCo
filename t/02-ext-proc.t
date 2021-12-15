@@ -46,7 +46,7 @@ sub setup() {
 
 '04-autorun'.&test(:1plan, {
 	setup();
-	my &code = autorun("raku -e 'print \$*RAKU.compiler.id'", proc => RunProc.new, :out);
+	my &code = autorun('raku -e "print \$*RAKU.compiler.id"', proc => RunProc.new, :out);
 	is code(), Fixture::compiler-id, 'autorun ok';
 });
 
