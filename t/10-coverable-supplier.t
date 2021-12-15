@@ -51,11 +51,13 @@ sub setup(
 	is $supplier.supply(:$file-name), (4, 5, 6), 'obsolete-time ok';
 });
 
-'04-empty-index'.&test(:1plan, {
+'04-empty-index'.&test(:2plan, {
 	setup(:file<empty-index>,
 		:123time, :hash<hashcode>, lines => (1, 2, 3),
 		:!use-index);
 	is $supplier.supply(:$file-name), (1, 2, 3), 'empty-index ok';
+	is $index.retrieve(:$file-name).lines, (1, 2, 3), 'after index';
+
 });
 
 '05-moarvm-from-index-and-outline-good'.&test(:2plan, {
@@ -74,6 +76,9 @@ sub setup(
 	is $index.retrieve(:$file-name).lines, (4, 5, 6), 'after index';
 });
 
-
+#'06-empty->moar->empty'.&test(:1plan, {
+#	setup();
+#
+#});
 
 done-testing
