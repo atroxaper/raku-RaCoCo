@@ -131,7 +131,7 @@
         });
         let current_coverage = 100;
         if (full_total !== 0) {
-            current_coverage = Math.round((full_covered / full_total) * 10 * 100) / 10;
+            current_coverage = Math.floor((full_covered / full_total) * 10 * 100) / 10;
         }
         coverage_header.textContent = current_coverage.toString();
     });
