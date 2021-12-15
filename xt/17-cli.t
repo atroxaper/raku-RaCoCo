@@ -100,12 +100,13 @@ sub do-main(&bloc) {
   is $captured.out.text.lines.join, "Coverage: 75%Coverage: 75%", 'pass append';
 });
 
-'10-fix-compunit'.&test(:1plan, {
+'10-fix-compunit'.&test(:2plan, {
   setup('lib');
   my $captured = do-main({
   	APP_MAIN(:fix-compunit, :silent);
   });
   is $captured.out.text.trim, 'Coverage: 100%', 'two precomp with fix-compunit';
+  ok $captured.err.text.trim ~~ / 'deprecated' /;
 });
 
 '11-two-precomp-fail'.&test(:1plan, {

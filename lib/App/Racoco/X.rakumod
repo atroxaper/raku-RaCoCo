@@ -14,17 +14,6 @@ class WrongRakuBinDirPath is Exception {
   method backtrace() { '' }
 }
 
-class AmbiguousPrecompContent is Exception {
-  has $.path;
-
-  method message() {
-    "Library path ｢$!path｣ has ambiguous .precomp directory with more than one " ~
-    'CompUnit Repository. Please, make sure you have only the one directory ' ~
-    'in the <library>/.precomp path or use --fix-compunit flag for the next ' ~
-    'RaCoCo launch to erase .precomp directory automatically.' }
-  method backtrace() { '' }
-}
-
 class CannotReadReport is Exception is export {
   has $.path;
 

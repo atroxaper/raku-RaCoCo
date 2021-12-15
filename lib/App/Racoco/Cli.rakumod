@@ -86,6 +86,10 @@ sub rmdir($path, :$rm-path) {
   $path.rmdir if $rm-path;
 }
 
+sub fix-compunit-deprecation-message() {
+  note "--fix-compunit no longer makes sense and is deprecated";
+}
+
 our sub MAIN(
   Str :lib($lib-dir) = 'lib',
   Str :$raku-bin-dir,
@@ -96,8 +100,10 @@ our sub MAIN(
   Bool :$silent = False,
   Bool :$append = False,
   Int() :$fail-level = 0,
-  Bool :$fix-compunit = False
+  Bool :$fix-compunit
 ) is export {
+  fix-compunit-deprecation-message() if $fix-compunit.DEFINITE;
+
   my $lib = get(lib => $lib-dir);
   my $moar = get(:name<moar>, :$raku-bin-dir);
   my $raku = get(:name<raku>, :$raku-bin-dir);
@@ -141,13 +147,12 @@ sub USAGE() is export {
 
 	Options:
 		--lib=<path>                   path to directory with coverable source files
-		--raku-bin-dir=<path>          path to directory with raku and moar binaries
 		--exec=<command-string|false>  command, which need to be executed to run tests or false to not run tests and use coverage data from the previous run
+		--raku-bin-dir=<path>          path to directory with raku and moar binaries, which supposed to be used in the --exec
 		--fail-level=<int>             minimum possible coverage percent for success exit
 		--silent                       hide test result output
 		--append                       do not clean coverage data before run tests and append its result to the previous one
 		--html                         produce simple html page to visualize results
 		--color-blind                  use more readable colors than green/red pare
-		--fix-compunit                 erase <library>/.precomp directory before run tests
 	END
 }
