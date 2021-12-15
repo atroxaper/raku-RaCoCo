@@ -2,6 +2,8 @@ use Test;
 use lib 'lib';
 use lib 't/lib';
 use App::Racoco::Precomp::PrecompSupplier;
+use App::Racoco::Precomp::PrecompLookup;
+use App::Racoco::Precomp::Precompiler;
 use App::Racoco::ModuleNames;
 use App::Racoco::Paths;
 use App::Racoco::Fixture;
@@ -17,7 +19,10 @@ sub setup($file, $lib-name) {
 	$lib = TestResources::exam-directory.add($lib-name);
 	$file-name = $file;
 	$proc = Fixture::fakeProc;
-	$supplier = PrecompSupplierReal.new(:$lib, :raku<raku>, :$proc);
+	$supplier = PrecompSupplierReal.new(
+		lookup => PrecompLookup.new(:$lib, compiler-id => Fixture::compiler-id),
+		precompiler => Precompiler.new(:$lib, :raku<raku>, :$proc)
+	);
 }
 
 '01-supply-precomp-in-lib'.&test(:2plan, {
