@@ -44,9 +44,9 @@ sub setup() {
 	nok $actual, 'run not-exists ok';
 });
 
-'04-autorun'.&test(:1plan, {
+'04-autorun-and-tweak-placeholders'.&test(:1plan, {
 	setup();
-	my &code = autorun('raku -e "print \$*RAKU.compiler.id"', proc => RunProc.new, :out);
+	my &code = autorun(q/raku -e "print $*RAKU.compiler.id"/, proc => RunProc.new, :out);
 	is code(), Fixture::compiler-id, 'autorun ok';
 });
 
