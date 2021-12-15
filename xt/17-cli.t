@@ -110,10 +110,7 @@ sub do-main(&bloc) {
 
 '11-two-precomp-fail'.&test(:1plan, {
   setup('lib');
-  do-main({
-  	throws-like { APP_MAIN() }, App::Racoco::X::AmbiguousPrecompContent,
-			'two precomp fail', message => / {$lib.Str} /;
-  });
+  do-main({ lives-ok { APP_MAIN(:silent) }, 'works with two precomp' });
 });
 
 '12-custom-reporter'.&test(:1plan, {

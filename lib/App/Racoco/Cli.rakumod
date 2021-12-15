@@ -7,10 +7,13 @@ use App::Racoco::Coverable::CoverableIndex;
 use App::Racoco::Coverable::CoverableOutliner;
 use App::Racoco::Coverable::CoverableLinesSupplier;
 use App::Racoco::CoverableLinesCollector;
+use App::Racoco::Precomp::PrecompLookup;
+use App::Racoco::Precomp::Precompiler;
 use App::Racoco::CoveredLinesCollector;
 use App::Racoco::Report::Reporter;
 use App::Racoco::Report::Data;
 use App::Racoco::Paths;
+use App::Racoco::Misc;
 use App::Racoco::X;
 
 multi sub get(:$lib) {
@@ -83,18 +86,6 @@ sub rmdir($path, :$rm-path) {
   $path.rmdir if $rm-path;
 }
 
-sub rm-precomp(:$lib) {
-  my $path = lib-precomp-path(:$lib);
-  rmdir($path, :!rm-path) if $path.e;
-}
-
-sub check-ambiguous-precomp(:$lib) {
-  my $path = lib-precomp-path(:$lib);
-  if $path.e and $path.dir().grep(*.d).elems > 1 {
-    App::Racoco::X::AmbiguousPrecompContent.new(:$path).throw
-  }
-}
-
 our sub MAIN(
   Str :lib($lib-dir) = 'lib',
   Str :$raku-bin-dir,
@@ -113,13 +104,13 @@ our sub MAIN(
   my $exec = $exec-command;
   my @reporter-classes = reporter-classes(@reporter, :$html, :$color-blind);
 
-  rm-precomp(:$lib) if $fix-compunit;
-  check-ambiguous-precomp(:$lib);
-
   my $proc = RunProc.new;
   my $covered-collector = CoveredLinesCollector.new(
       :$exec, :$lib, :$proc, print-test-log => !$silent, :$append);
-  my $precomp-supplier = PrecompSupplierReal.new(:$proc, :$lib, :$raku);
+  my $precomp-supplier = PrecompSupplierReal.new(
+    lookup => PrecompLookup.new(:$lib, compiler-id => compiler-id(:$raku, :$proc)),
+		precompiler => Precompiler.new(:$lib, :$raku, :$proc)
+  );
   my $index = CoverableIndexFile.new(:$lib);
   my $outliner = CoverableOutlinerReal.new(:$proc, :$moar);
   my $hashcode-reader = PrecompHashcodeReaderReal.new;
