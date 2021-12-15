@@ -2,8 +2,10 @@ For v1.5.0
 
 
 * Add `-l` option as shortcut for `--exec='prove6 -Ilib t'`;
-* Improve `--fix-compunit(--fix)` to leave precomp for the current raku version
-* Add `--clear-precomp` to do previous `--fix-compunit` behaviour
+* Remove `--fix-compunit` behaviour.
+* Do --append through report.txt instead of coverage.log
+* Do not store our precomp information in the index
+* Fix sha calculation
 * ~~Add possibility to write own reporter as a plugin.~~
 * ~~Add line hit count into the report~~
 * ~~Make tests (in `t` and `xt`) great again;~~
