@@ -1,5 +1,7 @@
 unit module App::Racoco::Misc;
 
+use App::Racoco::RunProc;
+
 our sub percent(Int $numerator, Int $denominator --> Rat) is export {
 	return 100.Rat if $denominator == 0;
 	min 100.Rat, (($numerator / $denominator) * 100 * 10).Int / 10;
@@ -15,4 +17,8 @@ our sub collect-all-module-names-in(:$lib, :$collect is raw = [], :prefix($prefi
 		}
 	}
 	$collect
+}
+
+our sub compiler-id(:$raku, :$proc) is export {
+	autorun("$raku -e 'print \$*RAKU.compiler.id'", :$proc, :out)();
 }

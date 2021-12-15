@@ -1,11 +1,12 @@
 use Test;
 use lib 'lib';
 use App::Racoco::Misc;
+use App::Racoco::RunProc;
 use lib 't/lib';
 use TestResources;
 use TestHelper;
 
-plan 2;
+plan 3;
 
 my ($lib);
 sub setup($lib-name) {
@@ -34,6 +35,11 @@ sub setup($lib-name) {
 		'Root'.IO.add('RootSubmod2.pm6').Str,
 		'Root'.IO.add('RootSubmod').add('RootSubmodSub.rakumod').Str;
 	ok collect-all-module-names-in(:$lib).Set === $expected, 'good collect';
+});
+
+'03-compiler-id'.&test(:1plan, {
+	setup(Nil);
+	is compiler-id(raku => 'raku', proc => RunProc.new), Fixture::compiler-id, 'compiler-id ok';
 });
 
 done-testing;
