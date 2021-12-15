@@ -6,7 +6,7 @@ use App::Racoco::Fixture;
 use TestResources;
 use TestHelper;
 
-plan 3;
+plan 4;
 
 my ($test-file);
 sub setup() {
@@ -42,6 +42,12 @@ sub setup() {
 	my $actual;
   Fixture::silently({ $actual = RunProc.new.run(q/not-exists/, :!err) });
 	nok $actual, 'run not-exists ok';
+});
+
+'04-autorun'.&test(:1plan, {
+	setup();
+	my &code = autorun("raku -e 'print \$*RAKU.compiler.id'", proc => RunProc.new, :out);
+	is code(), $*RAKU.compiler.id, 'autorun ok';
 });
 
 done-testing

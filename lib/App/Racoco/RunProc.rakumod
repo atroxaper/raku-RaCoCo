@@ -20,3 +20,13 @@ class RunProc is export {
 		}
 	}
 }
+
+our sub autorun(:$proc, :%vars, |c --> Block) is export {
+	-> {
+		my $p = $proc.run(:%vars, |c);
+		LEAVE { $p.out.close if $p && $p.out }
+		$p && $p.out
+		?? $p.out.slurp
+		!! Nil;
+	}
+}
