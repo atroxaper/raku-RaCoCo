@@ -33,7 +33,7 @@ sub setup() {
 	my $part = DataPart.read('ModuleName.rakumod | 42.8% | 1 0 2 3 | 4 1');
 	is $part.file-name(), 'ModuleName.rakumod', 'file-name';
 	is $part.percent, 42.8, 'percent';
-	is $part.coverable-amount, 2, 'coverable-amount';
+	is $part.coverable-amount, 3, 'coverable-amount';
 	is $part.covered-amount, 2, 'covered-amount';
 	is $part.color-of(:1line), RED, '1 red';
 	is $part.color-of(:2line), GREEN, '2 green';
@@ -52,8 +52,8 @@ sub setup() {
 		coverable => set(1, 2, 3, 5, 6, 7, 8),
 		covered => bag(2, 2, 2, 3, 4)
 	);
-	is $part.percent, 42.8, 'percent';
-	is $part.coverable-amount, 7, 'coverable-amount';
+	is $part.percent, 37.5, 'percent';
+	is $part.coverable-amount, 8, 'coverable-amount';
 	is $part.covered-amount, 3, 'covered-amount';
 	is $part.color-of(:1line), RED, '1 red';
 	is $part.color-of(:2line), GREEN, '2 green';
@@ -82,7 +82,7 @@ sub setup() {
 		coverable => set(1, 2, 3, 5, 6, 7, 8),
 		covered => bag(2, 2, 2, 3, 4)
 	);
-	is $part, 'ModuleName.rakumod | 42.8% | 1 0 2 3 3 1 5 0 6 0 7 0 8 0 | 4 1', 'Str with purple';
+	is $part, 'ModuleName.rakumod | 37.5% | 1 0 2 3 3 1 5 0 6 0 7 0 8 0 | 4 1', 'Str with purple';
 	$part = DataPart.new(
 		'ModuleName.rakumod',
 		coverable => set(1, 2, 3, 5, 6, 7, 8),
