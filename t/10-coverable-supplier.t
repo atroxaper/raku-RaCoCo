@@ -6,11 +6,11 @@ use App::Racoco::Coverable::CoverableLinesSupplier;
 use App::Racoco::Fixture;
 use TestHelper;
 
-plan 6;
+plan 7;
 
 my ($supplier, $index, $file-name);
 sub setup(
-	:$hash, :$time, :@lines,
+	:$hash, :$time = 123, :@lines,
 	:$hash-c, :$time-c, :@lines-c,
 	:$file, :$use-index = True
 ) {
@@ -32,13 +32,13 @@ sub setup(
 
 '01-from-index'.&test(:1plan, {
 	setup(:file<info-from-index>,
-		:123time, :hash<hashcode>, lines => (1, 2, 3), lines-c => (4, 5, 6));
+		:hash<hashcode>, lines => (1, 2, 3), lines-c => (4, 5, 6));
 	is $supplier.supply(:file-name<info-from-index>), (4, 5, 6), 'from-index ok';
 });
 
 '02-obsolete-hash'.&test(:2plan, {
 	setup(:file<obsolete-hash>,
-		:123time, :hash<hashcode>, :hash-c<obsolete>,
+		:hash<hashcode>, :hash-c<obsolete>,
 		lines => (1, 2, 3), lines-c => (4, 5, 6));
 	is $supplier.supply(:$file-name), (1, 2, 3), 'obsolete-hash ok';
 	is $index.retrieve(:$file-name).lines, (1, 2, 3), 'after index';
@@ -53,7 +53,7 @@ sub setup(
 
 '04-empty-index'.&test(:2plan, {
 	setup(:file<empty-index>,
-		:123time, :hash<hashcode>, lines => (1, 2, 3),
+		:hash<hashcode>, lines => (1, 2, 3),
 		:!use-index);
 	is $supplier.supply(:$file-name), (1, 2, 3), 'empty-index ok';
 	is $index.retrieve(:$file-name).lines, (1, 2, 3), 'after index';
@@ -62,7 +62,7 @@ sub setup(
 
 '05-moarvm-from-index-and-outline-good'.&test(:2plan, {
 	setup(:file<moarvm-hash>,
-		:123time, :hash<hashcode>, :hash-c<MOARVM>,
+		:hash<hashcode>, :hash-c<MOARVM>,
 		lines => (1, 2, 3), lines-c => (4, 5, 6));
 	is $supplier.supply(:$file-name), (1, 2, 3), 'outline';
 	is $index.retrieve(:$file-name).hashcode, 'hashcode', 'after index';
@@ -70,15 +70,17 @@ sub setup(
 
 '06-moarvm-from-index-and-outline-moarvm'.&test(:2plan, {
 	setup(:file<moarvm-hash>,
-		:123time, :hash<MOARVM>, :hash-c<MOARVM>,
+		:hash<MOARVM>, :hash-c<MOARVM>,
 		lines => (1, 2, 3), lines-c => (4, 5, 6));
 	is $supplier.supply(:$file-name), (1, 2, 3), 'outline';
 	is $index.retrieve(:$file-name).lines, (4, 5, 6), 'after index';
 });
 
-#'06-empty->moar->empty'.&test(:1plan, {
-#	setup();
-#
-#});
+'07-empty-index-and-outline-moarvm'.&test(:2plan, {
+	setup(:file<moarvm-hash>, :!use-index,
+		:hash<MOARVM>, lines => (1, 2, 3));
+	is $supplier.supply(:$file-name), (1, 2, 3), 'outline';
+	nok $index.retrieve(:$file-name), 'after index';
+});
 
 done-testing
