@@ -14,10 +14,10 @@ has Int $.covered-amount;
 has Int $.coverable-amount;
 #| Map like: line-number => covered-times.
 #| The map does not contain $!purple-lines.
-has Map $.data is built;
+has Map $!data is built;
 #| Same map like $!data, but only for lines,
 #| which is not coverable, but covered.
-has Map $.purple-lines is built;
+has Map $!purple-lines is built;
 
 method new(::?CLASS:U: Str $file-name, Set :$coverable!, Bag :$covered! --> ::?CLASS) {
 	my $purple-lines := Hash[UInt, Any].new: $covered.hash.grep({!$coverable{.key}});
@@ -61,8 +61,8 @@ method plus(::?CLASS:U: $part1, $part2 --> ::?CLASS:D) {
 	die "Fatal error: try to plus data parts with different names: {$part1.file-name}; {$part1.file-name}."
 		if $part1.file-name ne $part2.file-name;
 	my $file-name = $part1.file-name;
-	my $data = self!sum($part1.data, $part2.data);
-	my $purple-lines = self!sum($part1.purple-lines, $part2.purple-lines);
+	my $data = self!sum($part1!data, $part2!data);
+	my $purple-lines = self!sum($part1!purple-lines, $part2!purple-lines);
 	my $intersection = self!keys-intersection($data, $purple-lines);
 	self!add-at($data, $purple-lines, $intersection);
 	self!delete-at($purple-lines, $intersection);
@@ -78,6 +78,9 @@ method plus(::?CLASS:U: $part1, $part2 --> ::?CLASS:D) {
 		:$purple-lines
 	)
 }
+
+method !data() { $!data }
+method !purple-lines() { $!purple-lines }
 
 method !sum($data1, $data2) {
 	Hash[UInt, Any].new(
