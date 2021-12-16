@@ -1,4 +1,4 @@
 RaCoCo report v2:
 Filename | Coverage% | line hit-time line hit-time ... [| line hit-time line hit-time ... ]
-ModuleName1.rakumod | 42.8% | 1 0 2 3 3 1 5 0 6 0 7 0 8 0 | 4 1
-ModuleName2.r | 0%
+ModuleName1.rakumod | 37.5% | 1 0 2 3 3 1 5 0 6 0 7 0 8 0 | 4 1
+ModuleName2.r | 100%

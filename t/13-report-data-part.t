@@ -32,7 +32,7 @@ sub setup() {
 	setup();
 	my $part = DataPart.read('ModuleName.rakumod | 42.8% | 1 0 2 3 | 4 1');
 	is $part.file-name(), 'ModuleName.rakumod', 'file-name';
-	is $part.percent, 42.8, 'percent';
+	is $part.percent, 66.6, 'percent';
 	is $part.coverable-amount, 3, 'coverable-amount';
 	is $part.covered-amount, 2, 'covered-amount';
 	is $part.color-of(:1line), RED, '1 red';

@@ -25,7 +25,7 @@ sub setup($lib-name?) {
 	lives-ok { $data = Data.read(:$lib) }, 'read from file';
 	ok $data, 'read defined';
 	$part = $data.for(file-name => 'ModuleName1.rakumod');
-	is $part, 'ModuleName1.rakumod | 42.8% | 1 0 2 3 3 1 5 0 6 0 7 0 8 0 | 4 1', 'part 1';
+	is $part, 'ModuleName1.rakumod | 37.5% | 1 0 2 3 3 1 5 0 6 0 7 0 8 0 | 4 1', 'part 1';
 	$part = $data.for(file-name => 'ModuleName2.rakumod');
 	is $part, 'ModuleName2.rakumod | 28.5% | 1 0 2 3 3 1 5 0 6 0 7 0 8 0', 'part 2';
 	$part = $data.for(file-name => 'ModuleName3.rakumod');
@@ -62,8 +62,8 @@ sub setup($lib-name?) {
 	my $parts := Data.read(:$lib).get-all-parts;
 	ok $parts ~~ Positional, 'all parts are Positional';
 	is $parts.elems, 2, 'read only two from corrupt';
-	is $parts[0], 'ModuleName1.rakumod | 42.8% | 1 0 2 3 3 1 5 0 6 0 7 0 8 0 | 4 1';
-	is $parts[1], 'ModuleName2.r | 0%';
+	is $parts[0], 'ModuleName1.rakumod | 37.5% | 1 0 2 3 3 1 5 0 6 0 7 0 8 0 | 4 1';
+	is $parts[1], 'ModuleName2.r | 100%';
 });
 
 '06-write-to-file'.&test(:2plan, {
