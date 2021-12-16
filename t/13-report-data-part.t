@@ -4,7 +4,7 @@ use App::Racoco::Report::DataPart;
 use lib 't/lib';
 use TestHelper;
 
-plan 9;
+plan 10;
 
 sub setup() {
 	plan $*plan;
@@ -163,10 +163,11 @@ sub setup() {
 	is DataPart.plus($part1, $part2), $expected, 'plus works';
 });
 
-#'09-plus-different-names'.&test(:1plan, {
-#	setup();
-#
-#});
+'10-plus-different-names'.&test(:1plan, {
+	setup();
+	dies-ok { DataPart.plus(DataPart.read('M1 | 0% | 1 0'), DataPart.read('M2 | 0% | 1 0')) },
+		'different names dies';
+});
 
 #'09-plus-with-nil'.&test(:1plan, {
 #	setup();
