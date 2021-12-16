@@ -169,13 +169,14 @@ sub setup() {
 		'different names dies';
 });
 
-'11-plus-with-nil'.&test(:2plan, {
+'11-plus-with-nil'.&test(:3plan, {
 	setup();
 	my $part = DataPart.read(
 		'ModuleName.rakumod | 100% | 1 1 2 2 3 3 4 4 | 5 5',
 	);
 	is DataPart.plus($part, Nil), $part, 'value plus nil';
 	is DataPart.plus(Nil, $part), $part, 'nil plus value';
+	dies-ok { DataPart.plus(Nil, Nil) }, 'nil plus nil dies';
 });
 
 done-testing

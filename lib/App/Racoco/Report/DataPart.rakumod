@@ -55,7 +55,19 @@ method read(::?CLASS:U: Str $str --> ::?CLASS) {
 	);
 }
 
-method plus(::?CLASS:U: $part1, $part2 --> ::?CLASS:D) {
+multi method plus(::?CLASS:U: ::?CLASS:D $part, $) {
+	$part;
+}
+
+multi method plus(::?CLASS:U: $, ::?CLASS:D $part) {
+	$part;
+}
+
+multi method plus(::?CLASS:U: $, $) {
+	die 'Fatal error; try to plus empty data';
+}
+
+multi method plus(::?CLASS:U: ::?CLASS:D $part1, ::?CLASS:D $part2 --> ::?CLASS:D) {
 	return $part1 without $part2;
 	return $part2 without $part1;
 	die "Fatal error: try to plus data parts with different names: {$part1.file-name}; {$part1.file-name}."
