@@ -92,7 +92,7 @@ sub setup($lib-name?) {
 	is Data.read(:$lib).percent, 27.7, 'percent';
 });
 
-'09-plus'.&test(:1plan, {
+'09-plus'.&test(:3plan, {
 	setup('lib');
 	my $data1 = Data.new(
 		coverable => ('A1', set(1, 2, 3), 'A2', set(1, 2, 3)).Map,
@@ -110,6 +110,9 @@ sub setup($lib-name?) {
 	report-data-path(:$lib).unlink;
 	Data.plus($data1, $data2).write(:$lib);
 	is report-data-path(:$lib).slurp, $expected, 'report data plus works';
+
+	is Data.plus($data1, Nil), $data1, 'data plus nil';
+	is Data.plus(Nil, $data1), $data1, 'nil plu data';
 });
 
 done-testing
