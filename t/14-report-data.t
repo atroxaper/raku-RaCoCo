@@ -8,7 +8,7 @@ use lib 't/lib';
 use TestResources;
 use TestHelper;
 
-plan 8;
+plan 9;
 
 my ($lib);
 sub setup($lib-name?) {
@@ -78,7 +78,9 @@ sub setup($lib-name?) {
 		'ModuleName1.rakumod', set(1, 2, 3, 5, 6, 7, 8),
 		'ModuleName2.r', set(),
 		'ModuleName3.rakumod', set(1, 2);
-	my %covered = 'ModuleName1.rakumod', bag(2, 2, 2, 3, 4), 'ModuleName2.r', bag();
+	my %covered =
+		'ModuleName1.rakumod', bag(2, 2, 2, 3, 4),
+		'ModuleName2.r', bag();
 	my ($data);
 	lives-ok { $data = Data.new(:%coverable, :%covered) }, 'construct';
 	$data.write(:$lib);
@@ -88,6 +90,26 @@ sub setup($lib-name?) {
 '08-percent'.&test(:1plan, {
 	setup('lib');
 	is Data.read(:$lib).percent, 27.7, 'percent';
+});
+
+'09-plus'.&test(:1plan, {
+	setup('lib');
+	my $data1 = Data.new(
+		coverable => ('A1', set(1, 2, 3), 'A2', set(1, 2, 3)).Map,
+		covered => ('A1', bag(1, 2, 3), 'A2', bag(1, 2, 3)).Map
+	);
+	my $data2 = Data.new(
+		coverable => ('A3', set(1, 2, 3), 'A2', set(2, 3, 4)).Map,
+		covered => ('A3', bag(1, 2, 3), 'A2', bag(2, 3, 4)).Map
+	);
+	Data.new(
+		coverable => ('A1', set(1, 2, 3), 'A2', set(1, 2, 3, 4), 'A3', set(1, 2, 3)).Map,
+		covered => ('A1', bag(1, 2, 3), 'A2', bag(1, 2, 2, 3, 3, 4), 'A3', bag(1, 2, 3)).Map
+	).write(:$lib);
+	my $expected = report-data-path(:$lib).slurp;
+	report-data-path(:$lib).unlink;
+	Data.plus($data1, $data2).write(:$lib);
+	is report-data-path(:$lib).slurp, $expected, 'report data plus works';
 });
 
 done-testing

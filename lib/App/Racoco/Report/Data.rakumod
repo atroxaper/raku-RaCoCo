@@ -36,9 +36,19 @@ method read(::?CLASS:U: :$lib! --> ::?CLASS) {
 	self.bless(:$parts)
 }
 
+method plus(::?CLASS:U: ::?CLASS:D $data1, ::?CLASS:D $data2 --> ::?CLASS) {
+	my ($parts1, $parts2) = ($data1, $data2)>>!parts;
+	my $parts = ($parts1.keys (+) $parts2.keys).keys
+		.map({DataPart.plus($parts1{$_}, $parts2{$_})})
+		.map({$_.file-name => $_}).Map;
+	self.bless(:$parts)
+}
+
 method for(:$file-name --> DataPart) {
 	$!parts{$file-name} // Nil
 }
+
+method !parts() { $!parts }
 
 method get-all-parts(--> Positional) {
 	$!parts.values.sort(*.file-name).List
