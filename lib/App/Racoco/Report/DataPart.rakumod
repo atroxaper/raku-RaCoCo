@@ -14,10 +14,10 @@ has Int $.covered-amount;
 has Int $.coverable-amount;
 #| Map like: line-number => covered-times.
 #| The map does not contain $!purple-lines.
-has Map $!data is built;
+has Map $.data is built;
 #| Same map like $!data, but only for lines,
 #| which is not coverable, but covered.
-has Map $!purple-lines is built;
+has Map $.purple-lines is built;
 
 method new(::?CLASS:U: Str $file-name, Set :$coverable!, Bag :$covered! --> ::?CLASS) {
 	my $purple-lines := Hash[UInt, Any].new: $covered.hash.grep({!$coverable{.key}});
@@ -53,6 +53,49 @@ method read(::?CLASS:U: Str $str --> ::?CLASS) {
 		:$data,
 		:$purple-lines
 	);
+}
+
+method plus(::?CLASS:U: App::Racoco::Report::DataPart $part1, ::?CLASS $part2 --> ::?CLASS:D) {
+	return $part1 without $part2;
+	return $part2 without $part1;
+	die "Fatal error: try to plus data parts with different names: {$part1.file-name}; {$part1.file-name}."
+		if $part1.file-name ne $part2.file-name;
+	my $file-name = $part1.file-name;
+	my $data = self!sum($part1.data, $part2.data);
+	my $purple-lines = self!sum($part1.purple-lines, $part2.purple-lines);
+	my $intersection = self!keys-intersection($data, $purple-lines);
+	self!add-at($data, $purple-lines, $intersection);
+	self!delete-at($purple-lines, $intersection);
+	my $covered-amount = [+] ($data, $purple-lines).map(*.grep(*.value != 0).elems);
+	my $coverable-amount = $data.elems + $purple-lines.elems;
+	my $percent = percent($covered-amount, $coverable-amount);
+	self.bless(
+		:$file-name,
+		:$covered-amount,
+		:$coverable-amount,
+		:$percent,
+		:$data,
+		:$purple-lines
+	)
+}
+
+method !sum($data1, $data2) {
+	Hash[UInt, Any].new(
+		set($data1.keys, $data2.keys).keys
+			.map({$_, ($data1{$_} // 0) + ($data2{$_} // 0)})
+	);
+}
+
+method !keys-intersection($data1, $data2) {
+	$data1.keys (&) $data2.keys
+}
+
+method !add-at($data1, $data2, $at) {
+	$at.keys.map({$data1{$_} = ($data1{$_} // 0) + ($data2{$_} // 0)})
+}
+
+method !delete-at($data, $at) {
+	$at.keys.map({$data{$_}:delete})
 }
 
 method color-of(Int :$line --> COLOR) {
