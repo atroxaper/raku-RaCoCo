@@ -101,24 +101,30 @@ our sub MAIN(
   my $raku = get(:name<raku>, :$raku-bin-dir);
   my @reporter-classes = reporter-classes($reporter, :$html, :$color-blind);
 
-  my $proc = RunProc.new;
-  my $covered-collector = CoveredLinesCollector.new(
-      :$exec, :$lib, :$proc, print-test-log => !$silent, :$append);
-  my $precomp-supplier = PrecompSupplierReal.new(
-    lookup => PrecompLookup.new(:$lib, compiler-id => compiler-id(:$raku, :$proc)),
-		precompiler => Precompiler.new(:$lib, :$raku, :$proc)
-  );
-  my $index = CoverableIndexFile.new(:$lib);
-  my $outliner = CoverableOutlinerReal.new(:$proc, :$moar);
-  my $hashcode-reader = PrecompHashcodeReaderReal.new;
-  my $coverable-supplier = CoverableLinesSupplier.new(
-      supplier => $precomp-supplier, :$index, :$outliner, :$hashcode-reader);
-  my $coverable-collector = CoverableLinesCollector.new(
-      supplier => $coverable-supplier, :$lib);
-
-  my $report = $exec === False
-      ?? read-report(:$lib)
-      !! calculate-report(:$covered-collector, :$coverable-collector);
+  my $report;
+  if $exec {
+    my $previous-report = $append ?? read-report(:$lib) !! Nil;
+    my $proc = RunProc.new;
+    my $covered-collector = CoveredLinesCollector.new(
+        :$exec, :$lib, :$proc, print-test-log => !$silent, :$append);
+    my $precomp-supplier = PrecompSupplierReal.new(
+        lookup => PrecompLookup.new(:$lib, compiler-id => compiler-id(:$raku, :$proc)),
+        precompiler => Precompiler.new(:$lib, :$raku, :$proc)
+        );
+    my $index = CoverableIndexFile.new(:$lib);
+    my $outliner = CoverableOutlinerReal.new(:$proc, :$moar);
+    my $hashcode-reader = PrecompHashcodeReaderReal.new;
+    my $coverable-supplier = CoverableLinesSupplier.new(
+        supplier => $precomp-supplier, :$index, :$outliner, :$hashcode-reader);
+    my $coverable-collector = CoverableLinesCollector.new(
+        supplier => $coverable-supplier, :$lib);
+    $report = Data.plus(
+      calculate-report(:$covered-collector, :$coverable-collector),
+      $previous-report
+    )
+  } else {
+    $report = read-report(:$lib);
+  }
 
   print-simple-coverage($report);
   $report.write(:$lib);

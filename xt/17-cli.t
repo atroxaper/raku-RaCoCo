@@ -59,12 +59,13 @@ sub do-main(&bloc) {
   });
 });
 
-'05-simple-run'.&test(:1plan, {
+'05-simple-run'.&test(:2plan, {
   setup('lib');
   my $captured = do-main({
   	APP_MAIN(:silent);
   });
   is $captured.out.text.trim, 'Coverage: 75%', 'simple run ok';
+  nok coverage-log-path(:$lib).e, 'coverage.log deleted';
 });
 
 '06-with-raku-bin-dir'.&test(:1plan, {
@@ -91,13 +92,14 @@ sub do-main(&bloc) {
   });
 });
 
-'09-append'.&test(:1plan, {
+'09-append'.&test(:2plan, {
   setup('lib');
   my $captured = do-main({
   	APP_MAIN(:silent);
-  	APP_MAIN(:append, exec => 'echo "foo"', :silent);
+  	APP_MAIN(:append, exec => 'prove6 xt', :silent);
   });
-  is $captured.out.text.lines.join, "Coverage: 75%Coverage: 75%", 'pass append';
+  is $captured.out.text.lines.join, "Coverage: 25%Coverage: 75%", 'pass append';
+  nok coverage-log-path(:$lib).e, 'coverage.log deleted';
 });
 
 '10-fix-compunit'.&test(:2plan, {

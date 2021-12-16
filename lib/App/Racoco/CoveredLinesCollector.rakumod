@@ -25,7 +25,9 @@ class CoveredLinesCollector is export {
   method collect(--> Associative) {
     $!coverage-log-path.unlink unless self!need-save-log;
     self!run-tests();
-    self!parse-log;
+    my $result = self!parse-log;
+    $!coverage-log-path.unlink if $!coverage-log-path.e;
+    $result;
   }
 
   method !run-tests() {

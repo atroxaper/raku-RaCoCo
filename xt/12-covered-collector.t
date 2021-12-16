@@ -8,7 +8,7 @@ use App::Racoco::Fixture;
 use TestResources;
 use TestHelper;
 
-plan 9;
+plan 7;
 
 my ($sources, $lib, $coverage-log, $collector);
 sub setup($lib-name, :$exec = 'prove6', :$proc, :$append = False, :outloud($print-test-log) = False) {
@@ -31,62 +31,41 @@ sub collect() {
 	lives-ok { $collector.collect() }, 'collect lives ok';
 });
 
-'02-real-collect'.&test(:4plan, {
+'02-real-collect'.&test(:3plan, {
 	setup('lib', proc => RunProc.new);
 	my %covered-lines = collect();
-	ok $coverage-log.e, 'coverage log exists';
 	is %covered-lines.elems, 2, 'covered elems';
 	ok %covered-lines<Module2.rakumod>.Set === set(1, 2), 'covered module 2';
 	ok %covered-lines<Module3.rakumod>.Set === set(1, 2, 3, 5), 'covered module 3';
 });
 
-'03-append-log'.&test(:2plan, {
-	setup('lib', proc => RunProc.new, :append);
-	my $expected = "previous content";
-	$coverage-log.spurt("$expected$?NL");
-	collect();
-	my $lines = $coverage-log.slurp.lines;
-	ok $lines.elems > 0, 'write log';
-	is $lines[0], $expected, 'append log';
-});
-
-'04-rewrite-log'.&test(:2plan, {
-	setup('lib', proc => RunProc.new);
-	my $expected = "previous content";
-	$coverage-log.spurt("$expected$?NL");
-	collect();
-	my $lines = $coverage-log.slurp.lines;
-	ok $lines.elems > 0, 'write log';
-	isnt $lines[0], $expected, 'rewrite log';
-});
-
-'05-do-not-test-without-exec'.&test(:1plan, {
+'03-do-not-test-without-exec'.&test(:1plan, {
 	setup('lib', proc => my $proc = Fixture::fakeProc, :!exec);
 	collect();
 	nok $proc.c, 'do not test without exec';
 });
 
-'06-fail-collect'.&test(:1plan, {
+'04-fail-collect'.&test(:1plan, {
 	setup('lib', proc => Fixture::failProc);
 	throws-like { collect() }, App::Racoco::X::NonZeroExitCode,
 			'no zero exitcode';
 });
 
-'07-pass-default-out-to-proc'.&test(:2plan, {
+'05-pass-default-out-to-proc'.&test(:2plan, {
 	setup('lib', :outloud, proc => my $proc = Fixture::fakeProc);
 	collect();
 	ok $proc.c, 'proc is run';
 	is $proc.c.hash<out>, '-', 'out passed';
 });
 
-'08-pass-true-out-to-proc'.&test(:2plan, {
+'06-pass-true-out-to-proc'.&test(:2plan, {
 	setup('lib', :!outloud, proc => my $proc = Fixture::fakeProc);
 	collect();
 	ok $proc.c, 'proc is run';
 	is $proc.c.hash<out>, False, 'out passed';
 });
 
-'09-parse-log'.&test(:3plan, {
+'07-parse-log'.&test(:3plan, {
 	setup('lib', proc => Fixture::fakeProc, :!exec);
 	my $path = coverage-log-path(:$lib);
 	$path.spurt: $path.slurp.subst('lib/', $lib ~ '/', :g).subst('/', $*SPEC.dir-sep, :g);
