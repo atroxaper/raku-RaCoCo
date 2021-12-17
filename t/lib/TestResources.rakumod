@@ -25,7 +25,7 @@ our sub prepare($subtest --> IO::Path) {
 
 sub copy-content(:$from, :$to is copy) {
   $to = make-dir($to);
-  for $from.dir() -> $ls-from {
+  for eager $from.dir() -> $ls-from {
     my $ls-to = $to.add($ls-from.basename);
     if $ls-from.d {
       copy-content(from => $ls-from, to => $ls-to);

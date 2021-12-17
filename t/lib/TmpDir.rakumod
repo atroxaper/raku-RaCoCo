@@ -30,9 +30,12 @@ our sub clean-up() {
 
 our sub rmdir($path) {
   return unless $path ~~ :d & :e;
-  for $path.dir() -> $sub-path {
-    rmdir($sub-path) if $sub-path.d;
-    $sub-path.unlink;
+  for eager $path.dir() -> $sub-path {
+    if $sub-path.d {
+      rmdir($sub-path)
+    } else {
+      $sub-path.unlink
+    }
   }
   $path.rmdir;
   CATCH {
@@ -45,7 +48,7 @@ our sub rmdir($path) {
 
 sub iter-and($path, &do) {
   return unless $path.e;
-  for $path.dir -> $p {
+  for eager $path.dir -> $p {
     do($p);
     if $p.e && $p.d {
       iter-and($p, &do);
