@@ -8,7 +8,7 @@ use App::Racoco::X;
 use TestResources;
 use TestHelper;
 
-plan 16;
+plan 14;
 
 constant &APP_MAIN = &App::Racoco::Cli::MAIN;
 my ($sources, $lib);
@@ -47,15 +47,6 @@ sub do-main(&bloc) {
   setup('lib');
   do-main({
   	lives-ok { APP_MAIN(lib => 'no-precomp', :silent) }, 'lives with no precomp';
-  });
-});
-
-
-'04-lib-with-no-precomp-lives-ok-with-fix-compunit'.&test(:1plan, {
-  setup('lib');
-  do-main({
-  	lives-ok { APP_MAIN(lib => 'no-precomp', :fix-compunit, :silent) },
-			'lives with no precomp fix-compunit';
   });
 });
 
@@ -102,15 +93,6 @@ sub do-main(&bloc) {
   nok coverage-log-path(:$lib).e, 'coverage.log deleted';
 });
 
-'10-fix-compunit'.&test(:2plan, {
-  setup('lib');
-  my $captured = do-main({
-  	APP_MAIN(:fix-compunit, :silent);
-  });
-  is $captured.out.text.trim, 'Coverage: 100%', 'two precomp with fix-compunit';
-  ok $captured.err.text.trim ~~ / 'deprecated' /;
-});
-
 '11-two-precomp-fail'.&test(:1plan, {
   setup('lib');
   do-main({ lives-ok { APP_MAIN(:silent) }, 'works with two precomp' });
@@ -142,7 +124,7 @@ sub do-main(&bloc) {
 '15-pass-html'.&test(:3plan, {
   setup('lib');
   my $captured = do-main({
-  	APP_MAIN(:html, :silent);
+  	APP_MAIN(:reporter<html>, :silent);
   });
   ok report-html-path(:$lib).e, 'ok html';
   ok $captured.out.text.contains(report-html-path(:$lib)), 'pass html';
@@ -152,7 +134,7 @@ sub do-main(&bloc) {
 '16-pass-html-color-blind'.&test(:3plan, {
   setup('lib');
   my $captured = do-main({
-  	APP_MAIN(:html, :color-blind, :silent);
+  	APP_MAIN(:reporter<html-color-blind>, :silent);
   });
   ok report-html-path(:$lib).e, 'ok html';
 	ok $captured.out.text.contains(report-html-path(:$lib)), 'pass html';
