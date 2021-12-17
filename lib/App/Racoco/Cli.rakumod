@@ -127,7 +127,7 @@ our sub MAIN(
 sub clean-execs-args(@args --> Str) {
   return '' if @args.elems == 0;
   return 'fail' if @args.elems > 1;
-  return @args[0] eq '-l' ?? '--exec="prove6 -l"' !! @args[0];
+  return @args[0] eq '-l' ?? '--exec=prove6 -l' !! @args[0];
 }
 
 sub clean-reporters-args(@reporters --> Str) {

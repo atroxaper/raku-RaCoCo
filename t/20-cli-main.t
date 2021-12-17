@@ -94,7 +94,7 @@ test(
 );
 
 test(
-	(<--exec="prove6" -l>),
+	(<--exec=prove6 -l>),
 	('fail',),
 	desc => 'exec: exec= l'
 );
@@ -120,7 +120,7 @@ test(
 
 test(
 	(<-l>,),
-	('--exec="prove6 -l"',),
+	('--exec=prove6 -l',),
 	desc => 'exec: -l'
 );
 
@@ -134,7 +134,7 @@ ok Fixture::silently({
 ok Fixture::silently({
 	test(
 		(<--fix-compunit -l>),
-		('--exec="prove6 -l"',),
+		('--exec=prove6 -l',),
 		desc => 'fix-compunit: fix-compunit -l'
 )}).err.text.trim ~~ /'fix-compunit'/, 'noted';
 
