@@ -4,7 +4,7 @@ use lib 't/lib';
 use App::Racoco::Coverable::CoverableOutliner;
 use App::Racoco::RunProc;
 use App::Racoco::Paths;
-use App::Racoco::Fixture;
+use Fixture;
 use TestResources;
 
 plan 2;

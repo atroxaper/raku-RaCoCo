@@ -4,7 +4,7 @@ use lib 't/lib';
 use App::Racoco::Coverable::Coverable;
 use App::Racoco::Coverable::CoverableIndex;
 use App::Racoco::Paths;
-use App::Racoco::Fixture;
+use Fixture;
 use TestResources;
 
 plan 3;

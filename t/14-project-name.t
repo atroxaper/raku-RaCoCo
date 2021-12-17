@@ -2,7 +2,7 @@ use Test;
 use lib 'lib';
 use App::Racoco::ProjectName;
 use lib 't/lib';
-use App::Racoco::Fixture;
+use Fixture;
 use TestHelper;
 use TestResources;
 

@@ -4,7 +4,7 @@ use lib 't/lib';
 use App::Racoco::Coverable::Precomp::Precompiler;
 use App::Racoco::ModuleNames;
 use App::Racoco::RunProc;
-use App::Racoco::Fixture;
+use Fixture;
 use App::Racoco::Paths;
 use TestResources;
 

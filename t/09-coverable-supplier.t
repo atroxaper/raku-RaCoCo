@@ -3,7 +3,7 @@ use lib 'lib';
 use lib 't/lib';
 use App::Racoco::Coverable::Coverable;
 use App::Racoco::Coverable::CoverableLinesSupplier;
-use App::Racoco::Fixture;
+use Fixture;
 use TestHelper;
 
 plan 7;

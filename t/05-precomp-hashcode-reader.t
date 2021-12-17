@@ -1,7 +1,7 @@
 use Test;
 use lib 'lib';
 use lib 't/lib';
-use App::Racoco::Fixture;
+use Fixture;
 use App::Racoco::Paths;
 use App::Racoco::Coverable::Precomp::PrecompHashcodeReader;
 use TestResources;

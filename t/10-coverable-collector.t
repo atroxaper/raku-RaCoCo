@@ -2,7 +2,7 @@ use Test;
 use lib 'lib';
 use lib 't/lib';
 use App::Racoco::CoverableLinesCollector;
-use App::Racoco::Fixture;
+use Fixture;
 use TestResources;
 
 plan 1;

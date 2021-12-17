@@ -5,7 +5,7 @@ use App::Racoco::Coverable::Precomp::PrecompLookup;
 use App::Racoco::ModuleNames;
 use App::Racoco::Paths;
 use App::Racoco::X;
-use App::Racoco::Fixture;
+use Fixture;
 use TestResources;
 use TestHelper;
 

@@ -1,8 +1,8 @@
 unit module TestResources;
 
 use App::Racoco::ModuleNames;
-use App::Racoco::TmpDir;
-use App::Racoco::Fixture;
+use TmpDir;
+use Fixture;
 
 our sub test-directory() {
   't-resources/'.IO.add((callframe(4).file.IO.extension: '').basename).absolute.IO

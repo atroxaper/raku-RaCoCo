@@ -28,8 +28,11 @@
     "App::Racoco::ModuleNames": "lib/App/Racoco/ModuleNames.rakumod",
     "App::Racoco::Paths": "lib/App/Racoco/Paths.rakumod",
     "App::Racoco::ProjectName": "lib/App/Racoco/ProjectName.rakumod",
+    "App::Racoco::Report::Data": "lib/App/Racoco/Report/Data.rakumod",
+    "App::Racoco::Report::DataPart": "lib/App/Racoco/Report/DataPart.rakumod",
     "App::Racoco::Report::Reporter": "lib/App/Racoco/Report/Reporter.rakumod",
     "App::Racoco::Report::ReporterHtml": "lib/App/Racoco/Report/ReporterHtml.rakumod",
+    "App::Racoco::Report::ReporterHtmlColorBlind": "lib/App/Racoco/Report/ReporterHtmlColorBlind.rakumod",
     "App::Racoco::RunProc": "lib/App/Racoco/RunProc.rakumod",
     "App::Racoco::Sha": "lib/App/Racoco/Sha.rakumod",
     "App::Racoco::X": "lib/App/Racoco/X.rakumod"

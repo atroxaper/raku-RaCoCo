@@ -6,7 +6,7 @@ use App::Racoco::Report::ReporterHtml;
 use App::Racoco::Report::ReporterHtmlColorBlind;
 use App::Racoco::ModuleNames;
 use App::Racoco::Paths;
-use App::Racoco::Fixture;
+use Fixture;
 use TestResources;
 use TestHelper;
 
