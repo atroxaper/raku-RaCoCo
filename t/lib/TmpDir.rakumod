@@ -37,7 +37,7 @@ our sub rm_dir($path) {
       $sub-path.unlink
     }
   }
-  $path.rm_dir;
+  $path.rmdir;
   CATCH {
     default {
       $*ERR.say("Error while rmdir dir $path ", .^name, ': ',.Str);
