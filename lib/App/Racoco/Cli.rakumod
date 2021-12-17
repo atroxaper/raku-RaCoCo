@@ -73,10 +73,6 @@ sub reporter-classes($reporter) {
   @result
 }
 
-sub fix-compunit-deprecation-message() {
-  note "--fix-compunit no longer makes sense and is deprecated";
-}
-
 our sub MAIN(
   Str :lib($lib-dir) = 'lib',
   Str :$raku-bin-dir,
@@ -148,6 +144,11 @@ sub clean-reporters-args(@reporters --> Str) {
   return so($join) ?? '--reporter=' ~ $join !! '';
 }
 
+sub clean-fix-compunit(@fix-compunits) {
+  note "--fix-compunit no longer makes sense and is deprecated" if @fix-compunits.elems;
+  ''
+}
+
 our sub ARGS-TO-CAPTURE(&main, @args --> Capture) is export {
   my @new-args;
   my @execs;
@@ -169,7 +170,8 @@ our sub ARGS-TO-CAPTURE(&main, @args --> Capture) is export {
   @new-args = (
     @new-args,
     clean-execs-args(@execs),
-    clean-reporters-args(@reporters)
+    clean-reporters-args(@reporters),
+    clean-fix-compunit(@fix-compunits)
   ).flat.grep(*.chars).Array;
   &*ARGS-TO-CAPTURE(&main, @new-args);
 }

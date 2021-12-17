@@ -1,9 +1,10 @@
 use Test;
 use lib 'lib';
-use App::Racoco::Cli;
 use lib 't/lib';
+use App::Racoco::Cli;
+use App::Racoco::Fixture;
 
-plan 18;
+plan 22;
 
 my @*RESULT;
 my &*ARGS-TO-CAPTURE = sub (&, @args) { @*RESULT := @args }
@@ -122,6 +123,20 @@ test(
 	('--exec="prove6 -l"',),
 	desc => 'exec: -l'
 );
+
+ok Fixture::silently({
+	test(
+		(<--fix-compunit>,),
+		(),
+		desc => 'fix-compunit: fix-compunit'
+)}).err.text.trim ~~ /'fix-compunit'/, 'noted';
+
+ok Fixture::silently({
+	test(
+		(<--fix-compunit -l>),
+		('--exec="prove6 -l"',),
+		desc => 'fix-compunit: fix-compunit -l'
+)}).err.text.trim ~~ /'fix-compunit'/, 'noted';
 
 done-testing;
 exit; # this exit is need to prevent a stun in recursion MAIN call
