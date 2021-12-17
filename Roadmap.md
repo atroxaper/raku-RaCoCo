@@ -1,7 +1,7 @@
 For v1.5.0
 
-
-* Add `-l` option as shortcut for `--exec='prove6 -Ilib t'`;
+* Move Precomp package to Coverable
+* ~~Add `-l` option as shortcut for `--exec='prove6 -Ilib t'`~~
 * ~~Remove `--fix-compunit` behaviour.~~
 * ~~Do --append through report.txt instead of coverage.log~~
 * ~~Do not store our precomp information in the index~~
@@ -14,4 +14,3 @@ Backlog:
 * Convert project from a tool to tool&library. Make it possible to calculate a coverage from the Raku code.
 * Centrally check lib (and other paths) to be absolute.
 * Add :create adverb to all Paths subs.
-* Move Precomp package to Coverable.
