@@ -3,7 +3,7 @@ use lib 'lib';
 use App::Racoco::Cli;
 use lib 't/lib';
 
-plan 11;
+plan 18;
 
 my @*RESULT;
 my &*ARGS-TO-CAPTURE = sub (&, @args) { @*RESULT := @args }
@@ -78,6 +78,49 @@ test(
 	(<--reporter=custom-reporter --reporter=my --html>),
 	('--reporter=custom-reporter,html,my',),
 	desc => 'reporter: html custom my html'
+);
+
+test(
+	(<--exec -l>),
+	('fail',),
+	desc => 'exec: exec l'
+);
+
+test(
+	(<--/exec -l>),
+	('fail',),
+	desc => 'exec: /exec l'
+);
+
+test(
+	(<--exec="prove6" -l>),
+	('fail',),
+	desc => 'exec: exec= l'
+);
+
+
+test(
+	('--exec="prove6 t xt"',),
+	('--exec="prove6 t xt"',),
+	desc => 'exec: exec='
+);
+
+test(
+	(<--/exec>,),
+	('--/exec',),
+	desc => 'exec: /exec'
+);
+
+test(
+	(<--exec>,),
+	('--exec',),
+	desc => 'exec: exec'
+);
+
+test(
+	(<-l>,),
+	('--exec="prove6 -l"',),
+	desc => 'exec: -l'
 );
 
 done-testing;
