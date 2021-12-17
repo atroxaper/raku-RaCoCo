@@ -1,7 +1,7 @@
 use Test;
 use lib 'lib';
 use lib 't/lib';
-use App::Racoco::Precomp::Precompiler;
+use App::Racoco::Coverable::Precomp::Precompiler;
 use App::Racoco::ModuleNames;
 use App::Racoco::RunProc;
 use App::Racoco::Fixture;

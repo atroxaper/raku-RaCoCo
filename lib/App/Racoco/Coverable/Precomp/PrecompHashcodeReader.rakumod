@@ -1,4 +1,4 @@
-unit module App::Racoco::Precomp::PrecompHashcodeReader;
+unit module App::Racoco::Coverable::Precomp::PrecompHashcodeReader;
 
 use App::Racoco::RunProc;
 

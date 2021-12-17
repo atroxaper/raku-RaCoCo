@@ -1,4 +1,4 @@
-unit module App::Racoco::Precomp::PrecompLookup;
+unit module App::Racoco::Coverable::Precomp::PrecompLookup;
 
 use App::Racoco::ModuleNames;
 use App::Racoco::Paths;

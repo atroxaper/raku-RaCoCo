@@ -1,4 +1,4 @@
-unit module App::Racoco::Precomp::Precompiler;
+unit module App::Racoco::Coverable::Precomp::Precompiler;
 
 use App::Racoco::ModuleNames;
 use App::Racoco::RunProc;

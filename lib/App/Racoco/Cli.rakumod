@@ -1,14 +1,14 @@
 unit module App::Racoco::Cli;
 
 use App::Racoco::RunProc;
-use App::Racoco::Precomp::PrecompSupplier;
-use App::Racoco::Precomp::PrecompHashcodeReader;
+use App::Racoco::Coverable::Precomp::PrecompSupplier;
+use App::Racoco::Coverable::Precomp::PrecompHashcodeReader;
 use App::Racoco::Coverable::CoverableIndex;
 use App::Racoco::Coverable::CoverableOutliner;
 use App::Racoco::Coverable::CoverableLinesSupplier;
 use App::Racoco::CoverableLinesCollector;
-use App::Racoco::Precomp::PrecompLookup;
-use App::Racoco::Precomp::Precompiler;
+use App::Racoco::Coverable::Precomp::PrecompLookup;
+use App::Racoco::Coverable::Precomp::Precompiler;
 use App::Racoco::CoveredLinesCollector;
 use App::Racoco::Report::Reporter;
 use App::Racoco::Report::Data;

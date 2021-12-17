@@ -1,9 +1,9 @@
 use Test;
 use lib 'lib';
 use lib 't/lib';
-use App::Racoco::Precomp::PrecompSupplier;
-use App::Racoco::Precomp::PrecompLookup;
-use App::Racoco::Precomp::Precompiler;
+use App::Racoco::Coverable::Precomp::PrecompSupplier;
+use App::Racoco::Coverable::Precomp::PrecompLookup;
+use App::Racoco::Coverable::Precomp::Precompiler;
 use App::Racoco::ModuleNames;
 use App::Racoco::Paths;
 use App::Racoco::Fixture;

@@ -3,7 +3,7 @@ use lib 'lib';
 use lib 't/lib';
 use App::Racoco::Fixture;
 use App::Racoco::Paths;
-use App::Racoco::Precomp::PrecompHashcodeReader;
+use App::Racoco::Coverable::Precomp::PrecompHashcodeReader;
 use TestResources;
 
 plan 1;

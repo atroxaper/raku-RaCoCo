@@ -1,7 +1,7 @@
 unit module App::Racoco::Coverable::CoverableLinesSupplier;
 
-use App::Racoco::Precomp::PrecompSupplier;
-use App::Racoco::Precomp::PrecompHashcodeReader;
+use App::Racoco::Coverable::Precomp::PrecompSupplier;
+use App::Racoco::Coverable::Precomp::PrecompHashcodeReader;
 use App::Racoco::Coverable::CoverableIndex;
 use App::Racoco::Coverable::Coverable;
 use App::Racoco::Coverable::CoverableOutliner;

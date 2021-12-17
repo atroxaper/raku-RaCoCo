@@ -1,7 +1,7 @@
-unit module App::Racoco::Precomp::PrecompSupplier;
+unit module App::Racoco::Coverable::Precomp::PrecompSupplier;
 
-use App::Racoco::Precomp::PrecompLookup;
-use App::Racoco::Precomp::Precompiler;
+use App::Racoco::Coverable::Precomp::PrecompLookup;
+use App::Racoco::Coverable::Precomp::Precompiler;
 use App::Racoco::Misc;
 
 role PrecompSupplier is export {
