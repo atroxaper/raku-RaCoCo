@@ -38,15 +38,16 @@ our sub rmdir($path) {
   CATCH {
     default {
       $*ERR.say("Error while rmdir dir $path ", .^name, ': ',.Str);
-      iter-and($path, -> $p { note "d: ", $p.d, ' ', $p });
+      iter-and($path, -> $p { note "d: ", $p.e && $p.d, ' ', $p });
     }
   }
 }
 
 sub iter-and($path, &do) {
+  return unless $path.e;
   for $path.dir -> $p {
     do($p);
-    if $p.d {
+    if $p.e && $p.d {
       iter-and($p, &do);
     }
   }
