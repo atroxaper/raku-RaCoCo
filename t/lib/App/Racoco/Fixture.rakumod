@@ -7,7 +7,6 @@ use App::Racoco::Coverable::Coverable;
 use App::Racoco::Coverable::CoverableIndex;
 use App::Racoco::Coverable::CoverableOutliner;
 use App::Racoco::Coverable::CoverableLinesSupplier;
-use App::Racoco::TmpDir;
 
 our sub instant($time) {
 	Instant.from-posix($time.Str)
@@ -142,72 +141,4 @@ our sub silently(&block) {
 	my $result = Captured.new(my $*OUT, my $*ERR);
 	block();
 	return $result;
-}
-
-my $out;
-my @out-collect;
-our sub capture-out() {
-	$out = $*OUT;
-	$*OUT = (class :: is IO::Handle {
-		submethod TWEAK {
-			self.encoding: 'utf8'
-		}
-		method WRITE(Blob:D \data) {
-			@out-collect.push(data.decode);
-			True
-		}
-	}).new
-}
-
-our sub get-out() {
-	my $result = @out-collect.join("\n").trim;
-	@out-collect = [];
-	$result
-}
-
-our sub restore-out() {
-	$*OUT = $out if $out;
-}
-
-our sub root-folder() {
-	't-resources'.IO.add('root-folder')
-}
-
-sub cp($from, $to) {
-	$from.copy($to);
-}
-
-sub make-dir($create is copy) {
-	if ($create.basename eq 'current_compiler_id') {
-		$create = $create.parent.add(compiler-id());
-	}
-	$create.mkdir;
-	$create
-}
-
-sub copy($from, $to is copy) {
-	$to = make-dir($to);
-	for $from.dir() -> $ls-from {
-		my $ls-to = $to.add($ls-from.basename);
-		if $ls-from.d {
-			copy($ls-from, $ls-to);
-		} else {
-			cp($ls-from, $ls-to);
-		}
-	}
-}
-
-my $need-restore;
-our sub need-restore-root-folder() {
-	$need-restore = True;
-}
-our sub restore-root-folder() {
-	my $to = 't-resources/root-folder'.IO;
-	my $from = 't-resources/root-folder-backup'.IO;
-	TmpDir::rmdir($to);
-	copy($from, $to);
-}
-
-END {
-	restore-root-folder() if $need-restore;
 }
