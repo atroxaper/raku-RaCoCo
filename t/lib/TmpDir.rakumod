@@ -23,21 +23,21 @@ our sub register-dir(IO() $path --> IO::Path:D) {
 
 our sub clean-up() {
   for @tmp-dirs.reverse -> $path {
-    rmdir($path)
+    rm_dir($path)
   }
   @tmp-dirs = [];
 }
 
-our sub rmdir($path) {
+our sub rm_dir($path) {
   return unless $path ~~ :d & :e;
   for eager $path.dir() -> $sub-path {
     if $sub-path.d {
-      rmdir($sub-path)
+      rm_dir($sub-path)
     } else {
       $sub-path.unlink
     }
   }
-  $path.rmdir;
+  $path.rm_dir;
   CATCH {
     default {
       $*ERR.say("Error while rmdir dir $path ", .^name, ': ',.Str);
