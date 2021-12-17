@@ -55,14 +55,9 @@ sub read-report(:$lib) {
   Data.read(:$lib)
 }
 
-sub reporter-classes($reporter, :$html, :$color-blind) {
+sub reporter-classes($reporter) {
   my @result;
   my @reporter = ($reporter // '').split(',').grep(*.chars).Array;
-  if $color-blind && $html {
-    @reporter.push: 'html-color-blind' if $html;
-  } elsif $html {
-    @reporter.push: 'html' if $html;
-  }
 
   for @reporter -> $r-name {
     my $r-compunit-name = Reporter.^name ~ $r-name.split('-').map(*.tc).join('');
@@ -87,19 +82,14 @@ our sub MAIN(
   Str :$raku-bin-dir,
   BoolOrStr :$exec = 'prove6',
   Str :$reporter,
-  Bool :$html = False,
-  Bool :$color-blind = False,
   Bool :$silent = False,
   Bool :$append = False,
-  Int() :$fail-level = 0,
-  Bool :$fix-compunit
+  Int() :$fail-level = 0
 ) is export {
-  fix-compunit-deprecation-message() if $fix-compunit.DEFINITE;
-
   my $lib = get(lib => $lib-dir);
   my $moar = get(:name<moar>, :$raku-bin-dir);
   my $raku = get(:name<raku>, :$raku-bin-dir);
-  my @reporter-classes = reporter-classes($reporter, :$html, :$color-blind);
+  my @reporter-classes = reporter-classes($reporter);
 
   my $report;
   if $exec {
@@ -136,6 +126,52 @@ our sub MAIN(
       exit .exitcode;
     }
   }
+}
+
+sub clean-execs-args(@args --> Str) {
+  return '' if @args.elems == 0;
+  return 'fail' if @args.elems > 1;
+  return @args[0] eq '-l' ?? '--exec="prove6 -l"' !! @args[0];
+}
+
+sub clean-reporters-args(@reporters --> Str) {
+  return '' if @reporters.elems == 0;
+  my $unique = @reporters.Set;
+  my @collect;
+  if True ~~ all($unique<--html --color-blind>) {
+    push @collect, 'html-color-blind';
+  } elsif $unique<--html> {
+    push @collect, 'html'
+  }
+  push @collect, $unique.keys.grep(*.starts-with('--reporter=')).map(*.substr(11)).unique.Slip;
+  my $join = @collect.grep(*.chars).sort.join(',');
+  return so($join) ?? '--reporter=' ~ $join !! '';
+}
+
+our sub ARGS-TO-CAPTURE(&main, @args --> Capture) is export {
+  my @new-args;
+  my @execs;
+  my @reporters;
+  my @fix-compunits;
+  for @args -> $_ {
+    when '-l' { push @execs, $_ }
+    when /^'--exec'/ { push @execs, $_ }
+    when /^'--/exec'/ { push @execs, $_ }
+
+    when /^'--reporter='/ { push @reporters, $_ }
+    when '--html' { push @reporters, $_ }
+    when '--color-blind' { push @reporters, $_ }
+
+    when '--fix-compunit' { push @fix-compunits, $_ }
+    when '--/fix-compunit' { push @fix-compunits, $_ }
+    default { push @new-args, $_ }
+  }
+  @new-args = (
+    @new-args,
+    clean-execs-args(@execs),
+    clean-reporters-args(@reporters)
+  ).flat.grep(*.chars).Array;
+  &*ARGS-TO-CAPTURE(&main, @new-args);
 }
 
 sub USAGE() is export {
