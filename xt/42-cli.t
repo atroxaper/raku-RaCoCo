@@ -50,7 +50,7 @@ sub do-main(&bloc) {
   });
 });
 
-'05-simple-run'.&test(:2plan, {
+'04-simple-run'.&test(:2plan, {
   setup('lib');
   my $captured = do-main({
   	APP_MAIN(:silent);
@@ -59,7 +59,7 @@ sub do-main(&bloc) {
   nok coverage-log-path(:$lib).e, 'coverage.log deleted';
 });
 
-'06-with-raku-bin-dir'.&test(:1plan, {
+'05-with-raku-bin-dir'.&test(:1plan, {
   setup('lib');
   my $captured = do-main({
 		APP_MAIN(lib => 'lib', raku-bin-dir => $*EXECUTABLE.parent.Str, :silent);
@@ -67,7 +67,7 @@ sub do-main(&bloc) {
   is $captured.out.text.trim, 'Coverage: 75%', 'pass lib and raku-bin-dir';
 });
 
-'07-pass-exec'.&test(:1plan, {
+'06-pass-exec'.&test(:1plan, {
   setup('lib');
   my $captured = do-main({
 		APP_MAIN(exec => 'echo "foo"', :silent);
@@ -75,7 +75,7 @@ sub do-main(&bloc) {
   is $captured.out.text.trim, 'Coverage: 0%', 'pass exec';
 });
 
-'08-no-exec-and-no-report-fail'.&test(:1plan, {
+'07-no-exec-and-no-report-fail'.&test(:1plan, {
   setup('lib');
   do-main({
 		throws-like { APP_MAIN(:!exec) }, App::Racoco::X::CannotReadReport,
@@ -83,7 +83,7 @@ sub do-main(&bloc) {
   });
 });
 
-'09-append'.&test(:2plan, {
+'08-append'.&test(:2plan, {
   setup('lib');
   my $captured = do-main({
   	APP_MAIN(:silent);
@@ -93,26 +93,26 @@ sub do-main(&bloc) {
   nok coverage-log-path(:$lib).e, 'coverage.log deleted';
 });
 
-'11-two-precomp-fail'.&test(:1plan, {
+'09-two-precomp-fail'.&test(:1plan, {
   setup('lib');
   do-main({ lives-ok { APP_MAIN(:silent) }, 'works with two precomp' });
 });
 
-'12-custom-reporter'.&test(:1plan, {
+'10-custom-reporter'.&test(:1plan, {
 	setup('lib');
 	my $captured = do-main({ APP_MAIN(:silent, reporter => 'custom-one') });
 	is $captured.out.text.trim.lines.join('|'), 'Coverage: 75%|CustomOne: 75%',
 		'custom-one reporter';
 });
 
-'13-two-custom-reporters'.&test(:1plan, {
+'11-two-custom-reporters'.&test(:1plan, {
 	setup('lib');
 	my $captured = do-main({ APP_MAIN(:silent, reporter => 'custom-one,two') });
 	is $captured.out.text.trim.lines.join('|'), 'Coverage: 75%|CustomOne: 75%|Done',
 		'two custom reporters';
 });
 
-'14-not-exists-reporter'.&test(:2plan, {
+'12-not-exists-reporter'.&test(:2plan, {
 	setup('lib');
 	my $captured = do-main({ APP_MAIN(:silent, reporter => 'not-exists,two') });
 	is $captured.err.text.trim, 'Cannot use App::Racoco::Report::ReporterNotExists package as reporter.',
@@ -121,7 +121,7 @@ sub do-main(&bloc) {
 		'not-exist-reporter';
 });
 
-'15-pass-html'.&test(:3plan, {
+'13-pass-html'.&test(:3plan, {
   setup('lib');
   my $captured = do-main({
   	APP_MAIN(:reporter<html>, :silent);
@@ -131,7 +131,7 @@ sub do-main(&bloc) {
   ok report-html-data-path(:$lib).dir()[0].slurp ~~ /'color-blind'/, 'no color-blind';
 });
 
-'16-pass-html-color-blind'.&test(:3plan, {
+'14-pass-html-color-blind'.&test(:3plan, {
   setup('lib');
   my $captured = do-main({
   	APP_MAIN(:reporter<html-color-blind>, :silent);
