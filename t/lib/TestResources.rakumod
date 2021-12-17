@@ -18,7 +18,7 @@ our sub exam-directory() {
 
 our sub prepare($subtest --> IO::Path) {
   my $exam-directory = exam-directory();
-  TmpDir::rmdir($exam-directory);
+  TmpDir::rm_dir($exam-directory);
   TmpDir::create-dir($exam-directory);
   copy-content(from => subtest-directory($subtest), to => $exam-directory);
 }
