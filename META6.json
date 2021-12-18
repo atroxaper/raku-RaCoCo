@@ -2,7 +2,7 @@
   "name": "App::RaCoCo",
   "description": "Raku Code Coverage tool.",
   "version": "1.5.0.dev",
-  "perl": "6.*",
+  "perl": "6.d",
   "authors": [
     "Mikhail Khorkov"
   ],
