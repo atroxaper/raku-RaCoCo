@@ -1,7 +1,6 @@
 use Test;
 use lib 'lib';
 use App::Racoco::Report::ReporterCoveralls::TransportTinyHTTP;
-use lib 't/lib';
 
 plan 2;
 
