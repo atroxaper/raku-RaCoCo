@@ -1,6 +1,6 @@
-use App::Racoco::Report::Reporter:ver<1.5+>;
-use App::Racoco::Report::DataPart:ver<1.5+>;
-use App::Racoco::Report::Data:ver<1.5+>;
+use App::Racoco::Report::Reporter;
+use App::Racoco::Report::DataPart;
+use App::Racoco::Report::Data;
 
 unit class App::Racoco::Report::ReporterCoveralls does Reporter is export;
 
