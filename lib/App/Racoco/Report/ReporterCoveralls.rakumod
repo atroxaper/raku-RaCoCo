@@ -81,6 +81,13 @@ method get-service-number(:$p) {
 	''
 }
 
+method get-service-job-id(:$p) {
+	return '' if $.is-github(:$p);
+	$p.env-only('COVERALLS_SERVICE_JOB_ID') //
+	$p.property('service_job_id') //
+	''
+}
+
 method is-github(:$p!) {
 	$p.env-only('GITHUB_ACTIONS').defined
 }
