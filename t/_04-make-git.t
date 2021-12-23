@@ -8,7 +8,6 @@ use Fixture;
 
 plan 1;
 
-my $lib = 't-resources/_02-make-source-files-json'.IO;
 my $*create-proc = Fixture::mockProc(|%(
 		'%H' => '_hash',
 		'%aN' => '_author',

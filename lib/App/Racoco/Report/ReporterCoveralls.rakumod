@@ -58,3 +58,18 @@ method make-git(:$properties) {
 	}
 	END
 }
+
+method get-repo-token(:$p!) {
+	return $p.env-only('GITHUB_TOKEN') if $.is-github(:$p);
+	$p.env-only('COVERALLS_REPO_TOKEN') //
+	$p.property('repo_token') //
+	''
+}
+
+method is-github(:$p!) {
+	$p.env-only('GITHUB_ACTIONS').defined
+}
+
+method is-gitlab(:$p!) {
+	$p.env-only('GITLAB_CI').defined
+}
