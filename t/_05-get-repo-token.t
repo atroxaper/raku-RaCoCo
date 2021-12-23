@@ -11,7 +11,7 @@ plan 3;
 my ReporterCoveralls $coveralls = ReporterCoveralls.new;
 my $p = Properties.new(lib => $*TMPDIR.add('lib'), command-line => 'repo_token:123');
 
-%*ENV<GITHUB_ACTIONS> = 'sdf';
+%*ENV<GITHUB_ACTIONS> = 1;
 %*ENV<GITHUB_TOKEN> = 'github-token';
 %*ENV<COVERALLS_REPO_TOKEN> = 'env-token';
 is $coveralls.get-repo-token(:$p), 'github-token', 'github token';

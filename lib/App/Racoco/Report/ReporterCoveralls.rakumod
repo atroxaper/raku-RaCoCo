@@ -66,6 +66,17 @@ method get-repo-token(:$p!) {
 	''
 }
 
+method get-service-name(:$p) {
+	return $p.property('github_service_name') // 'github-actions' if $.is-github(:$p);
+	$p.env-only('COVERALLS_SERVICE_NAME') //
+	$p.property('service_name') //
+	''
+}
+
+method get-service-number(:$p) {
+
+}
+
 method is-github(:$p!) {
 	$p.env-only('GITHUB_ACTIONS').defined
 }
