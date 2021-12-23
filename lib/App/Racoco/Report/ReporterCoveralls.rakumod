@@ -74,7 +74,11 @@ method get-service-name(:$p) {
 }
 
 method get-service-number(:$p) {
-
+	return $p.env-only('GITHUB_RUN_ID') if $.is-github(:$p);
+	return $p.env-only('CI_PIPELINE_IID') if $.is-gitlab(:$p);
+	$p.env-only('COVERALLS_SERVICE_NUMBER') //
+	$p.property('service_number') //
+	''
 }
 
 method is-github(:$p!) {
