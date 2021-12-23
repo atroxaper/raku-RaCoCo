@@ -88,6 +88,17 @@ method get-service-job-id(:$p) {
 	''
 }
 
+method get-service-pull-request(:$p) {
+	if $.is-github(:$p) {
+		my $ref = $p.env-only('GITHUB_REF');
+		if $ref.defined && $ref.starts-with('refs/pull/') {
+			return $ref.split('/')[*- 1];
+		}
+		return '';
+	}
+	''
+}
+
 method is-github(:$p!) {
 	$p.env-only('GITHUB_ACTIONS').defined
 }
