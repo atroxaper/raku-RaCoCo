@@ -10,5 +10,7 @@ class MD5Mock does MD5 {
 }
 
 class TransportMock does Transport {
-	has $.host = 'my-host'
+	has $.host = 'my-host';
+
+	method send(Str:D $obj, :$uri --> Bool) { }
 }

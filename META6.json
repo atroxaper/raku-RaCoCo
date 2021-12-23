@@ -2,7 +2,6 @@
   "name": "App::RaCoCo",
   "description": "Raku Code Coverage tool.",
   "version": "1.5.0.dev",
-  "api": "1",
   "perl": "6.d",
   "authors": [
     "Mikhail Khorkov"
@@ -15,6 +14,7 @@
   ],
   "provides": {
     "App::Racoco::Cli": "lib/App/Racoco/Cli.rakumod",
+    "App::Racoco::ConfigFile": "lib/App/Racoco/ConfigFile.rakumod",
     "App::Racoco::Coverable::Coverable": "lib/App/Racoco/Coverable/Coverable.rakumod",
     "App::Racoco::Coverable::CoverableIndex": "lib/App/Racoco/Coverable/CoverableIndex.rakumod",
     "App::Racoco::Coverable::CoverableLinesSupplier": "lib/App/Racoco/Coverable/CoverableLinesSupplier.rakumod",
@@ -29,6 +29,7 @@
     "App::Racoco::ModuleNames": "lib/App/Racoco/ModuleNames.rakumod",
     "App::Racoco::Paths": "lib/App/Racoco/Paths.rakumod",
     "App::Racoco::ProjectName": "lib/App/Racoco/ProjectName.rakumod",
+    "App::Racoco::Properties": "lib/App/Racoco/Properties.rakumod",
     "App::Racoco::Report::Data": "lib/App/Racoco/Report/Data.rakumod",
     "App::Racoco::Report::DataPart": "lib/App/Racoco/Report/DataPart.rakumod",
     "App::Racoco::Report::Reporter": "lib/App/Racoco/Report/Reporter.rakumod",
@@ -46,5 +47,6 @@
   "tags": [
     "COVERAGE"
   ],
+  "api": "1",
   "source-url": "https://github.com/atroxaper/raku-RaCoCo.git"
 }

@@ -1,4 +1,5 @@
 use App::Racoco::Report::ReporterCoveralls::MD5;
+use App::Racoco::RunProc;
 use App::Racoco::Report::ReporterCoveralls::MD5Digest;
 use App::Racoco::Report::ReporterCoveralls::Transport;
 use App::Racoco::Report::ReporterCoveralls::TransportTinyHTTP;
@@ -13,4 +14,9 @@ our sub create-md5(--> MD5) {
 my $*create-transport;
 our sub create-transport(--> Transport) {
 	$*create-transport // TransportTinyHTTP.new
+}
+
+my $*create-proc;
+our sub create-proc(--> RunProc) {
+	$*create-proc // RunProc.new
 }
