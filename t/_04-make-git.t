@@ -24,7 +24,6 @@ my $properties = Properties.new(lib => $*TMPDIR.add('lib'));
 is $coveralls.make-git(:$properties),
 q:to/END/.trim, 'make-git';
 {
-"git":{
 	"head":{
 		"id":"_hash",
 		"author_name":"_author",
@@ -40,7 +39,6 @@ q:to/END/.trim, 'make-git';
 			"url": "origin.git"
 		}
 	]
-}
 }
 END
 

@@ -9,7 +9,6 @@ use Fixture;
 plan 4;
 
 my ReporterCoveralls $coveralls = ReporterCoveralls.new;
-#my $p = Properties.new(lib => $*TMPDIR.add('lib'), command-line => 'repo_token:123');
 my %config-file = %('_' => %(
 	github_service_name => 'github',
 	service_name => 'general-name'

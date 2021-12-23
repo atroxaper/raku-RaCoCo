@@ -9,7 +9,6 @@ use Fixture;
 plan 3;
 
 my ReporterCoveralls $coveralls = ReporterCoveralls.new;
-#my $p = Properties.new(lib => $*TMPDIR.add('lib'), command-line => 'repo_token:123');
 my %config-file = %('_' => %());
 my $p = Properties.bless(command-line => %(), config-file-mode => '-', :%config-file);
 

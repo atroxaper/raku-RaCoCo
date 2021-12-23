@@ -17,6 +17,22 @@ method do(IO::Path:D :$lib, Data:D :$data, Properties:D :$properties) {
 	# 3 send
 }
 
+method make-json(:$lib!, :$data!, :properties($p)!) {
+	qq:to/END/.trim;
+	\{
+	"repo_token":"{self.get-repo-token(:$p)}",
+	"service_name":"{self.get-service-name(:$p)}",
+	"service_number":"{self.get-service-number(:$p)}",
+	"service_job_id":"{self.get-service-job-id(:$p)}",
+	"service_pull_request":"{self.get-service-pull-request(:$p)}",
+	"source_files": [
+		{self.make-source-files-json(:$lib, :$data)}
+	],
+	"git": {self.make-git(:$p)}
+	}
+	END
+}
+
 method make-source-files-json(:$lib, :$data) {
 	$data.get-all-parts.map(-> $part {
 		my $content = $lib.add($part.file-name).slurp;
@@ -34,11 +50,10 @@ method coverage-line(:$lib, :$content, :$part) {
 	join "\n", '{', $name, $source-digest, $coverage, '}';
 }
 
-method make-git(:$properties) {
+method make-git(:p($properties)!) {
 	my $remote := $!git.get-git(:$properties, :remote).first;
 	qq:to/END/.trim
 	\{
-	"git":\{
 		"head":\{
 			"id":"{$!git.get-git(:$properties, :hash)}",
 			"author_name":"{$!git.get-git(:$properties, :author)}",
@@ -55,7 +70,6 @@ method make-git(:$properties) {
 			}
 		]
 	}
-	}
 	END
 }
 
@@ -66,14 +80,14 @@ method get-repo-token(:$p!) {
 	''
 }
 
-method get-service-name(:$p) {
+method get-service-name(:$p!) {
 	return $p.property('github_service_name') // 'github-actions' if $.is-github(:$p);
 	$p.env-only('COVERALLS_SERVICE_NAME') //
 	$p.property('service_name') //
 	''
 }
 
-method get-service-number(:$p) {
+method get-service-number(:$p!) {
 	return $p.env-only('GITHUB_RUN_ID') if $.is-github(:$p);
 	return $p.env-only('CI_PIPELINE_IID') if $.is-gitlab(:$p);
 	$p.env-only('COVERALLS_SERVICE_NUMBER') //
@@ -81,14 +95,14 @@ method get-service-number(:$p) {
 	''
 }
 
-method get-service-job-id(:$p) {
+method get-service-job-id(:$p!) {
 	return '' if $.is-github(:$p);
 	$p.env-only('COVERALLS_SERVICE_JOB_ID') //
 	$p.property('service_job_id') //
 	''
 }
 
-method get-service-pull-request(:$p) {
+method get-service-pull-request(:$p!) {
 	if $.is-github(:$p) {
 		my $ref = $p.env-only('GITHUB_REF');
 		if $ref.defined && $ref.starts-with('refs/pull/') {
