@@ -31,6 +31,8 @@ my $p = Properties.bless(command-line => %(), config-file-mode => '-', :%config-
 %*ENV<GITHUB_TOKEN> = 'github-token';
 %*ENV<GITHUB_RUN_ID> = 123;
 %*ENV<GITHUB_REF> = 'refs/pull/123';
+%*ENV<GIT_BRANCH>:delete;
+%*ENV<GITHUB_HEAD_REF>:delete;
 my ReporterCoveralls $coveralls = ReporterCoveralls.new;
 $coveralls.do(:$lib, :$data, properties => $p);
 

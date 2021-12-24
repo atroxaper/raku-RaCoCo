@@ -33,7 +33,7 @@ multi method get-git(:branch($)!, :$p! --> Str) {
 	self!github-branch(:$p) //
 	$p.property('GIT_BRANCH') //
 	autorun(:$!proc, :out, "git rev-parse --abbrev-ref HEAD")() //
-	'BBB'
+	''
 }
 
 multi method get-git(:remote($)!, :$p! --> Associative) {
