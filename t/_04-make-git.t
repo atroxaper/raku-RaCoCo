@@ -21,6 +21,8 @@ my $*create-proc = Fixture::mockProc(|%(
 my ReporterCoveralls $coveralls = ReporterCoveralls.new;
 my $p = Properties.new(lib => $*TMPDIR.add('lib'));
 
+%*ENV<GITHUB_REF>:delete;
+%*ENV<GIT_BRANCH>:delete;
 is $coveralls.make-git(:$p),
 q:to/END/.trim, 'make-git';
 {

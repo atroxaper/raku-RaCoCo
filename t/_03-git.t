@@ -30,6 +30,8 @@ subtest '01-from-proc', {
 	is $git.get-git(:$p, :committer-email), '_commiter_email', 'commiter email';
 	is $git.get-git(:$p, :message), '_message', 'message';
 
+	%*ENV<GITHUB_REF>:delete;
+	%*ENV<GIT_BRANCH>:delete;
 	is $git.get-git(:$p, :branch), '_branch', 'branch';
 
 	is $git.get-git(:$p, :remote), %(origin => 'origin.git', fork => 'fork.git'), 'remotes';
@@ -57,6 +59,8 @@ subtest '02-from-prop', {
 	is $git.get-git(:$p, :committer-email), 'env_commiter_email', 'commiter email';
 	is $git.get-git(:$p, :message), 'env_message', 'message';
 
+	%*ENV<GITHUB_REF>:delete;
+	%*ENV<GIT_BRANCH>:delete;
 	is $git.get-git(:$p, :branch), 'env_branch', 'branch';
 
 	is $git.get-git(:$p, :remote), %(env_remote => 'env_remote_url'), 'remotes';
