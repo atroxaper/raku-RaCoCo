@@ -8,7 +8,7 @@ use App::Racoco::X;
 use TestResources;
 use TestHelper;
 
-plan 14;
+plan 16;
 
 constant &APP_MAIN = &App::Racoco::Cli::MAIN;
 my ($sources, $lib);
