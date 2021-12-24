@@ -32,5 +32,5 @@ method send(Str:D $obj, :$uri --> Str) {
 
 # {"message":"Job #1618708989.1","url":"https://coveralls.io/jobs/92040948"}
 method parse-job-url($response --> Str) {
-	$response.match(/'https://coveralls.io' <-["]>+/) // ''
+	($response.match(/'https://coveralls.io' <-["]>+/) // '').Str
 }
