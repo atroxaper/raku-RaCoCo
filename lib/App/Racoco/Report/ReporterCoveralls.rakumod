@@ -10,14 +10,14 @@ unit class App::Racoco::Report::ReporterCoveralls does Reporter is export;
 
 has MD5 $!md5 = Factory::create-md5();
 has Git $!git = Git.new;
+has Transport $!transport = Factory::create-transport;
 
 method do(IO::Path:D :$lib, Data:D :$data, Properties:D :$properties) {
-	# 1 collect all configurations
-	# 2 collect data to send
-	# 3 send
+	my $json = self.make-json(:$lib, :$data, p => $properties);
+	$!transport.send($json);
 }
 
-method make-json(:$lib!, :$data!, :properties($p)!) {
+method make-json(:$lib!, :$data!, :$p!) {
 	qq:to/END/.trim;
 	\{
 	"repo_token":"{self.get-repo-token(:$p)}",
@@ -50,19 +50,19 @@ method coverage-line(:$lib, :$content, :$part) {
 	join "\n", '{', $name, $source-digest, $coverage, '}';
 }
 
-method make-git(:p($properties)!) {
-	my $remote := $!git.get-git(:$properties, :remote).first;
+method make-git(:$p!) {
+	my $remote := $!git.get-git(:$p, :remote).sort(*.key).first;
 	qq:to/END/.trim
 	\{
 		"head":\{
-			"id":"{$!git.get-git(:$properties, :hash)}",
-			"author_name":"{$!git.get-git(:$properties, :author)}",
-			"author_email":"{$!git.get-git(:$properties, :email)}",
-			"committer_name":"{$!git.get-git(:$properties, :committer)}",
-			"committer_email":"{$!git.get-git(:$properties, :committer-email)}",
-			"message":"{$!git.get-git(:$properties, :message)}"
+			"id":"{$!git.get-git(:$p, :hash)}",
+			"author_name":"{$!git.get-git(:$p, :author)}",
+			"author_email":"{$!git.get-git(:$p, :email)}",
+			"committer_name":"{$!git.get-git(:$p, :committer)}",
+			"committer_email":"{$!git.get-git(:$p, :committer-email)}",
+			"message":"{$!git.get-git(:$p, :message)}"
 		},
-		"branch":"{$!git.get-git(:$properties, :branch)}",
+		"branch":"{$!git.get-git(:$p, :branch)}",
 		"remotes": [
 			\{
 				"name":"{$remote.key}",

@@ -16,12 +16,12 @@ my $*create-proc = Fixture::mockProc(|%(
 		'%ce' => '_commiter_email',
 		'%s' => '_message',
 		'--abbrev-ref' => '_branch',
-		'remote' => "origin  origin.git (fetch)\norigin  origin.git (push)\nfork  fork.git (fetch)",
+		'remote' => "origin  origin.git (fetch)\norigin  origin.git (push)\nzork  zork.git (fetch)",
 	));
 my ReporterCoveralls $coveralls = ReporterCoveralls.new;
-my $properties = Properties.new(lib => $*TMPDIR.add('lib'));
+my $p = Properties.new(lib => $*TMPDIR.add('lib'));
 
-is $coveralls.make-git(:$properties),
+is $coveralls.make-git(:$p),
 q:to/END/.trim, 'make-git';
 {
 	"head":{

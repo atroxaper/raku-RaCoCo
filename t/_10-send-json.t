@@ -5,9 +5,11 @@ use App::Racoco::Report::Data;
 use App::Racoco::Report::ReporterCoveralls;
 use lib 't/lib';
 use Fixture;
+use Mocks;
 
 plan 1;
 
+my $*create-transport = Mocks::TransportMock.new;
 my $*create-proc = Fixture::mockProc(|%(
 		'%H' => '_hash',
 		'%aN' => '_author',
@@ -16,7 +18,7 @@ my $*create-proc = Fixture::mockProc(|%(
 		'%ce' => '_commiter_email',
 		'%s' => '_message',
 		'--abbrev-ref' => '_branch',
-		'remote' => "origin  origin.git (fetch)\norigin  origin.git (push)\nfork  fork.git (fetch)",
+		'remote' => "origin  origin.git (fetch)\norigin  origin.git (push)\nzork  zork.git (fetch)",
 	));
 my $data = Data.new(
 	coverable => ('Module1.rakumod', set(3, 4), 'Module2.rakumod', set(3)).Map,
@@ -30,8 +32,9 @@ my $p = Properties.bless(command-line => %(), config-file-mode => '-', :%config-
 %*ENV<GITHUB_RUN_ID> = 123;
 %*ENV<GITHUB_REF> = 'refs/pull/123';
 my ReporterCoveralls $coveralls = ReporterCoveralls.new;
+$coveralls.do(:$lib, :$data, properties => $p);
 
-is $coveralls.make-json(:$lib, :$data, properties => $p),
+is $*create-transport.sended,
 q:to/END/.trim, 'make json ok';
 {
 "repo_token":"github-token",
