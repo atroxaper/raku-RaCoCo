@@ -7,7 +7,7 @@ unit class App::Racoco::Report::ReporterCoveralls::TransportTinyHTTP
 
 has $.host is built(False) = 'coveralls.io';
 
-class Foo is IO::Path {
+my class FakePath is IO::Path {
 	has $.content;
 	method slurp(|c) {
 		$!content.encode
@@ -21,15 +21,13 @@ class Foo is IO::Path {
 	}
 }
 
-
-
 method send(Str:D $obj, :$uri --> Str) {
 	my $response = HTTP::Tiny.new.post:
 		($uri // self.uri()),
-		content => %(json_file => Foo.new($*CWD).set($obj));
+		content => %(json_file => FakePath.new($*CWD).set($obj));
 	my $content = $response<content>.decode;
 	fail $response<status> ~ "$?NL" ~ $content unless $response<success>;
-	self.parse-responce-url($content)
+	self.parse-job-url($content)
 }
 
 # {"message":"Job #1618708989.1","url":"https://coveralls.io/jobs/92040948"}

@@ -139,10 +139,6 @@ our sub MAIN(
     when App::Racoco::X::NonZeroExitCode {
       exit .exitcode;
     }
-    default {
-      say "Error ", .^name, ': ', .Str;
-      exit 1;
-    }
   }
 }
 

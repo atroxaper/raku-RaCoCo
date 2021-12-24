@@ -41,7 +41,7 @@ our sub failProc() {
 our sub mockProc(*%responces) {
 	class :: is RunProc {
 		has %.responces;
-		method run($command) {
+		method run($command, |c) {
 			my $responce = %!responces.first({$command.contains: .key}).value // Nil;
 			return class :: {
 				method exitcode { 0 }
