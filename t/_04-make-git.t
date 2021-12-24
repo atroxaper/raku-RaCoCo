@@ -23,6 +23,7 @@ my $p = Properties.new(lib => $*TMPDIR.add('lib'));
 
 %*ENV<GITHUB_REF>:delete;
 %*ENV<GIT_BRANCH>:delete;
+%*ENV<GITHUB_HEAD_REF>:delete;
 is $coveralls.make-git(:$p),
 q:to/END/.trim, 'make-git';
 {

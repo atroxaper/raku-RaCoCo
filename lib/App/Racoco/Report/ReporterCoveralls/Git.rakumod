@@ -36,6 +36,15 @@ multi method get-git(:branch($)!, :$p! --> Str) {
 	''
 }
 
+method !github-branch(:$p) {
+	with $p.env-only('GITHUB_REF') -> $ref {
+		if $ref.starts-with('refs/heads/') or $ref.starts-with('refs/tags/') {
+			return $ref.split('/')[*-1];
+		}
+	}
+	return $_ with $p.env-only('GITHUB_HEAD_REF');
+}
+
 multi method get-git(:remote($)!, :$p! --> Associative) {
 	my $from-git = autorun(:$!proc, :out, "git remote -v")();
 	with $from-git {
@@ -50,13 +59,4 @@ multi method get-git(:remote($)!, :$p! --> Associative) {
 
 method !git-log-format($format --> Str) {
 	autorun(:$!proc, :out, "git --no-pager log -1 --pretty=format:$format")()
-}
-
-method !github-branch(:$p) {
-	with $p.env-only('GITHUB_REF') -> $ref {
-		if $ref.starts-with('refs/heads/') or $ref.starts-with('refs/tags/') {
-			return $ref.split('/')[*-1];
-		}
-	}
-	return $_ with $p.env-only('GITHUB_HEAD_REF');
 }
