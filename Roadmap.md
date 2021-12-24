@@ -3,6 +3,7 @@ Backlog:
 * Centrally check lib (and other paths) to be absolute.
 * Add :create adverb to all Paths subs.
 * Refactory CLI
+* Create reporter for LCOV format file. It will provide a possibility to use coveralls-github-action GitHub Action.
 
 For v1.5.0
 * ~~Move Precomp package to Coverable~~

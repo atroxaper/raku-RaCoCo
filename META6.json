@@ -46,7 +46,8 @@
   ],
   "license": "Artistic-2.0",
   "tags": [
-    "COVERAGE"
+    "COVERAGE",
+    "RACOCO"
   ],
   "api": "1",
   "source-url": "https://github.com/atroxaper/raku-RaCoCo.git"
