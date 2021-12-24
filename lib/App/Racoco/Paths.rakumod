@@ -12,6 +12,7 @@ constant \REPORT-DATA = 'report-data';
 constant \REPORT-HTML = 'report.html';
 
 constant \META6 = 'META6.json';
+constant \CONFIG-FILE = 'racoco.ini';
 
 sub absolute(IO::Path $path --> IO::Path) {
 	$path.is-absolute ?? $path !! $path.absolute.IO
@@ -54,6 +55,10 @@ our sub meta6-path(IO() :$lib --> IO::Path:D) is export {
 }
 
 our sub parent-name(IO() $path) is export {
-  absolute($path).parent.basename;
+  absolute($path).parent.basename
+}
+
+our sub config-file(IO() :$lib) is export {
+	absolute($lib).parent.add(CONFIG-FILE)
 }
 

@@ -9,7 +9,7 @@ use App::Racoco::ProjectName;
 has IO::Path $!lib;
 has Bool $.color-blind is rw;
 
-method do(:$lib, :$data) {
+method do(:$lib, :$data, :$properties) {
   $!lib = $lib;
   my %module-links = self!write-module-pages($data);
   self!write-main-page($data, %module-links);

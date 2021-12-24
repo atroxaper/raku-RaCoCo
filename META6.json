@@ -14,6 +14,7 @@
   ],
   "provides": {
     "App::Racoco::Cli": "lib/App/Racoco/Cli.rakumod",
+    "App::Racoco::ConfigFile": "lib/App/Racoco/ConfigFile.rakumod",
     "App::Racoco::Coverable::Coverable": "lib/App/Racoco/Coverable/Coverable.rakumod",
     "App::Racoco::Coverable::CoverableIndex": "lib/App/Racoco/Coverable/CoverableIndex.rakumod",
     "App::Racoco::Coverable::CoverableLinesSupplier": "lib/App/Racoco/Coverable/CoverableLinesSupplier.rakumod",
@@ -28,9 +29,11 @@
     "App::Racoco::ModuleNames": "lib/App/Racoco/ModuleNames.rakumod",
     "App::Racoco::Paths": "lib/App/Racoco/Paths.rakumod",
     "App::Racoco::ProjectName": "lib/App/Racoco/ProjectName.rakumod",
+    "App::Racoco::Properties": "lib/App/Racoco/Properties.rakumod",
     "App::Racoco::Report::Data": "lib/App/Racoco/Report/Data.rakumod",
     "App::Racoco::Report::DataPart": "lib/App/Racoco/Report/DataPart.rakumod",
     "App::Racoco::Report::Reporter": "lib/App/Racoco/Report/Reporter.rakumod",
+    "App::Racoco::Report::ReporterCustomThree": "lib/App/Racoco/Report/ReporterCustomThree.rakumod",
     "App::Racoco::Report::ReporterHtml": "lib/App/Racoco/Report/ReporterHtml.rakumod",
     "App::Racoco::Report::ReporterHtmlColorBlind": "lib/App/Racoco/Report/ReporterHtmlColorBlind.rakumod",
     "App::Racoco::RunProc": "lib/App/Racoco/RunProc.rakumod",
@@ -43,7 +46,9 @@
   ],
   "license": "Artistic-2.0",
   "tags": [
-    "COVERAGE"
+    "COVERAGE",
+    "RACOCO"
   ],
+  "api": "1",
   "source-url": "https://github.com/atroxaper/raku-RaCoCo.git"
 }

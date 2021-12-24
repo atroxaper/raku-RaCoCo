@@ -38,6 +38,24 @@ our sub failProc() {
 	}.new
 }
 
+our sub mockProc(*%responces) {
+	class :: is RunProc {
+		has %.responces;
+		method run($command, |c) {
+			my $responce = %!responces.first({$command.contains: .key}).value // Nil;
+			return class :: {
+				method exitcode { 0 }
+				method out {
+					return class :: {
+						method close {}
+						method slurp { $responce }
+					}.new
+				}
+			}.new
+		}
+	}.new(:%responces)
+}
+
 our sub fakePath($path, :$modified) {
 	my $result = class FakeIOPath is IO::Path {
 		has $.modified is rw;

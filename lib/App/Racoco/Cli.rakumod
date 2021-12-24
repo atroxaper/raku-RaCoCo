@@ -12,6 +12,7 @@ use App::Racoco::Coverable::Precomp::Precompiler;
 use App::Racoco::CoveredLinesCollector;
 use App::Racoco::Report::Reporter;
 use App::Racoco::Report::Data;
+use App::Racoco::Properties;
 use App::Racoco::Paths;
 use App::Racoco::Misc;
 use App::Racoco::X;
@@ -74,18 +75,35 @@ sub reporter-classes($reporter) {
 }
 
 our sub MAIN(
-  Str :lib($lib-dir) = 'lib',
-  Str :$raku-bin-dir,
-  BoolOrStr :$exec = 'prove6',
-  Str :$reporter,
-  Bool :$silent = False,
-  Bool :$append = False,
-  Int() :$fail-level = 0
+  Str $config-file-section = '_',
+  :$lib is copy = 'lib',
+  Str :$raku-bin-dir is copy,
+  :$exec is copy,
+  Str :$reporter is copy ,
+  Bool :$silent is copy,
+  Bool :$append is copy,
+  Int() :$fail-level is copy,
+  Str :$properties,
 ) is export {
-  my $lib = get(lib => $lib-dir);
+  my $p = Properties.new(:$lib, command-line => $properties, mode => $config-file-section);
+
+  $lib = $_ with $p.property('lib');
+  $lib = get(:$lib);
+
+  $raku-bin-dir = $raku-bin-dir // $p.property('raku-bin-dir');
   my $moar = get(:name<moar>, :$raku-bin-dir);
   my $raku = get(:name<raku>, :$raku-bin-dir);
+
+  $exec = $exec // $p.property('exec') // 'prove6';
+
+  $reporter = $reporter // $p.property('reporter');
   my @reporter-classes = reporter-classes($reporter);
+
+  $silent = $silent // $p.property('silent') // False;
+
+  $append = $append // $p.property('append') // False;
+
+  $fail-level = $fail-level // $p.property('fail-level') // 0;
 
   my $report;
   if $exec {
@@ -114,7 +132,7 @@ our sub MAIN(
 
   print-simple-coverage($report);
   $report.write(:$lib);
-  @reporter-classes.map({ ::($_).new.do(:$lib, data => $report) });
+  @reporter-classes.map({ ::($_).new.do(:$lib, data => $report, properties => $p) });
   check-fail-level($fail-level, $report);
 
   CATCH {
