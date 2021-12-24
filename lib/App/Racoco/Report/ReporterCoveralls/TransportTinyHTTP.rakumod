@@ -8,6 +8,8 @@ unit class App::Racoco::Report::ReporterCoveralls::TransportTinyHTTP
 has $.host is built(False) = 'coveralls.io';
 
 method send(Str:D $obj, :$uri --> Bool) {
+say 'try to send';
+say $obj;
 	my $response = HTTP::Tiny.new.post:
 		($uri // self.uri()),
 		content => $obj,
