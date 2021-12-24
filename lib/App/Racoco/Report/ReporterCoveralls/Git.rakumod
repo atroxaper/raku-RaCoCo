@@ -39,7 +39,7 @@ multi method get-git(:branch($)!, :$p! --> Str) {
 multi method get-git(:remote($)!, :$p! --> Associative) {
 	my $from-git = autorun(:$!proc, :out, "git remote -v")();
 	with $from-git {
-		return $from-git.lines.grep(*.contains: '(fetch)').map(*.split: ' ', :skip-empty).map({.[0] => .[1]}).Map
+		return $from-git.lines.grep(*.contains: '(fetch)').map(*.words).map({.[0] => .[1]}).Map
 	} else {
 		with $p.property('GIT_REMOTE') {
 			return %($_ => $p.property('GIT_URL') // '')

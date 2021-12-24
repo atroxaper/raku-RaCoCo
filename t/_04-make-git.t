@@ -16,7 +16,7 @@ my $*create-proc = Fixture::mockProc(|%(
 		'%ce' => '_commiter_email',
 		'%s' => '_message',
 		'--abbrev-ref' => '_branch',
-		'remote' => "origin  origin.git (fetch)\norigin  origin.git (push)\nzork  zork.git (fetch)",
+		'remote' => "origin	origin.git (fetch)\norigin  origin.git (push)\nzork  zork.git (fetch)",
 	));
 my ReporterCoveralls $coveralls = ReporterCoveralls.new;
 my $p = Properties.new(lib => $*TMPDIR.add('lib'));
