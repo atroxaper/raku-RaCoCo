@@ -60,7 +60,6 @@ subtest '02-from-prop', {
 	is $git.get-git(:$p, :message), 'env_message', 'message';
 
 	%*ENV<GITHUB_REF>:delete;
-	%*ENV<GIT_BRANCH>:delete;
 	is $git.get-git(:$p, :branch), 'env_branch', 'branch';
 
 	is $git.get-git(:$p, :remote), %(env_remote => 'env_remote_url'), 'remotes';
@@ -111,7 +110,7 @@ subtest '04-empty-git', {
 	is $git.get-git(:$p, :committer-email), '', 'commiter email';
 	is $git.get-git(:$p, :message), '', 'message';
 
-	is $git.get-git(:$p, :branch), '', 'branch';
+	is $git.get-git(:$p, :branch), 'BBB', 'branch';
 
 	is $git.get-git(:$p, :remote), %('' => ''), 'remotes';
 }
