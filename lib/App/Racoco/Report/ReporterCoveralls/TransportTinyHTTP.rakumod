@@ -17,6 +17,7 @@ say $uri // self.uri();
 		content => $obj,
 		headers => %(content-type => 'application/json');
 say $response;
+say $response<content>.decode;
 	fail $response<status> unless $response<success>;
 	True
 }
