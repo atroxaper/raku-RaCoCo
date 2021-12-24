@@ -13,7 +13,7 @@ method new(:$lib!, :$command-line, :$mode = '_') {
 	}
 	self.bless(
 		command-line => self.parse-command-line($command-line),
-		config-file => ConfigFile::parse($config-file-content),
+		config-file => ConfigFile::parse($config-file-content ~ "\n"),
 		config-file-mode => $mode,
 	)
 }
