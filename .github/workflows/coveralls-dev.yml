@@ -23,10 +23,10 @@ jobs:
       - name: Install Dependencies
         run: zef install --/test --test-depends --deps-only .
       - name: Install Dependencies
-        run: zef install --/test HTTP::Tiny Digest
+        run: zef install --/test HTTP::Tiny Digest IO::Socket::SSL
       - name: Install App::Prove6
         run: zef install --/test App::Prove6
       - name: Run RaCoCo
-        run: raku -Ilib bin/racoco --exec='prove6 t/08-coverable-index.t' --reporter=coveralls
+        run: raku -Ilib bin/racoco coveralls
         env:
           GITHUB_TOKEN: ${{ secrets.COVERALLS_TOKEN }}

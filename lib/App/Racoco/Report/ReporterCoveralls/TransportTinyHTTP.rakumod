@@ -7,17 +7,32 @@ unit class App::Racoco::Report::ReporterCoveralls::TransportTinyHTTP
 
 has $.host is built(False) = 'coveralls.io';
 
-method send(Str:D $obj, :$uri --> Bool) {
-say 'try to send';
-say $obj;
-say 'to';
-say $uri // self.uri();
+class Foo is IO::Path {
+	has $.content;
+	method slurp(|c) {
+		$!content.encode
+	}
+	method basename(|c) {
+		'json_file'
+	}
+	method set($content) {
+		$!content = $content;
+		self
+	}
+}
+
+
+
+method send(Str:D $obj, :$uri --> Str) {
 	my $response = HTTP::Tiny.new.post:
 		($uri // self.uri()),
-		content => $obj,
-		headers => %(content-type => 'application/json');
-say $response;
-say $response<content>.decode;
-	fail $response<status> unless $response<success>;
-	True
+		content => %(json_file => Foo.new($*CWD).set($obj));
+	my $content = $response<content>.decode;
+	fail $response<status> ~ "$?NL" ~ $content unless $response<success>;
+	self.parse-responce-url($content)
+}
+
+# {"message":"Job #1618708989.1","url":"https://coveralls.io/jobs/92040948"}
+method parse-job-url($response --> Str) {
+	$response.match(/'https://coveralls_io' <-["]>+/) // ''
 }

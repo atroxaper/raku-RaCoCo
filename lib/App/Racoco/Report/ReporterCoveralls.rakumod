@@ -14,7 +14,8 @@ has Transport $!transport = Factory::create-transport;
 
 method do(IO::Path:D :$lib, Data:D :$data, Properties:D :$properties) {
 	my $json = self.make-json(:$lib, :$data, p => $properties);
-	$!transport.send($json);
+	my $job-url = $!transport.send($json);
+	say 'Result: ', $job-url;
 }
 
 method make-json(:$lib!, :$data!, :$p!) {

@@ -11,8 +11,6 @@ use TestHelper;
 
 plan 4;
 
-say $*EXECUTABLE.parent.Str;
-
 my ($sources, $lib, $file-name, $lookup);
 sub setup($file, $lib-name) {
 	plan $*plan;
