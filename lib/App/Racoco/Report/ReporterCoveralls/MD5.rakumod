@@ -1,9 +1,7 @@
-use Digest::MD5;
+use Digest;
 unit class App::Racoco::Report::ReportCoveralls::MD5
 	is export;
 
-has $!md5 = Digest::MD5.new;
-
 method md5(Str $content --> Str) {
-	$!md5.md5_hex($content)
+	md5($content.encode: 'utf-8').list».fmt("%02x").join
 }
