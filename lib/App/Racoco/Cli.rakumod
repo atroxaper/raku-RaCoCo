@@ -199,13 +199,17 @@ sub USAGE() is export {
 	Usage: racoco [options]
 
 	Options:
-		--lib=<path>                   path to directory with coverable source files
-		--exec=<command-string|false>  command, which need to be executed to run tests or false to not run tests and use coverage data from the previous run
-		--raku-bin-dir=<path>          path to directory with raku and moar binaries, which supposed to be used in the --exec
-		--fail-level=<int>             minimum possible coverage percent for success exit
-		--silent                       hide test result output
-		--append                       do not clean coverage data before run tests and append its result to the previous one
-		--html                         produce simple html page to visualize results
-		--color-blind                  use more readable colors than green/red pare
+	  racoco-ini-section-name        name of section in racoco.ini file to use as properties
+		--lib=<path>                   path to directory with target source files ('./lib' by default)
+		--exec=<command-string|false>  command, which needs to be executed to run tests or false to not run tests and use coverage data from the previous run ('prove6' by default)
+		-l                             short-cut for --exec='prove6 -l t'
+		--raku-bin-dir=<path>          path to directory with raku and moar binaries, which supposed to be used in the --exec ($*EXECUTABLE.parent by default)
+		--fail-level=<int>             minimum possible coverage percent for success exit (0 by default)
+		--silent                       hide the tests result output (false by default)
+		--append                       append the previous run result to the new one (false by default)
+		--html                         produce a simple HTML page to visualize results
+		--color-blind                  use with --html option to make more readable colors than green/red pare
+		--reporter=<reporter-name>     name of a custom result reporter
+		--properties                   pass custom properties here if you know what you do
 	END
 }

@@ -10,32 +10,22 @@
 # SYNOPSIS
 
 ```bash
-> racoco
+> racoco -l
 [...]
 All tests successful.
 Files=16, Tests=114,  6 wallclock secs
 Result: PASS
 Coverage: 89.2%
 
+> racoco --fail-level=95
+[...]
+Coverage: 89.2%
+# exit code: 6
+
 > racoco --html --silent
 Visualisation: file://.racoco/report.html
 Coverage: 89.2%
 > browsername .racoco/report.html
-
-> racoco --exec='prove6 -Ilib' --fail-level=95 --silent
-Coverage: 89.2%
-# exit code: 6
-
-> racoco
-[...]
-===SORRY!===
-Library path ｢lib/.precomp｣ has ambiguous .precomp directory with more than one
-CompUnit Repository. Please, make sure you have only the one directory in
-the <library>/.precomp path or use --fix-compunit flag for the next RaCoCo launch
-to erase .precomp directory automatically.
-> racoco --fix-compunit
-[...]
-Coverage: 89.2%
 ```
 
 # INSTALLATION
@@ -46,37 +36,45 @@ If you use zef, then `zef install App::RaCoCo`, or `pakku add App::RaCoCo` if yo
 
 `App::RaCoCo` provides the `racoco` application, which can be used to run tests and calculate code coverage.
 
-You may specify the following parameters:
+You may specify the following options:
 * **--lib** - path to directory with target source files (`'./lib'` by default);
 
-* **--raku-bin-dir** - path to directory with raku and moar binaries (`$*EXECUTABLE.parent` by default);
+* **--exec** - command, which needs to be executed to run tests. For example, you may pass `--exec='prove --exec raku'` to use Perl's `prove` util instead of default `prove6`. Use `--/exec` parameter to not run tests and use coverage data from the previous run;
 
-* **--exec** - command, which need to be executed to run tests. For example, you may pass `'prove --exec raku'` to the `exec` parameter to say `prove` to manage your tests, or use `--/exec` parameter to not run tests and use coverage data from the previous run (`prove6` by default);
+* **-l** - short-cut for `--exec='prove6 -l t'`;
 
-* **--fail-level** - integer number - if coverage will be less than it then `racoco` will exit with non-zero exitcode;
+* **--raku-bin-dir** - path to directory with `raku` and `moar` binaries, which supposed to be used in the `--exec` (`$*EXECUTABLE.parent` by default);
+minimum possible coverage percent for success exit (0 by default)
+
+* **--fail-level** - integer number - if the coverage level will be less than it then `racoco` will exit with a non-zero exit code;
 
 * **--silent** - hide test result output;
 
-* **--append** - do not clean coverage data before this `racoco` run and append its result to the previous one;
+* **--append** - append the previous run result to the new one;
 
-* **--html** - produce simple html page to visualize results;
+* **--html** - produce a simple HTML page to visualize results;
 
-* **--color-blind** - addition to `--html` parameter - use more readable colors than green/red pare;
+* **--color-blind** - use with --html option to make more readable colors than green/red pare;
 
-* **--fix-compunit** - erase `<library>/.precomp` directory before run tests. See [details below](#notes).
+* **--reporter** - name of a custom result reporter;
+
+* **--properties** - pass custom properties here.
 
 # NOTES
 
 * RaCoCo application works only with MoarVM backended Raku compiler;
-* It is common practise to not include `use lib 'lib'` line in test files. In such case we need to run tests with command like `prove6 -Ilib`. As RaCoCo uses just `prove6` command by default, then we will need to run it like `racoco --exec='prove6 -Ilib'`;
-* If `<library>/.precomp` directory has more than one directory with compiled sources, then RaCoCo cannot be sure which one need to be analysed. The situation arises, for example, after updating raku compiler. You need to clean `.precomp` directory or delete only the old directories inside. Alternatively, you can run RaCoCo with `--fix-compunit` flag ones to erase `.precomp` directory automatically;
+* It is common practice to not include `use lib 'lib'` line in test files. In a such case, we need to run tests with a command like `prove6 -Ilib`. RaCoCo has a special short-cun option `-l` for you, then you do not need to write `racoco --exec='prove6 -l'`;
 * Unfortunately, the current Rakudo implementation may produce a little different coverage log from run to run. Probably, it is because of some runtime optimisations.
+
+# CONFIGURATION FILE
+
+# CUSTOM REPORTERS
 
 # AUTHOR
 
 Mikhail Khorkov <atroxaper@cpan.org>
 
-Source can be located at: [github](https://github.com/atroxaper/raku-RaCoCo). Comments and Pull Requests are welcome.
+Sources can be found at: [github](https://github.com/atroxaper/raku-RaCoCo). The new Issued and Pull Requests are welcome.
 
 # COPYRIGHT AND LICENSE
 
