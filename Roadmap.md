@@ -4,6 +4,7 @@ Backlog:
 * Add :create adverb to all Paths subs.
 * Refactory CLI
 * Create reporter for LCOV format file. It will provide a possibility to use coveralls-github-action GitHub Action.
+* Improve ConfigFile grammar and tests.
 
 For v1.5.0
 * ~~Move Precomp package to Coverable~~
