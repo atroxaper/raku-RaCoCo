@@ -11,5 +11,5 @@ submethod TWEAK() {
 }
 
 method do(:$lib, :$data, :$properties) {
-  $!reporter.do(:$lib, :$data);
+  $!reporter.do(:$lib, :$data, :$properties);
 }

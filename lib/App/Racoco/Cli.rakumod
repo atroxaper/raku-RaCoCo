@@ -199,10 +199,10 @@ sub USAGE() is export {
 	Usage: racoco [options]
 
 	Options:
-	  racoco-ini-section-name        name of section in racoco.ini file to use as properties
-		--lib=<path>                   path to directory with target source files ('./lib' by default)
+	  configuration-name             name of section in racoco.ini file to use as properties
 		--exec=<command-string|false>  command, which needs to be executed to run tests or false to not run tests and use coverage data from the previous run ('prove6' by default)
 		-l                             short-cut for --exec='prove6 -l t'
+		--lib=<path>                   path to directory with target source files ('./lib' by default)
 		--raku-bin-dir=<path>          path to directory with raku and moar binaries, which supposed to be used in the --exec ($*EXECUTABLE.parent by default)
 		--fail-level=<int>             minimum possible coverage percent for success exit (0 by default)
 		--silent                       hide the tests result output (false by default)
