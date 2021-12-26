@@ -1,5 +1,13 @@
 Version history:
 
+1.5.0   2021-12-27  'Custom Reporters and Configurations'
+	- Add possibility to implement a custom reporter
+	- Add configuration file racoco.ini
+	- Add -l option as a shout-cut for --exec='prove6 -l'
+	- Remove all logic related --fix-compunit option. Now the correct folder is determined using the --raku-bin-dir option
+	- Now --append option works through previous report.txt file instead of previous coverage.log file. The coverage.log file is deleted after each run because it can be very large
+	- Improve calculation of coverage level. Most likely now the level will be lower than before
+
 1.4.5		2021-11-03	'Bugfix release'
 	- Fix fail when run on library with not existed .precomp directory (#10)
 
