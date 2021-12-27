@@ -1,6 +1,7 @@
 unit module App::Racoco::CoverableLinesCollector;
 
 use App::Racoco::Coverable::CoverableLinesSupplier;
+use App::Racoco::Misc;
 
 class CoverableLinesCollector is export {
   has IO::Path $.lib;
@@ -8,23 +9,16 @@ class CoverableLinesCollector is export {
   has Int $!lib-path-len;
 
   submethod TWEAK() {
-    $!lib-path-len = $!lib.Str.chars + '/'.chars;
+    $!lib-path-len = $!lib.Str.chars + $*SPEC.dir-sep.chars;
   }
 
   method collect(--> Associative) {
-    self!iter-through($!lib, %{});
-  }
-
-  method !iter-through($dir, %collect) {
-    for $dir.dir -> $file {
-      if $file.d {
-        self!iter-through($file, %collect);
-      } elsif $file.extension eq any('rakumod', 'pm6') {
-        my $file-name = $file.Str.substr($!lib-path-len);
+    my %collect;
+    collect-all-module-names-in(:$!lib)
+      .map(-> $file-name {
         my $lines = $!supplier.supply(:$file-name);
         %collect{$file-name} = $lines.Set if $lines;
-      }
-    }
+      });
     %collect
   }
 }

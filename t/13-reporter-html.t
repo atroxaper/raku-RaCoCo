@@ -1,0 +1,81 @@
+use Test;
+use lib 'lib';
+use App::Racoco::Report::Data;
+use App::Racoco::Report::ReporterHtml;
+use App::Racoco::Report::ReporterHtmlColorBlind;
+use App::Racoco::ModuleNames;
+use App::Racoco::Paths;
+use lib 't/lib';
+use Fixture;
+use TestResources;
+use TestHelper;
+
+plan 2;
+
+my ($lib, $data);
+sub setup($lib-name) {
+	plan $*plan;
+	TestResources::prepare($*subtest);
+	$lib = TestResources::exam-directory.add($lib-name);
+}
+
+sub check-page($data, $file-name, $page-name, :$color-blind = False) {
+  my $part = $data.for(:$file-name);
+  my $page = (report-html-data-path(:$lib).add($page-name) ~ '.html').IO;
+  ok $page.e, $page-name ~ ' exists';
+  my $content = $page.slurp;
+  for 1..4 -> $line {
+    my $color = ($part.color-of(:$line).key // 'no').lc;
+    ok $content ~~ /"<span class=\"coverage-$color\">line$line\</span>"/,
+       "$page-name line$line ok";
+  }
+  if $color-blind {
+    nok $content.contains('color-blind'), "$page-name color-blind";
+  }
+
+  nok $content ~~ /'%%'/, $page-name ~ ' has no placeholders';
+}
+
+sub check-main-page($content, $file-name, $page-name) {
+  my $part = $data.for(:$file-name);
+  my $module-name = module-name(path => $file-name);
+  my $link = $page-name ~ '.html';
+  my $line = $content.lines.first(* ~~ /$module-name/);
+  ok $line, 'line with ' ~ $module-name ~ ' exists';
+  ok $line ~~ /{$part.percent}/, $module-name ~ ' percent ok';
+  ok $line ~~ /{$part.coverable-amount}/, $module-name ~ ' coverable ok';
+  ok $line ~~ /{$part.covered-amount}/, $module-name ~ ' covered ok';
+  ok $line ~~ /"href=\"./report-data/$link\""/, $module-name ~ ' link ok';
+}
+
+'01-render'.&test(:37plan, {
+	setup('lib');
+  $data = Data.read(:$lib);
+  Fixture::silently({ indir($lib.parent, { ReporterHtml.new.do(:$lib, :$data) }) });
+  is report-html-data-path(:$lib).dir.elems, 3, 'data dir with pages';
+  my $file-name-page-name = $data.get-all-parts
+    .map(*.file-name)
+    .map({$_ => .split('/').join('-').substr(0, *-8)}).Map;
+
+  $file-name-page-name
+    .map({check-page($data, .key, .value)});
+
+  my $with-esc = report-html-data-path(:$lib).add('RootModule.html').slurp;
+  ok $with-esc ~~ /'&quot;&amp;&lt;&gt;'/, 'escape ok';
+
+  ok report-html-path(:$lib).e, 'html report exists';
+  my $main-content = report-html-path(:$lib).slurp;
+  $file-name-page-name
+    .map({check-main-page($main-content, .key, .value)});
+  nok $main-content ~~ /'%%'/, 'main page has no placeholders';
+});
+
+'02-color-blind'.&test(:7plan, {
+	setup('lib');
+	$data = Data.read(:$lib);
+	my $reporter = ReporterHtmlColorBlind.new;
+  Fixture::silently({ indir($lib.parent, { $reporter.do(:$lib, :$data) }) });
+  check-page($data, 'RootModule.rakumod', 'RootModule', :color-blind);
+});
+
+done-testing

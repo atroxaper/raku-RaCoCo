@@ -2,11 +2,13 @@ use Test;
 use lib 'lib';
 use App::Racoco::Paths;
 use lib 't/lib';
-use App::Racoco::TmpDir;
+use TestResources;
+use TestHelper;
 
 plan 8;
 
-my ($sources, $lib) = TmpDir::create-tmp-lib('racoco-tests');
+TestResources::prepare('whole');
+my $lib = TestResources::exam-directory.add('lib');
 
 {
 	my $racoco-path = racoco-path(:$lib);
@@ -30,6 +32,7 @@ my ($sources, $lib) = TmpDir::create-tmp-lib('racoco-tests');
 }
 
 {
-  is parent-name($lib), 'racoco-tests', 'parent name ok';
+  is parent-name($lib), 'exam', 'parent name ok';
 }
+
 done-testing

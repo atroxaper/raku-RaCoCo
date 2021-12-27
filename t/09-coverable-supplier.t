@@ -1,0 +1,86 @@
+use Test;
+use lib 'lib';
+use lib 't/lib';
+use App::Racoco::Coverable::Coverable;
+use App::Racoco::Coverable::CoverableLinesSupplier;
+use Fixture;
+use TestHelper;
+
+plan 7;
+
+my ($supplier, $index, $file-name);
+sub setup(
+	:$hash, :$time = 123, :@lines,
+	:$hash-c, :$time-c, :@lines-c,
+	:$file, :$use-index = True
+) {
+	plan $*plan;
+	$file-name = $file;
+	my $indexed = Coverable.new(
+		:$file-name,
+		timestamp => Instant.from-posix($time-c // $time),
+		hashcode => $hash-c // $hash,
+		lines => @lines-c // @lines
+	);
+	$index = Fixture::testIndex($use-index ?? $indexed !! ());
+	my $precomp = Fixture::fakePath($file-name, :modified($time));
+	my $precomp-supplier = Fixture::testPrecompSupplier($file-name, $precomp);
+	my $hashcode-reader = Fixture::testHashcodeReader($precomp.Str, $hash);
+	my $outliner = Fixture::testOutliner($precomp.Str, @lines);
+	$supplier = CoverableLinesSupplier.new(:$index, :supplier($precomp-supplier), :$hashcode-reader, :$outliner);
+}
+
+'01-from-index'.&test(:1plan, {
+	setup(:file<info-from-index>,
+		:hash<hashcode>, lines => (1, 2, 3), lines-c => (4, 5, 6));
+	is $supplier.supply(:file-name<info-from-index>), (4, 5, 6), 'from-index ok';
+});
+
+'02-obsolete-hash'.&test(:2plan, {
+	setup(:file<obsolete-hash>,
+		:hash<hashcode>, :hash-c<obsolete>,
+		lines => (1, 2, 3), lines-c => (4, 5, 6));
+	is $supplier.supply(:$file-name), (1, 2, 3), 'obsolete-hash ok';
+	is $index.retrieve(:$file-name).lines, (1, 2, 3), 'after index';
+});
+
+'03-obsolete-time-never-mind'.&test(:1plan, {
+	setup(:file<obsolete-time>,
+		:123time, :122time-c, :hash<hashcode>,
+		lines => (1, 2, 3), lines-c => (4, 5, 6));
+	is $supplier.supply(:$file-name), (4, 5, 6), 'obsolete-time ok';
+});
+
+'04-empty-index'.&test(:2plan, {
+	setup(:file<empty-index>,
+		:hash<hashcode>, lines => (1, 2, 3),
+		:!use-index);
+	is $supplier.supply(:$file-name), (1, 2, 3), 'empty-index ok';
+	is $index.retrieve(:$file-name).lines, (1, 2, 3), 'after index';
+
+});
+
+'05-moarvm-from-index-and-outline-good'.&test(:2plan, {
+	setup(:file<moarvm-hash>,
+		:hash<hashcode>, :hash-c<MOARVM>,
+		lines => (1, 2, 3), lines-c => (4, 5, 6));
+	is $supplier.supply(:$file-name), (1, 2, 3), 'outline';
+	is $index.retrieve(:$file-name).hashcode, 'hashcode', 'after index';
+});
+
+'06-moarvm-from-index-and-outline-moarvm'.&test(:2plan, {
+	setup(:file<moarvm-hash>,
+		:hash<MOARVM>, :hash-c<MOARVM>,
+		lines => (1, 2, 3), lines-c => (4, 5, 6));
+	is $supplier.supply(:$file-name), (1, 2, 3), 'outline';
+	is $index.retrieve(:$file-name).lines, (4, 5, 6), 'after index';
+});
+
+'07-empty-index-and-outline-moarvm'.&test(:2plan, {
+	setup(:file<moarvm-hash>, :!use-index,
+		:hash<MOARVM>, lines => (1, 2, 3));
+	is $supplier.supply(:$file-name), (1, 2, 3), 'outline';
+	nok $index.retrieve(:$file-name), 'after index';
+});
+
+done-testing

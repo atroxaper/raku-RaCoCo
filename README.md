@@ -10,32 +10,22 @@
 # SYNOPSIS
 
 ```bash
-> racoco
+> racoco -l
 [...]
 All tests successful.
 Files=16, Tests=114,  6 wallclock secs
 Result: PASS
 Coverage: 89.2%
 
+> racoco --fail-level=95
+[...]
+Coverage: 89.2%
+# exit code: 6
+
 > racoco --html --silent
 Visualisation: file://.racoco/report.html
 Coverage: 89.2%
 > browsername .racoco/report.html
-
-> racoco --exec='prove6 -Ilib' --fail-level=95 --silent
-Coverage: 89.2%
-# exit code: 6
-
-> racoco
-[...]
-===SORRY!===
-Library path ｢lib/.precomp｣ has ambiguous .precomp directory with more than one
-CompUnit Repository. Please, make sure you have only the one directory in
-the <library>/.precomp path or use --fix-compunit flag for the next RaCoCo launch
-to erase .precomp directory automatically.
-> racoco --fix-compunit
-[...]
-Coverage: 89.2%
 ```
 
 # INSTALLATION
@@ -46,37 +36,67 @@ If you use zef, then `zef install App::RaCoCo`, or `pakku add App::RaCoCo` if yo
 
 `App::RaCoCo` provides the `racoco` application, which can be used to run tests and calculate code coverage.
 
-You may specify the following parameters:
+You may specify the following options:
+
+* **--exec** - command, which needs to be executed to run tests. For example, you may pass `--exec='prove --exec raku'` to use Perl's `prove` util instead of default `prove6`. Use `--/exec` option to not run tests and use coverage data from the previous run;
+
+* **-l** - short-cut for `--exec='prove6 -l t'`;
+
 * **--lib** - path to directory with target source files (`'./lib'` by default);
 
-* **--raku-bin-dir** - path to directory with raku and moar binaries (`$*EXECUTABLE.parent` by default);
+* **--raku-bin-dir** - path to directory with `raku` and `moar` binaries, which supposed to be used in the `--exec` (`$*EXECUTABLE.parent` by default);
 
-* **--exec** - command, which need to be executed to run tests. For example, you may pass `'prove --exec raku'` to the `exec` parameter to say `prove` to manage your tests, or use `--/exec` parameter to not run tests and use coverage data from the previous run (`prove6` by default);
-
-* **--fail-level** - integer number - if coverage will be less than it then `racoco` will exit with non-zero exitcode;
+* **--fail-level** - integer number - if the coverage level will be less than it then `racoco` will exit with a non-zero exit code;
 
 * **--silent** - hide test result output;
 
-* **--append** - do not clean coverage data before this `racoco` run and append its result to the previous one;
+* **--append** - append the previous run result to the new one;
 
-* **--html** - produce simple html page to visualize results;
+* **--html** - produce a simple HTML page to visualize results. It is short-cut for `--reporter=html`;
 
-* **--color-blind** - addition to `--html` parameter - use more readable colors than green/red pare;
+* **--color-blind** - use with `--html` option to make more readable colors than green/red pare. It is short-cut for `--reporter=html-color-blind`;
 
-* **--fix-compunit** - erase `<library>/.precomp` directory before run tests. See [details below](#notes).
+* **--reporter** - name of a custom result reporter;
+
+* **--properties** - pass custom properties here;
+
+* **configuration-name** - name of section with properties in `racoco.ini` to use in tests (see below [CONFIGURATION FILE](#configuration-file))
+
 
 # NOTES
 
 * RaCoCo application works only with MoarVM backended Raku compiler;
-* It is common practise to not include `use lib 'lib'` line in test files. In such case we need to run tests with command like `prove6 -Ilib`. As RaCoCo uses just `prove6` command by default, then we will need to run it like `racoco --exec='prove6 -Ilib'`;
-* If `<library>/.precomp` directory has more than one directory with compiled sources, then RaCoCo cannot be sure which one need to be analysed. The situation arises, for example, after updating raku compiler. You need to clean `.precomp` directory or delete only the old directories inside. Alternatively, you can run RaCoCo with `--fix-compunit` flag ones to erase `.precomp` directory automatically;
+* It is common practice to not include `use lib 'lib'` line in test files. In a such case, we need to run tests with a command like `prove6 -l`. RaCoCo has a special short-cut option `-l` for you, then you do not need to write `racoco --exec='prove6 -l'`;
 * Unfortunately, the current Rakudo implementation may produce a little different coverage log from run to run. Probably, it is because of some runtime optimisations.
+
+# CONFIGURATION FILE
+
+Tests are a thing that it is customary to run frequently. If you run tests with a command more complicated than just `rococo -l`, then you will like the fact that you can write all the configurations to a special `racoco.ini` file. For example, you regularly run `rococo -l` and `racoco -l --silent --html --fail-level=82` before commit. Then you can create a `rococo.ini` file in the root directory of your project with the following content:
+
+```ini
+exec = prove6 -l
+
+[commit]
+silent = true
+reporter = html
+fail-level = 82
+```
+
+After that just run `racoco` regularly and `racoco commit` before commit. As an alternative for configuration file you can use environment variables with appropriate names, or `--property=name:value;name:value` command-line option, or a combination of them. The priority is: command-line arguments > `--property` option > environment variables > `racoco.ini` file.
+
+# CUSTOM REPORTERS
+
+In addition to the output of results to the console, Rococo supports additional reporters with the `--reporter` option. Examples of such reporters are `html` or `html-color-blind` which build a simple HTML page with results. Please look for other reporters in the [Ecosystem](https://raku.land/?q=racoco).
+
+## Information for Developers
+
+A custom reporter must implement `App::Racoco::Report::Reporter` role, has full qualified name like `App::Racoco::Report::ReporterTheName` and live in `App::Racoco::Report::ReporterTheName` compilation unit (file). Then you can address to it through `--reporter=the-name`. For example, see `ReportHtmlColorBlind.rakumod`.
 
 # AUTHOR
 
-Mikhail Khorkov <atroxaper@cpan.org>
+Mikhail Khorkov <atroxaper[at]cpan.org>
 
-Source can be located at: [github](https://github.com/atroxaper/raku-RaCoCo). Comments and Pull Requests are welcome.
+Sources can be found at: [github](https://github.com/atroxaper/raku-RaCoCo). The new Issues and Pull Requests are welcome.
 
 # COPYRIGHT AND LICENSE
 
