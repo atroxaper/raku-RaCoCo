@@ -27,10 +27,10 @@ jobs:
       - name: Install App::Prove6
         run: zef install --/test App::Prove6
       - name: Run RaCoCo
-        run: raku -Ilib bin/racoco --exec='prove6 t xt'
+        run: raku -Ilib bin/racoco --exec='prove6 t xt' | raku -ne 'say $<num>.floor if /^ "Coverage:" <.ws> $<num>=[\d+(\.\d+)?] "%" $/' > .racoco/percent
       - name: Discover Code Coverage
         run: |
-          coverage=`head -1 .racoco/report.txt | sed 's/\..*//'`
+          coverage=`head -1 .racoco/percent`
           echo $coverage
           echo "COVERAGE=$coverage%" >> $GITHUB_ENV
         shell: bash
