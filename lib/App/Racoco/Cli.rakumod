@@ -44,8 +44,6 @@ sub check-fail-level(Int $fail-level, Data $report) {
   }
 }
 
-subset BoolOrStr where Bool | Str;
-
 sub calculate-report(:$covered-collector, :$coverable-collector) {
   my %covered = $covered-collector.collect();
   my %coverable = $coverable-collector.collect();
@@ -186,20 +184,20 @@ our sub ARGS-TO-CAPTURE(&main, @args --> Capture) is export {
     default { push @new-args, $_ }
   }
   @new-args = (
-    @new-args,
     clean-execs-args(@execs),
     clean-reporters-args(@reporters),
-    clean-fix-compunit(@fix-compunits)
+    clean-fix-compunit(@fix-compunits),
+    |@new-args
   ).flat.grep(*.chars).Array;
   &*ARGS-TO-CAPTURE(&main, @new-args);
 }
 
-sub USAGE() is export {
-  print q:to/END/;
+our sub GENERATE-USAGE(&main, |c) is export {
+  q:to/END/;
 	Usage: racoco [options]
 
 	Options:
-	  configuration-name             name of section in racoco.ini file to use as properties
+		configuration-name             name of section in racoco.ini file to use as properties
 		--exec=<command-string|false>  command, which needs to be executed to run tests or false to not run tests and use coverage data from the previous run ('prove6' by default)
 		-l                             short-cut for --exec='prove6 -l t'
 		--lib=<path>                   path to directory with target source files ('./lib' by default)
