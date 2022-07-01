@@ -1,0 +1,9 @@
+use Test;
+use lib 'lib';
+use Module;
+
+plan 1;
+
+is mod1, 'mod1', 'mod1 ok';
+
+done-testing

@@ -1,7 +1,7 @@
 [![Ubuntu](https://github.com/atroxaper/raku-RaCoCo/actions/workflows/ubuntu.yml/badge.svg)](https://github.com/atroxaper/raku-RaCoCo/actions/workflows/ubuntu.yml)
 [![MacOS](https://github.com/atroxaper/raku-RaCoCo/actions/workflows/macos.yml/badge.svg)](https://github.com/atroxaper/raku-RaCoCo/actions/workflows/macos.yml)
 [![Windows](https://github.com/atroxaper/raku-RaCoCo/actions/workflows/windows.yml/badge.svg)](https://github.com/atroxaper/raku-RaCoCo/actions/workflows/windows.yml)
-![badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/atroxaper/bbe5dc9c78db69d256b11c2ea562a42f/raw/racoco-ubuntu-coco.json)
+[![Coverage Status](https://coveralls.io/repos/github/atroxaper/raku-RaCoCo/badge.svg?branch=master)](https://coveralls.io/github/atroxaper/raku-RaCoCo?branch=master)
 
 # NAME
 
@@ -40,7 +40,9 @@ You may specify the following options:
 
 * **--exec** - command, which needs to be executed to run tests. For example, you may pass `--exec='prove --exec raku'` to use Perl's `prove` util instead of default `prove6`. Use `--/exec` option to not run tests and use coverage data from the previous run;
 
-* **-l** - short-cut for `--exec='prove6 -l t'`;
+* **-l** - short-cut for `--exec='prove6 -l'`;
+
+* **-I** - short-cut for `--exec='prove6 -I.'`;
 
 * **--lib** - path to directory with target source files (`'./lib'` by default);
 

@@ -1,5 +1,9 @@
 Version history:
 
+1.6.0   2022-07-02  'No precompilation modules and -I'
+	- Add support for project modules with 'no precompilation' pragma. Such project will have inaccurate results.
+	- Add '-I' option key as a short-cut for --exec='prove6 -I.'
+
 1.5.0   2021-12-27  'Custom Reporters and Configurations'
 	- Add possibility to implement a custom reporter
 	- Add configuration file racoco.ini

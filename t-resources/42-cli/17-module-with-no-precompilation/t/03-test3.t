@@ -1,0 +1,9 @@
+use Test;
+use lib 'lib';
+use Module3;
+
+plan 1;
+
+is mod3(True), 'mod3', 'mod3 ok';
+
+done-testing

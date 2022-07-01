@@ -1,12 +1,16 @@
 unit module App::Racoco::RunProc;
 
 class RunProc is export {
-	method run(:%vars, |c --> Proc) {
+	method run(:%vars, :&error-handler, |c --> Proc) {
 		my $comand = self!tweak-command-placeholders(c.list[0]);
 		$comand = self!tweak-command($comand, :%vars);
 		my $proc = shell($comand, |c.hash);
 		if $proc.exitcode != 0 {
-			$*ERR.say: "Fail execute: { $comand }";
+			with &error-handler {
+				error-handler($proc, $comand, &default-handler);
+			} else {
+				default-handler($proc, $comand);
+			}
 		}
 		$proc
 	}
@@ -25,6 +29,10 @@ class RunProc is export {
 			%vars.kv.map(-> $k, $v { "$k=$v" }).join(' ') ~ ' ' ~ $command
 		}
 	}
+}
+
+my sub default-handler($proc, $comand) {
+	$*ERR.say: "Fail execute: { $comand }";
 }
 
 our sub autorun(:$proc, :%vars, |c --> Block) is export {

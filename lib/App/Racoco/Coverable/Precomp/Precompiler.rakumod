@@ -15,8 +15,20 @@ class Precompiler is export {
 		$out-path.parent.mkdir;
 		my $source-file = $!lib.add($file-name);
 		my $proc = $!proc.run(
-			qq/$!raku -I$!lib --target=mbc --output=$out-path $source-file/, :!out
+			qq/$!raku -I$!lib --target=mbc --output=$out-path $source-file/, :!out,
+			:err, error-handler => suppress-precompilation-impotence($file-name)
 		);
-		$proc.exitcode ?? Nil !! $out-path;
+		$proc.exitcode || !$out-path.e ?? Nil !! $out-path;
+	}
+
+	my sub suppress-precompilation-impotence($file-name) {
+		-> $proc, $comand, &default-handler {
+			my $error-msg = slurp($proc.err);
+			if $error-msg ~~ /'This compilation unit cannot be pre-compiled'/ {
+				$*OUT.say: "$file-name cannot be precompiled. Coverage results may be inaccurate.";
+			} else {
+				default-handler($proc, $comand);
+			}
+		}
 	}
 }

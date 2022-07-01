@@ -38,6 +38,16 @@ our sub failProc() {
 	}.new
 }
 
+our sub realProc() {
+	class RealProc is RunProc {
+		has $.c;
+		method run(|c) {
+			$!c = c;
+			RunProc.new.run(|c);
+		}
+	}.new
+}
+
 our sub mockProc(*%responces) {
 	class :: is RunProc {
 		has %.responces;

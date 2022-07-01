@@ -18,7 +18,7 @@ sub setup($file, $lib-name) {
 	TestResources::prepare($*subtest);
 	$lib = TestResources::exam-directory.add($lib-name);
 	$file-name = $file;
-	$proc = Fixture::fakeProc;
+	$proc = Fixture::realProc;
 	$supplier = PrecompSupplierReal.new(
 		lookup => PrecompLookup.new(:$lib, compiler-id => -> {Fixture::compiler-id}),
 		precompiler => Precompiler.new(:$lib, :raku<raku>, :$proc)
