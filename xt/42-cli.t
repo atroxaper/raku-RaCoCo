@@ -8,7 +8,7 @@ use App::Racoco::X;
 use TestResources;
 use TestHelper;
 
-plan 16;
+plan 17;
 
 constant &APP_MAIN = &App::Racoco::Cli::MAIN;
 my ($sources, $lib);
@@ -89,11 +89,11 @@ sub do-main(&bloc) {
   	APP_MAIN(:silent);
   	APP_MAIN(:append, exec => 'prove6 xt', :silent);
   });
-  is $captured.out.text.lines.join, "Coverage: 25%Coverage: 75%", 'pass append';
+  is $captured.out.text.lines.join, "Coverage: 20%Coverage: 60%", 'pass append';
   nok coverage-log-path(:$lib).e, 'coverage.log deleted';
 });
 
-'09-two-precomp-fail'.&test(:1plan, {
+'09-two-precomp-ok'.&test(:1plan, {
   setup();
   do-main({ lives-ok { APP_MAIN(:silent) }, 'works with two precomp' });
 });
@@ -153,6 +153,17 @@ sub do-main(&bloc) {
 	my $captured = do-main({ APP_MAIN(:silent) });
 	is $captured.out.text.trim.lines.join('|'), 'Coverage: 75%|CustomThree: pass',
 		'properties from config';
+});
+
+'17-module-with-no-precompilation'.&test(:2plan, {
+	setup();
+	my $captured = do-main({
+		APP_MAIN(:silent);
+	});
+	is $captured.err.text.trim, '', 'no error';
+	is $captured.out.text.trim.lines.join(' '), 'Module.rakumod cannot be precompiled. ' ~
+			'Coverage results may be inaccurate. Coverage: 75%', 'warn and inaccurate';
+	say 'sbsdfsf';
 });
 
 done-testing
