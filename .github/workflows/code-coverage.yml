@@ -24,6 +24,8 @@ jobs:
         run: zef install --/test --test-depends --deps-only .
       - name: Install App::Prove6
         run: zef install --/test App::Prove6
+      - name: Install App::Racoco::Report::ReporterCoveralls
+        run: zef install --/test App::Racoco::Report::ReporterCoveralls
       - name: Run RaCoCo
         run: raku -Ilib bin/racoco --reporter=coveralls --exec='prove6 t xt'
         env:
