@@ -6,14 +6,16 @@ use Fixture;
 use TestResources;
 use TestHelper;
 
-plan 4;
+plan 6;
 
 my ($test-file);
 sub setup() {
 	plan $*plan;
-	TestResources::prepare($*subtest);
-	my $sources = TestResources::exam-directory;
-	$test-file = $sources.add('file');
+	unless $*wo-resources {
+		TestResources::prepare($*subtest);
+		my $sources = TestResources::exam-directory;
+		$test-file = $sources.add('file');
+	}
 }
 
 '01-run-proc-with-vars-and-out'.&test(:3plan, {
@@ -21,7 +23,7 @@ sub setup() {
 	my $out will leave { .close } = $test-file.open(:w);
 	my %vars = V1 => 'v1', V2 => 'v2';
 	my $result = RunProc.new
-		.run(q/raku -e "say qq[vars: %*ENV{'V1'} %*ENV{'V2'}]"/, :$out, :%vars);
+			.run(q/raku -e "say qq[vars: %*ENV{'V1'} %*ENV{'V2'}]"/, :$out, :%vars);
 	ok $test-file.e, 'run say into file';
 	is $test-file.slurp.trim, 'vars: v1 v2', 'say into file with vars correct';
 	is $result.exitcode, 0, 'exitcode 0';
@@ -30,21 +32,60 @@ sub setup() {
 '02-run-without-vars-and-out'.&test(:3plan, {
 	setup();
 	my $result = RunProc.new
-		.run(qq/raku -e "q[{$test-file}].IO.spurt(q[no vars and out])"/);
+			.run(qq/raku -e "q[{ $test-file }].IO.spurt(q[no vars and out])"/);
 	ok $test-file.e, 'run spurt into file';
 	is $test-file.slurp.trim, 'no vars and out',
-		'say into file without any params';
+			'say into file without any params';
 	is $result.exitcode, 0, 'exitcode 0';
 });
 
-'03-run-not-exists'.&test(:1plan, {
+'03-run-not-exists-with-default-error-handler'.&test(:2plan, :wo-resources, {
 	setup();
 	my $actual;
-  Fixture::silently({ $actual = RunProc.new.run(q/not-exists/, :!err) });
+	my $captured = Fixture::silently({ $actual = RunProc.new.run(q/not-exists/, :!err) });
+
+	is $captured.err.text.trim, 'Fail execute: not-exists', 'default error handler';
 	nok $actual, 'run not-exists ok';
 });
 
-'04-autorun-and-tweak-placeholders'.&test(:1plan, {
+'04-run-not-exists-with-custom-error-handler'.&test(:2plan, :wo-resources, {
+	setup();
+	my $actual;
+	my $error-handler = -> $proc, $comand, &default-handler {
+		with $proc.err {
+			my $with-or-wihtout = slurp($proc.err) ?? 'with' !! 'without';
+			$*ERR.say: "Fail execute: { $comand } { $with-or-wihtout } error";
+		}
+	}
+	my $captured = Fixture::silently({
+		$actual = RunProc.new.run(q/not-exists/, :$error-handler, :err)
+	});
+
+	is $captured.err.text.trim, 'Fail execute: not-exists with error', 'custom error handler';
+	nok $actual, 'run not-exists ok';
+});
+
+'05-run-not-exists-with-custom-error-handler-to-default'.&test(:2plan, :wo-resources, {
+	setup();
+	my $actual;
+	my $error-handler = -> $proc, $comand, &default-handler {
+		with $proc.err {
+			if slurp($proc.err) ~~ /'not-exists'/ {
+				default-handler($proc, $comand);
+			} else {
+				$*ERR.say: "Fail";
+			}
+		}
+	}
+	my $captured = Fixture::silently({
+		$actual = RunProc.new.run(q/not-exists/, :$error-handler, :err)
+	});
+
+	is $captured.err.text.trim, 'Fail execute: not-exists', 'custom to default error handler';
+	nok $actual, 'run not-exists ok';
+});
+
+'06-autorun-and-tweak-placeholders'.&test(:1plan, :wo-resources, {
 	setup();
 	my &code = autorun(q/raku -e "print $*RAKU.compiler.id"/, proc => RunProc.new, :out);
 	is code(), Fixture::compiler-id, 'autorun ok';
