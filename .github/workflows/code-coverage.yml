@@ -25,22 +25,7 @@ jobs:
       - name: Install App::Prove6
         run: zef install --/test App::Prove6
       - name: Run RaCoCo
-        run: raku -Ilib bin/racoco --exec='prove6 t xt' | raku -ne 'say $<num>.floor if /^ "Coverage:" <.ws> $<num>=[\d+(\.\d+)?] "%" $/' > .percent
-      - name: Discover Code Coverage
-        run: |
-          coverage=`head -1 .percent`
-          echo $coverage
-          echo "COVERAGE=$coverage%" >> $GITHUB_ENV
-        shell: bash
-      - name: Create Code Coverage Badge
-        uses: schneegans/dynamic-badges-action@v1.1.0
-        with:
-          auth: ${{ secrets.GIST_COCO_TOCKEN }}
-          gistID: bbe5dc9c78db69d256b11c2ea562a42f
-          filename: racoco-ubuntu-coco.json
-          namedLogo: GitHub
-          logoColor: 969da4
-          label: Coverage
-          labelColor: 343a41
-          message: ${{ env.COVERAGE }}
-          color: 5cb45a
+        run: racoco --reporter=coveralls
+        env:
+          RAKULIB: './lib'
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
