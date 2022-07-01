@@ -40,7 +40,9 @@ You may specify the following options:
 
 * **--exec** - command, which needs to be executed to run tests. For example, you may pass `--exec='prove --exec raku'` to use Perl's `prove` util instead of default `prove6`. Use `--/exec` option to not run tests and use coverage data from the previous run;
 
-* **-l** - short-cut for `--exec='prove6 -l t'`;
+* **-l** - short-cut for `--exec='prove6 -l'`;
+
+* **-I** - short-cut for `--exec='prove6 -I.'`;
 
 * **--lib** - path to directory with target source files (`'./lib'` by default);
 

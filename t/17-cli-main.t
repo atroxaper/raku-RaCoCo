@@ -4,7 +4,7 @@ use lib 't/lib';
 use App::Racoco::Cli;
 use Fixture;
 
-plan 22;
+plan 23;
 
 my @*RESULT;
 my &*ARGS-TO-CAPTURE = sub (&, @args) { @*RESULT := @args }
@@ -122,6 +122,12 @@ test(
 	(<-l>,),
 	('--exec=prove6 -l',),
 	desc => 'exec: -l'
+);
+
+test(
+	(<-I>,),
+	('--exec=prove6 -I.',),
+	desc => 'exec: -I'
 );
 
 ok Fixture::silently({

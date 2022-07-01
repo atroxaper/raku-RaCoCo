@@ -143,7 +143,9 @@ our sub MAIN(
 sub clean-execs-args(@args --> Str) {
   return '' if @args.elems == 0;
   return 'fail' if @args.elems > 1;
-  return @args[0] eq '-l' ?? '--exec=prove6 -l' !! @args[0];
+  return @args[0] eq '-l' ?? '--exec=prove6 -l'
+      !! @args[0] eq '-I' ?? '--exec=prove6 -I.'
+      !! @args[0];
 }
 
 sub clean-reporters-args(@reporters --> Str) {
@@ -172,6 +174,7 @@ our sub ARGS-TO-CAPTURE(&main, @args --> Capture) is export {
   my @fix-compunits;
   for @args -> $_ {
     when '-l' { push @execs, $_ }
+    when '-I' { push @execs, $_ }
     when /^'--exec'/ { push @execs, $_ }
     when /^'--/exec'/ { push @execs, $_ }
 
@@ -200,6 +203,7 @@ our sub GENERATE-USAGE(&main, |c) is export {
 		configuration-name             name of section in racoco.ini file to use as properties
 		--exec=<command-string|false>  command, which needs to be executed to run tests or false to not run tests and use coverage data from the previous run ('prove6' by default)
 		-l                             short-cut for --exec='prove6 -l t'
+		-I                             short-cut for --exec='prove6 -I.'
 		--lib=<path>                   path to directory with target source files ('./lib' by default)
 		--raku-bin-dir=<path>          path to directory with raku and moar binaries, which supposed to be used in the --exec ($*EXECUTABLE.parent by default)
 		--fail-level=<int>             minimum possible coverage percent for success exit (0 by default)
