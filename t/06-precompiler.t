@@ -8,7 +8,7 @@ use Fixture;
 use App::Racoco::Paths;
 use TestResources;
 
-plan 5;
+plan 6;
 
 my ($lib, $our-precomp, $proc, $precompiler, $subtest);
 sub setup($proc-arg, :$subtest, :$plan!, :$wo-resources = False) {
@@ -24,13 +24,13 @@ sub setup($proc-arg, :$subtest, :$plan!, :$wo-resources = False) {
 	$precompiler = Precompiler.new(:$lib, :raku<raku>, :$proc);
 }
 
-$subtest = '01-fake-compile';
+$subtest = '01-right-proc-args';
 subtest $subtest, {
-	setup(Fixture::fakeProc, :$subtest, :7plan, :wo-resources);
+	setup(Fixture::fakeProc, :$subtest, :6plan, :wo-resources);
   my $file-name = 'Module'.IO.add('Module2.rakumod').Str;
   my $source-file = $lib.add($file-name);
   my $out-path = $our-precomp.add(file-precomp-path(:$lib, path => $file-name));
-  is $precompiler.compile(:$file-name), $out-path, 'fake precomp ok';
+  $precompiler.compile(:$file-name);
   is $proc.c.elems, 1, 'one comand';
 	is $proc.c.list.[0], "raku -I$lib --target=mbc --output=$out-path $source-file", 'right comand';
 	is $proc.c.hash.elems, 3, 'three optioons';
@@ -71,6 +71,15 @@ subtest $subtest, {
 	my $captured = Fixture::silently({ $result = $precompiler.compile(:$file-name) });
 	nok $result.defined, 'fail precomp ok';
 	ok $captured.out.text ~~ /'Module.rakumod cannot be precompiled.'/, 'default error handler';
+}
+
+$subtest = '06-dependency-with-no-precompile';
+subtest $subtest, {
+	setup(RunProc.new, :$subtest, :2plan);
+	my $file-name = 'Module2.rakumod';
+	my $out-path = $our-precomp.add(file-precomp-path(:$lib, path => $file-name));
+	nok $precompiler.compile(:$file-name).defined, 'precomp ok without output file';
+	nok $out-path.e, 'precomp exists';
 }
 
 done-testing

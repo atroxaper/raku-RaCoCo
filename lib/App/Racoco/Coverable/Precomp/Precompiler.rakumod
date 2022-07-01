@@ -18,7 +18,7 @@ class Precompiler is export {
 			qq/$!raku -I$!lib --target=mbc --output=$out-path $source-file/, :!out,
 			:err, error-handler => suppress-precompilation-impotence($file-name)
 		);
-		$proc.exitcode ?? Nil !! $out-path;
+		$proc.exitcode || !$out-path.e ?? Nil !! $out-path;
 	}
 
 	my sub suppress-precompilation-impotence($file-name) {
