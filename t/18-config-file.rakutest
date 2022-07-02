@@ -194,7 +194,3 @@ is-deeply %te, {
 		:!key6, :!key7, :!key8, :!key9, :!key0
 	}
 };
-
-
-
-done-testing

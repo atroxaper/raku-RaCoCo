@@ -42,5 +42,3 @@ sub setup($lib-name) {
 	setup(Nil);
 	is compiler-id(raku => 'raku', proc => RunProc.new)(), Fixture::compiler-id, 'compiler-id ok';
 });
-
-done-testing;

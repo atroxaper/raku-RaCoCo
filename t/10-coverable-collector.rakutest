@@ -32,5 +32,3 @@ subtest $subtest, {
     },
     'lines collector ok';
 }
-
-done-testing

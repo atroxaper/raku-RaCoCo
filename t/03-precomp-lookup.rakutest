@@ -50,5 +50,3 @@ sub setup($file, $lib-name) {
 	my $expected = our-precomp-path(:$lib).add(file-precomp-path(:$lib, path => $file-name));
   is $lookup.lookup(:$file-name).IO, $expected, 'lookup in our precomp';
 });
-
-done-testing

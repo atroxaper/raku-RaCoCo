@@ -23,5 +23,3 @@ subtest $subtest, {
 	my $path = $lib.parent.add('precompiled');
 	is $reader.read(:$path), $expected, 'hashcode ok';
 }
-
-done-testing

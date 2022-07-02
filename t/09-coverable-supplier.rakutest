@@ -82,5 +82,3 @@ sub setup(
 	is $supplier.supply(:$file-name), (1, 2, 3), 'outline';
 	nok $index.retrieve(:$file-name), 'after index';
 });
-
-done-testing

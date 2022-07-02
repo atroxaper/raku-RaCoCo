@@ -77,5 +77,3 @@ sub check-main-page($content, $file-name, $page-name) {
   Fixture::silently({ indir($lib.parent, { $reporter.do(:$lib, :$data) }) });
   check-page($data, 'RootModule.rakumod', 'RootModule', :color-blind);
 });
-
-done-testing

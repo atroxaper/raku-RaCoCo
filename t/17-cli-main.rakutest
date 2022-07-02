@@ -144,5 +144,4 @@ ok Fixture::silently({
 		desc => 'fix-compunit: fix-compunit -l'
 )}).err.text.trim ~~ /'fix-compunit'/, 'noted';
 
-done-testing;
 exit; # this exit is need to prevent a stun in recursion MAIN call

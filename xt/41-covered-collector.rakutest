@@ -74,5 +74,3 @@ sub collect() {
 	ok %covered-lines<MyModuleName1.rakumod> === bag(1, 2, 2, 1, 3, 5), 'parse 1 ok';
 	ok %covered-lines<MyModuleName2.rakumod> === bag(1, 1, 1, 1), 'parse 2 ok';
 });
-
-done-testing

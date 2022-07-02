@@ -46,5 +46,3 @@ sub setup($file, $lib-name) {
 	is $supplier.supply(:$file-name), $expected, 'compile ok';
 	nok $proc.c, 'cold proc';
 });
-
-done-testing

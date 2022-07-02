@@ -11,5 +11,3 @@ sub test($sha) {
 
 test(App::Racoco::Sha::NQPSha.new);
 test(App::Racoco::Sha::create());
-
-done-testing

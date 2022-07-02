@@ -178,5 +178,3 @@ sub setup() {
 	is DataPart.plus(Nil, $part), $part, 'nil plus value';
 	dies-ok { DataPart.plus(Nil, Nil) }, 'nil plus nil dies';
 });
-
-done-testing

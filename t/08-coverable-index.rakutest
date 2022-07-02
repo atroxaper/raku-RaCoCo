@@ -56,5 +56,3 @@ $subtest = '03-without-index-file';
 subtest $subtest, {
 	lives-ok { setup('lib', :$subtest, :1plan) }, 'without index file';
 }
-
-done-testing

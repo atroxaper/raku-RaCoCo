@@ -24,5 +24,3 @@ sub setup($lib-name) {
 	setup('lib');
 	is project-name(:$lib), 'exam';
 });
-
-done-testing

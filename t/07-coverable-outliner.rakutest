@@ -31,5 +31,3 @@ subtest $subtest, {
 	Fixture::silently({ $actual = $outliner.outline(:$path) });
   is $actual, (), 'fail moar proc';
 }
-
-done-testing

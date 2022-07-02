@@ -34,5 +34,3 @@ my $lib = TestResources::exam-directory.add('lib');
 {
   is parent-name($lib), 'exam', 'parent name ok';
 }
-
-done-testing

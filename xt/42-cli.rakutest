@@ -165,5 +165,3 @@ sub do-main(&bloc) {
 			'Coverage results may be inaccurate. Coverage: 75%', 'warn and inaccurate';
 	say 'sbsdfsf';
 });
-
-done-testing

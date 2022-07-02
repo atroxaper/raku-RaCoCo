@@ -32,6 +32,3 @@ sub setup() {
 	is file-precomp-path(path => 'dir1/dir2/dir3/file.rakumod'.IO, :$lib),
 		'B7'.IO.add('B7E0FD976577C721036834DB17F280990D5FFE1F');
 });
-
-done-testing
-

@@ -81,5 +81,3 @@ subtest $subtest, {
 	nok $precompiler.compile(:$file-name).defined, 'precomp ok without output file';
 	nok $out-path.e, 'precomp exists';
 }
-
-done-testing

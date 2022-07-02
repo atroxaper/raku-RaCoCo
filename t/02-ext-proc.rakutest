@@ -90,5 +90,3 @@ sub setup() {
 	my &code = autorun(q/raku -e "print $*RAKU.compiler.id"/, proc => RunProc.new, :out);
 	is code(), Fixture::compiler-id, 'autorun ok';
 });
-
-done-testing

@@ -114,5 +114,3 @@ sub setup($lib-name?) {
 	is Data.plus($data1, Nil), $data1, 'data plus nil';
 	is Data.plus(Nil, $data1), $data1, 'nil plu data';
 });
-
-done-testing
