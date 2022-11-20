@@ -73,7 +73,7 @@ You may specify the following options:
 
 # CONFIGURATION FILE
 
-Tests are a thing that it is customary to run frequently. If you run tests with a command more complicated than just `rococo -l`, then you will like the fact that you can write all the configurations to a special `racoco.ini` file. For example, you regularly run `rococo -l` and `racoco -l --silent --html --fail-level=82` before commit. Then you can create a `rococo.ini` file in the root directory of your project with the following content:
+Tests are a thing that it is customary to run frequently. If you run tests with a command more complicated than just `racoco -l`, then you will like the fact that you can write all the configurations to a special `racoco.ini` file. For example, you regularly run `racoco -l` and `racoco -l --silent --html --fail-level=82` before commit. Then you can create a `racoco.ini` file in the root directory of your project with the following content:
 
 ```ini
 exec = prove6 -l
@@ -88,7 +88,7 @@ After that just run `racoco` regularly and `racoco commit` before commit. As an 
 
 # CUSTOM REPORTERS
 
-In addition to the output of results to the console, Rococo supports additional reporters with the `--reporter` option. Examples of such reporters are `html` or `html-color-blind` which build a simple HTML page with results. Please look for other reporters in the [Ecosystem](https://raku.land/?q=racoco).
+In addition to the output of results to the console, Racoco supports additional reporters with the `--reporter` option. Examples of such reporters are `html` or `html-color-blind` which build a simple HTML page with results. Please look for other reporters in the [Ecosystem](https://raku.land/?q=racoco).
 
 ## Information for Developers
 
