@@ -1,5 +1,7 @@
 unit module App::Racoco::Paths;
 
+use App::Racoco::X;
+
 constant \DOT-RACOCO = '.racoco';
 constant \DOT-PRECOMP = '.precomp';
 constant \OUR-PRECOMP = '.precomp';
@@ -62,3 +64,21 @@ our sub config-file(IO() :$lib) is export {
 	absolute($lib).parent.add(CONFIG-FILE)
 }
 
+class Paths is export {
+	has IO::Path $.root;
+	has IO::Path $.lib;
+	has IO::Path $.racoco;
+
+	submethod BUILD(IO() :$root, IO() :$lib, IO() :$racoco) {
+		$!root = absolute($root);
+		App::Racoco::X::WrongRootPath.new(:path($root)).throw unless $!root.e;
+		$!lib = absolute($lib);
+		App::Racoco::X::WrongLibPath.new(:path($lib)).throw unless $!lib.e;
+		$!racoco = absolute($racoco);
+		mkdir $!racoco;
+	}
+
+	multi method from(IO() :$lib --> Paths:D) {
+		self.bless(:root($lib.parent), :$lib, :racoco($lib.parent.add(DOT-RACOCO)))
+	}
+}

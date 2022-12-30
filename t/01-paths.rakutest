@@ -1,11 +1,31 @@
 use Test;
 use lib 'lib';
 use App::Racoco::Paths;
+use App::Racoco::X;
 use lib 't/lib';
 use TestResources;
 use TestHelper;
 
-plan 8;
+plan 9;
+
+my $exam = TestResources::exam-directory;
+sub setup() {
+	plan $*plan;
+	TestResources::prepare($*subtest);
+}
+
+'01-from-lib'.&test(:5plan, {
+	setup();
+	indir($exam, {
+		throws-like { Paths.from(:lib<non-exist>) }, App::Racoco::X::WrongLibPath,
+				'throw non-esist';
+		my $p = Paths.from(:lib<exist-lib>);
+		ok $p.lib.e, 'lib exist';
+		ok $p.root.e, 'root exist';
+		ok $p.racoco.e, 'racoco exist';
+		is $p.lib.parent, $p.root, 'root is parent of lib';
+	});
+});
 
 TestResources::prepare('whole');
 my $lib = TestResources::exam-directory.add('lib');
