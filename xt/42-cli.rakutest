@@ -163,5 +163,4 @@ sub do-main(&bloc) {
 	is $captured.err.text.trim, '', 'no error';
 	is $captured.out.text.trim.lines.join(' '), 'Module.rakumod cannot be precompiled. ' ~
 			'Coverage results may be inaccurate. Coverage: 75%', 'warn and inaccurate';
-	say 'sbsdfsf';
 });
