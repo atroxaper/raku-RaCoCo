@@ -1,17 +1,28 @@
 unit module App::Racoco::X;
 
-class WrongLibPath is Exception {
+class WrongPath is Exception {
   has $.path;
 
-  method message() { "Library path ｢$!path｣ does not exists." }
+  method message() { "$.path-name path ｢$!path｣ does not exists." }
+
   method backtrace() { '' }
+  method path-name() { ... }
 }
 
-class WrongRakuBinDirPath is Exception {
-  has $.path;
+class WrongRootPath is WrongPath {
+  method path-name() { 'Project root' }
+}
 
-  method message() { "Raku bin dir ｢$!path｣ is wrong." }
-  method backtrace() { '' }
+class WrongLibPath is WrongPath {
+  method path-name() { 'Library' }
+}
+
+class WrongRacocoPath is WrongPath {
+  method path-name() { '.racoco parent' }
+}
+
+class WrongRakuBinDirPath is WrongPath {
+  method path-name() { 'Raku bin dir' }
 }
 
 class CannotReadReport is Exception is export {
