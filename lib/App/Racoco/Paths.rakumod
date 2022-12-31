@@ -69,16 +69,19 @@ class Paths is export {
 	has IO::Path $.lib;
 	has IO::Path $.racoco;
 
-	submethod BUILD(IO() :$root, IO() :$lib, IO() :$racoco) {
-		$!root = absolute($root);
-		App::Racoco::X::WrongRootPath.new(:path($root)).throw unless $!root.e;
-		$!lib = absolute($lib);
-		App::Racoco::X::WrongLibPath.new(:path($lib)).throw unless $!lib.e;
-		$!racoco = absolute($racoco);
-		mkdir $!racoco;
-	}
-
 	multi method from(IO() :$lib --> Paths:D) {
 		self.bless(:root($lib.parent), :$lib, :racoco($lib.parent.add(DOT-RACOCO)))
+	}
+
+	submethod BUILD(IO() :$root, IO() :$lib, IO() :$racoco) {
+		$!root = check-dir-path($root, App::Racoco::X::WrongRootPath);
+		$!lib = check-dir-path($lib, App::Racoco::X::WrongLibPath);
+		mkdir $racoco;
+		$!racoco = check-dir-path($racoco, App::Racoco::X::WrongRacocoPath);
+	}
+
+	sub check-dir-path(IO $path, App::Racoco::X::WrongPath:U $err-class) {
+		$err-class.new(:$path).throw unless $path ~~ :e & :d;
+		absolute($path);
 	}
 }

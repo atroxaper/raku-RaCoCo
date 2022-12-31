@@ -14,11 +14,13 @@ sub setup() {
 	TestResources::prepare($*subtest);
 }
 
-'01-from-lib'.&test(:5plan, {
+'01-from-lib'.&test(:6plan, {
 	setup();
 	indir($exam, {
 		throws-like { Paths.from(:lib<non-exist>) }, App::Racoco::X::WrongLibPath,
 				'throw non-esist';
+		throws-like { Paths.from(:lib<non-lib-dir>) }, App::Racoco::X::WrongLibPath,
+				'throw non-lib-dir';
 		my $p = Paths.from(:lib<exist-lib>);
 		ok $p.lib.e, 'lib exist';
 		ok $p.root.e, 'root exist';
