@@ -6,12 +6,12 @@ use lib 't/lib';
 use TestResources;
 use TestHelper;
 
-plan 9;
+plan 10;
 
 my $exam = TestResources::exam-directory;
 sub setup() {
 	plan $*plan;
-	TestResources::prepare($*subtest);
+	TestResources::prepare($*subtest) unless $*wo-resources;
 }
 
 '01-from-lib'.&test(:6plan, {
@@ -27,6 +27,13 @@ sub setup() {
 		ok $p.racoco.e, 'racoco exist';
 		is $p.lib.parent, $p.root, 'root is parent of lib';
 	});
+});
+
+'02-root-hash-name'.&test(:1plan, :wo-resources, {
+	setup();
+	is root-hash-name('/home/user/projects/project'),
+		'B8D6346BB8E1B3654A01753655EA8BF0521B17A6',
+		'root hash name';
 });
 
 TestResources::prepare('whole');

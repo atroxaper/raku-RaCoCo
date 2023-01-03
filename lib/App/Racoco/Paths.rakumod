@@ -1,5 +1,6 @@
 unit module App::Racoco::Paths;
 
+use App::Racoco::Sha;
 use App::Racoco::X;
 
 constant \DOT-RACOCO = '.racoco';
@@ -58,6 +59,10 @@ our sub meta6-path(IO() :$lib --> IO::Path:D) is export {
 
 our sub parent-name(IO() $path) is export {
   absolute($path).parent.basename
+}
+
+our sub root-hash-name(IO() $path --> Str) is export {
+	App::Racoco::Sha::create.uc(absolute($path).Str)
 }
 
 our sub config-file(IO() :$lib) is export {
