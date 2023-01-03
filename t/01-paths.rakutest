@@ -6,7 +6,7 @@ use lib 't/lib';
 use TestResources;
 use TestHelper;
 
-plan 10;
+plan 11;
 
 my $exam = TestResources::exam-directory;
 sub setup() {
@@ -34,6 +34,12 @@ sub setup() {
 	is root-hash-name('/home/user/projects/project'),
 		'B8D6346BB8E1B3654A01753655EA8BF0521B17A6',
 		'root hash name';
+});
+
+'03-racoco-path'.&test(:1plan, {
+	setup();
+	my $path = racoco-path(lib => TestResources::exam-directory.add('lib'));
+	ok $path.add('.keep').e, 'racoco path with root id';
 });
 
 TestResources::prepare('whole');

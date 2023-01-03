@@ -1,6 +1,7 @@
 unit module TestResources;
 
 use App::Racoco::ModuleNames;
+use App::Racoco::Sha;
 use TmpDir;
 use Fixture;
 
@@ -60,6 +61,9 @@ sub fix-name(IO::Path $path --> IO::Path) {
     my $precomp-path = file-precomp-path(:$lib, path => $module-name);
     try $path.parent.add($precomp-path.parent).mkdir;
     return $path.parent.add($precomp-path);
+  } elsif $basename eq 'root-id' {
+    my $root-hash-name = App::Racoco::Sha::create.uc(exam-directory());
+    return $path.parent.add($root-hash-name);
   }
   return $path;
 }

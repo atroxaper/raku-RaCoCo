@@ -23,6 +23,7 @@ sub absolute(IO::Path $path --> IO::Path) {
 
 our sub racoco-path(IO() :$lib --> IO::Path:D) is export {
 	mkdir absolute($lib).parent.add(DOT-RACOCO)
+		.add(root-hash-name($lib.parent));
 }
 
 our sub our-precomp-path(IO() :$lib --> IO::Path:D) is export {
