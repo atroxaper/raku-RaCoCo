@@ -1,0 +1,93 @@
+use Test;
+use lib 'lib';
+
+use App::Racoco::Configuration;
+
+plan 8;
+
+subtest '01-empty', {
+	plan 2;
+	my $config = ConfigurationFactory.empty();
+	isa-ok $config, Configuration, 'empty type';
+	is $config.get('foo'), Nil, 'empty get';
+}
+
+subtest '02-env', {
+	plan 3;
+	my $config = ConfigurationFactory.env();
+	isa-ok $config, Configuration, 'env type';
+	is $config.get('foo'), Nil, 'env not get';
+	%*ENV<foo> = 'bar';
+	is $config.get('foo'), 'bar', 'env get';
+}
+
+subtest '03-args', {
+	plan 3;
+	my $config = ConfigurationFactory.args(:foo(42));
+	isa-ok $config, Configuration, 'args type';
+	is $config.get('foo'), 42, 'args get';
+	is ConfigurationFactory.args(:foo(42), :bar<baz>).get('bar'), 'baz',
+			'args get';
+}
+
+subtest '04-or', {
+	plan 3;
+	my $factory = ConfigurationFactory.empty().or();
+	isa-ok $factory, App::Racoco::Configuration::Factory, 'factory type';
+	my $config = ConfigurationFactory.env.or.args(:foo(42), :bar(24));
+	%*ENV<foo> = 'from env';
+	is $config.get('foo'), 'from env', 'get from env';
+	is $config.get('bar'), 24, 'get from args';
+}
+
+subtest '05-args-filter', {
+	plan 2;
+	sub make(:$foo, :$bar) { ConfigurationFactory.args(:$foo, :$bar).or.env }
+	my $config = make(:foo<baz>);
+	%*ENV<bar> = 42;
+	is $config.get('bar'), 42, 'agrs filter';
+	is make(:foo<baz>, :bar<foobar>).get('bar'), 'foobar', 'agrs filter 2';
+}
+
+subtest '06-one-line', {
+	plan 2;
+	my $config = ConfigurationFactory.property-line('foo:42;bar:baz');
+	isa-ok $config, Configuration, 'property-line type';
+	is $config.get('bar'), 'baz', 'property-line get';
+}
+
+subtest '07-ini', {
+	plan 6;
+	my $content = q:to/END/;
+		top = good value
+		good = boom
+
+		[good]
+		top = boom
+		good = good value
+
+		[bad]
+		top = boom
+		good = boom
+		END
+	my $top-config = ConfigurationFactory.ini($content);
+	isa-ok $top-config, Configuration, 'ini top type';
+	is $top-config.get('top'), 'good value', 'ini top get ok';
+	is $top-config.get('good'), 'boom', 'ini top get nok';
+	my $section-config = ConfigurationFactory.ini($content, :section<good>);
+	is $section-config.get('top'), 'boom', 'ini section get nok';
+	is $section-config.get('good'), 'good value', 'ini section get ok';
+	my $miss-section = ConfigurationFactory.ini($content, :section<miss>);
+	nok $miss-section.get('top'), 'ini miss section nok';
+}
+
+subtest '08-all-or', {
+	plan 1;
+	my $config = ConfigurationFactory
+		.empty.or
+		.env.or
+		.args(values => %{:3a}).or
+		.ini("foo = bar").or
+		.empty;
+	isa-ok $config, Configuration, 'all or ok';
+}

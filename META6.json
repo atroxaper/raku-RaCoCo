@@ -15,6 +15,7 @@
   "provides": {
     "App::Racoco::Cli": "lib/App/Racoco/Cli.rakumod",
     "App::Racoco::ConfigFile": "lib/App/Racoco/ConfigFile.rakumod",
+    "App::Racoco::Configuration::Factory": "lib/App/Racoco/Configuration/Factory.rakumod",
     "App::Racoco::Coverable::Coverable": "lib/App/Racoco/Coverable/Coverable.rakumod",
     "App::Racoco::Coverable::CoverableIndex": "lib/App/Racoco/Coverable/CoverableIndex.rakumod",
     "App::Racoco::Coverable::CoverableLinesSupplier": "lib/App/Racoco/Coverable/CoverableLinesSupplier.rakumod",
