@@ -22,7 +22,7 @@ sub setup($lib-name = 'lib') {
 	is $actual<one>, 't w o', 'parsed with spases';
 });
 
-'02-all-properties'.&test(:6plan, {
+'02-all-properties'.&test(:7plan, {
 	setup();
 	%*ENV<from-command-line> = 'env: overridden';
 	%*ENV<from-env> = 'env value';
@@ -38,6 +38,7 @@ sub setup($lib-name = 'lib') {
 	is $properties.property('from-top-section'), 'top value', 'top > Any';
 	is $properties.property('from-good-section'), 'good value', 'good > top';
 	nok $properties.property('not-exists'), 'not exists';
+	is $properties.property('lib'), 'very good lib', 'lib from properties';
 });
 
 '03-empty-config'.&test(:2plan, {

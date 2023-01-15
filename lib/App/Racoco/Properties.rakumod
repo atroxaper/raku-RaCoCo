@@ -32,5 +32,7 @@ method property($key) {
 
 method parse-command-line(::?CLASS:U: $command-line --> Associative) {
 	return %() without $command-line;
-	$command-line.trim.split(';', :skip-empty).map({.[0].trim => .[1].trim with .split(':', :skip-empty)}).Map;
+	$command-line.trim.split(';', :skip-empty)
+			.map({.[0].trim => .[1].trim with .split(':', :skip-empty)})
+			.Map;
 }
