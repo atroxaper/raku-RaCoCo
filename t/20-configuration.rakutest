@@ -3,7 +3,7 @@ use lib 'lib';
 
 use App::Racoco::Configuration;
 
-plan 8;
+plan 12;
 
 subtest '01-empty', {
 	plan 2;
@@ -90,4 +90,47 @@ subtest '08-all-or', {
 		.ini("foo = bar").or
 		.empty;
 	isa-ok $config, Configuration, 'all or ok';
+}
+
+subtest '09-int-key', {
+	plan 3;
+	my $config = ConfigurationFactory.args(int => 5, str => '6');
+	is-deeply $config.get(IntKey.of: 'int'), 5, 'int key int';
+	is-deeply $config.get(IntKey.of: 'str'), 6, 'int key str';
+	nok $config.get(IntKey.of: 'miss'), 'int key nok';
+}
+
+subtest '10-path-key', {
+	plan 5;
+	my $config = ConfigurationFactory.args(
+		report => 'resources'.IO.add('report.html').Str,
+		not-path => 'foo'
+	);
+	my $report = $config.get(PathKey.of: 'report');
+	isa-ok $report, IO::Path, 'path key type';
+	ok $report.is-absolute, 'path key absolute';
+	ok $report.e, 'path key exists';
+	nok $config.get(PathKey.of: 'not-path'), 'path key nok';
+	nok $config.get(PathKey.of: 'miss'), 'path key nok';
+}
+
+subtest '11-get-by-brackets', {
+	plan 2;
+	my $config = ConfigurationFactory.args(foo => '5');
+	is $config{'foo'}, '5', 'bracket with str';
+	is-deeply $config{IntKey.of: 'foo'}, 5, 'bracket with key';
+}
+
+subtest '12-or-with-key', {
+	plan 2;
+	class StrKeyLen does App::Racoco::Configuration::Key[Str] {
+		has Int:D $.len = 2;
+		method convert(Str $value --> Str) {
+			return Nil without $value;
+			return $value.chars == $!len ?? $value !! Nil;
+		}
+	}
+	my $config = ConfigurationFactory.args(foo => 'a').or.args(foo => 'bb');
+	is $config{StrKeyLen.new(name => 'foo', len => 1)}, 'a', 'or with key first';
+	is $config{StrKeyLen.new(name => 'foo', len => 2)}, 'bb', 'or with key second';
 }
