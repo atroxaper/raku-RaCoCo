@@ -4,3 +4,4 @@ t/lib/.precomp/**
 **/*.iml
 **/.DS_Store
 .racoco/**
+t-resources/exam/**
