@@ -6,7 +6,7 @@ use lib 't/lib';
 use TestResources;
 use TestHelper;
 
-plan 16;
+plan 17;
 
 subtest '01-empty', {
 	plan 2;
@@ -176,13 +176,27 @@ sub setup() {
 	my $sources = TestResources::exam-directory;
 }
 
-'16-make-path'.&test(:4plan, {
+'16-make-paths'.&test(:4plan, {
 	setup();
 	indir(TestResources::exam-directory, {
-		my $path = make-path-from(ConfigurationFactory.defaults);
+		my $path = make-paths-from(ConfigurationFactory.defaults);
 		isa-ok $path, Paths, 'make type';
 		ok $path.racoco.d, '.racoco exists';
 		ok $path.lib.d, 'lib exists';
 		ok $path.root.d, 'root exists';
 	});
 });
+
+subtest '17-path-key', {
+	plan 4;
+	my $config = ConfigurationFactory.args(
+		file => 'resources'.IO.add('report.html').Str,
+		dir => 't-resources'.IO.Str,
+		not-path => 'foo'
+	);
+	my $report = $config.get(PathKey.of: 'dir');
+	isa-ok $report, IO::Path, 'path key type';
+	ok $report.is-absolute, 'path key absolute';
+	ok $config.get(PathKey.of: 'file'), 'path key for file ok';
+	ok $config.get(PathKey.of: 'not-path'), 'path key ok';
+}

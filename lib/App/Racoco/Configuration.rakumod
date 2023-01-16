@@ -19,7 +19,7 @@ class IntKey does Key[Int] is export {
 	}
 }
 
-role PathKey does Key[IO::Path] {
+role PathKey does Key[IO::Path] is export {
 	method convert($value --> IO::Path) {
 		return Nil without $value;
 		given $value.IO {
@@ -27,7 +27,7 @@ role PathKey does Key[IO::Path] {
 		}
 		Nil
 	}
-	method is-my(IO $path) { ... }
+	method is-my(IO $path) { True }
 }
 
 class FilePathKey does PathKey is export {
@@ -143,7 +143,7 @@ our sub configuration-file-content() is export {
 	return $path.f ?? $path.slurp !! '';
 }
 
-our sub make-path-from(Configuration $config) is export {
+our sub make-paths-from(Configuration $config) is export {
 	Paths.new(
 		root => $config{DirPathKey.of: 'root'},
 		lib => $config{DirPathKey.of: 'lib'},
