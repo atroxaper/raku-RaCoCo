@@ -162,16 +162,10 @@ sub clean-reporters-args(@reporters --> Str) {
   return so($join) ?? '--reporter=' ~ $join !! '';
 }
 
-sub clean-fix-compunit(@fix-compunits) {
-  note "--fix-compunit no longer makes sense and is deprecated" if @fix-compunits.elems;
-  ''
-}
-
 our sub ARGS-TO-CAPTURE(&main, @args --> Capture) is export {
   my @new-args;
   my @execs;
   my @reporters;
-  my @fix-compunits;
   for @args -> $_ {
     when '-l' { push @execs, $_ }
     when '-I' { push @execs, $_ }
@@ -182,14 +176,11 @@ our sub ARGS-TO-CAPTURE(&main, @args --> Capture) is export {
     when '--html' { push @reporters, $_ }
     when '--color-blind' { push @reporters, $_ }
 
-    when '--fix-compunit' { push @fix-compunits, $_ }
-    when '--/fix-compunit' { push @fix-compunits, $_ }
     default { push @new-args, $_ }
   }
   @new-args = (
     clean-execs-args(@execs),
     clean-reporters-args(@reporters),
-    clean-fix-compunit(@fix-compunits),
     |@new-args
   ).flat.grep(*.chars).Array;
   &*ARGS-TO-CAPTURE(&main, @new-args);
