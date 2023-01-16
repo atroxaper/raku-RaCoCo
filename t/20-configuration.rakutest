@@ -3,7 +3,7 @@ use lib 'lib';
 
 use App::Racoco::Configuration;
 
-plan 12;
+plan 13;
 
 subtest '01-empty', {
 	plan 2;
@@ -133,4 +133,10 @@ subtest '12-or-with-key', {
 	my $config = ConfigurationFactory.args(foo => 'a').or.args(foo => 'bb');
 	is $config{StrKeyLen.new(name => 'foo', len => 1)}, 'a', 'or with key first';
 	is $config{StrKeyLen.new(name => 'foo', len => 2)}, 'bb', 'or with key second';
+}
+
+subtest '13-defaults', {
+	plan 1;
+	my $config = ConfigurationFactory.defaults;
+	is $config<silent>, False, 'defaults';
 }

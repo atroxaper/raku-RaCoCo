@@ -70,6 +70,7 @@ role Factory {
 	method args(*%values --> Configuration:D) { ... }
 	method property-line($line) { ... }
 	method ini($content, :$section = '_') { ... }
+	method defaults() { ... }
 }
 
 class ConfigurationFactory does Factory is export {
@@ -86,6 +87,19 @@ class ConfigurationFactory does Factory is export {
 		my %values = ConfigFile::parse($content ~ "\n"){$section} // %();
 		Args.new(:%values)
 	}
+	method defaults() {
+		my %values = %(
+			append => False,
+			cache-dir => $*CWD,
+			exec => 'prove6',
+			fail-level => 0,
+			lib => 'lib',
+			raku-bin-dir => $*EXECUTABLE.parent.Str,
+			root => $*CWD,
+			silent => False,
+		);
+		Args.new(:%values)
+	}
 }
 
 class ConfigurationFactoryOr does Factory {
@@ -97,7 +111,7 @@ class ConfigurationFactoryOr does Factory {
 		self!make(ConfigurationFactory.empty)
 	}
 	method env(--> Configuration:D) {
-		self!make(ConfigurationFactory.env())
+		self!make(ConfigurationFactory.env)
 	}
 	method args(*%values --> Configuration:D) {
 		self!make(ConfigurationFactory.args(|%values))
@@ -108,4 +122,8 @@ class ConfigurationFactoryOr does Factory {
 	method ini($content, :$section = '_') {
 		self!make(ConfigurationFactory.ini($content, :$section))
 	}
+	method defaults() {
+		self!make(ConfigurationFactory.defaults)
+	}
 }
+
