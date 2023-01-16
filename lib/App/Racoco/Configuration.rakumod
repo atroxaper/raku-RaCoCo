@@ -100,7 +100,7 @@ class ConfigurationFactory does Factory is export {
 	method defaults() {
 		my %values = %(
 			append => False,
-			cache-dir => $*CWD,
+			cache-dir => App::Racoco::Paths::DOT-RACOCO,
 			exec => 'prove6',
 			fail-level => 0,
 			lib => 'lib',
@@ -141,4 +141,12 @@ our sub configuration-file-content() is export {
 	my $path =
 		config-path(root => ConfigurationFactory.defaults{DirPathKey.of: 'root'});
 	return $path.f ?? $path.slurp !! '';
+}
+
+our sub make-path-from(Configuration $config) is export {
+	Paths.new(
+		root => $config{DirPathKey.of: 'root'},
+		lib => $config{DirPathKey.of: 'lib'},
+		racoco => $config<cache-dir>,
+	)
 }

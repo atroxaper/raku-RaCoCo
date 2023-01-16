@@ -1,9 +1,12 @@
 use Test;
 use lib 'lib';
-
 use App::Racoco::Configuration;
+use App::Racoco::Paths;
+use lib 't/lib';
+use TestResources;
+use TestHelper;
 
-plan 15;
+plan 16;
 
 subtest '01-empty', {
 	plan 2;
@@ -166,3 +169,20 @@ subtest '15-configuration-file-content', {
 		is configuration-file-content, 'foo = bar', 'config file content';
 	});
 }
+
+sub setup() {
+	plan $*plan;
+	TestResources::prepare($*subtest);
+	my $sources = TestResources::exam-directory;
+}
+
+'16-make-path'.&test(:4plan, {
+	setup();
+	indir(TestResources::exam-directory, {
+		my $path = make-path-from(ConfigurationFactory.defaults);
+		isa-ok $path, Paths, 'make type';
+		ok $path.racoco.d, '.racoco exists';
+		ok $path.lib.d, 'lib exists';
+		ok $path.root.d, 'root exists';
+	});
+});
