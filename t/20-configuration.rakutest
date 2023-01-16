@@ -3,7 +3,7 @@ use lib 'lib';
 
 use App::Racoco::Configuration;
 
-plan 13;
+plan 15;
 
 subtest '01-empty', {
 	plan 2;
@@ -50,10 +50,11 @@ subtest '05-args-filter', {
 }
 
 subtest '06-one-line', {
-	plan 2;
+	plan 3;
 	my $config = ConfigurationFactory.property-line('foo:42;bar:baz');
 	isa-ok $config, Configuration, 'property-line type';
 	is $config.get('bar'), 'baz', 'property-line get';
+	nok ConfigurationFactory.property-line(Str)<foo>, 'property-line with empty';
 }
 
 subtest '07-ini', {
@@ -100,18 +101,20 @@ subtest '09-int-key', {
 	nok $config.get(IntKey.of: 'miss'), 'int key nok';
 }
 
-subtest '10-path-key', {
-	plan 5;
+subtest '10-file-path-key', {
+	plan 6;
 	my $config = ConfigurationFactory.args(
-		report => 'resources'.IO.add('report.html').Str,
+		file => 'resources'.IO.add('report.html').Str,
+		dir => 't-resources'.IO.Str,
 		not-path => 'foo'
 	);
-	my $report = $config.get(PathKey.of: 'report');
-	isa-ok $report, IO::Path, 'path key type';
-	ok $report.is-absolute, 'path key absolute';
-	ok $report.e, 'path key exists';
-	nok $config.get(PathKey.of: 'not-path'), 'path key nok';
-	nok $config.get(PathKey.of: 'miss'), 'path key nok';
+	my $report = $config.get(FilePathKey.of: 'file');
+	isa-ok $report, IO::Path, 'file path key type';
+	ok $report.is-absolute, 'file path key absolute';
+	ok $report.f, 'file path key exists';
+	nok $config.get(FilePathKey.of: 'dir'), 'file path key dir nok';
+	nok $config.get(FilePathKey.of: 'not-path'), 'file path key nok';
+	nok $config.get(FilePathKey.of: 'miss'), 'file path key nok';
 }
 
 subtest '11-get-by-brackets', {
@@ -139,4 +142,27 @@ subtest '13-defaults', {
 	plan 1;
 	my $config = ConfigurationFactory.defaults;
 	is $config<silent>, False, 'defaults';
+}
+
+subtest '14-dir-path-key', {
+	plan 6;
+	my $config = ConfigurationFactory.args(
+		file => 'resources'.IO.add('report.html').Str,
+		dir => 't-resources'.IO.Str,
+		not-path => 'foo'
+	);
+	my $report = $config.get(DirPathKey.of: 'dir');
+	isa-ok $report, IO::Path, 'dir path key type';
+	ok $report.is-absolute, 'dir path key absolute';
+	ok $report.d, 'dir path key exists';
+	nok $config.get(DirPathKey.of: 'file'), 'dir path key for file nok';
+	nok $config.get(DirPathKey.of: 'not-path'), 'dir path key nok';
+	nok $config.get(DirPathKey.of: 'miss'), 'dir path key nok';
+}
+
+subtest '15-configuration-file-content', {
+	plan 1;
+	indir('t-resources'.IO.add('20-configuration'), {
+		is configuration-file-content, 'foo = bar', 'config file content';
+	});
 }

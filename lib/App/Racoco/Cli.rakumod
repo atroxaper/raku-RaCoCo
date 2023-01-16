@@ -1,21 +1,22 @@
 unit module App::Racoco::Cli;
 
-use App::Racoco::RunProc;
-use App::Racoco::Coverable::Precomp::PrecompSupplier;
-use App::Racoco::Coverable::Precomp::PrecompHashcodeReader;
 use App::Racoco::Coverable::CoverableIndex;
-use App::Racoco::Coverable::CoverableOutliner;
 use App::Racoco::Coverable::CoverableLinesSupplier;
-use App::Racoco::CoverableLinesCollector;
+use App::Racoco::Coverable::CoverableOutliner;
+use App::Racoco::Coverable::Precomp::PrecompHashcodeReader;
 use App::Racoco::Coverable::Precomp::PrecompLookup;
+use App::Racoco::Coverable::Precomp::PrecompSupplier;
 use App::Racoco::Coverable::Precomp::Precompiler;
+use App::Racoco::CoverableLinesCollector;
 use App::Racoco::CoveredLinesCollector;
-use App::Racoco::Report::Reporter;
-use App::Racoco::Report::Data;
-use App::Racoco::Properties;
-use App::Racoco::Paths;
 use App::Racoco::Misc;
+use App::Racoco::Paths;
+use App::Racoco::Properties;
+use App::Racoco::Report::Data;
+use App::Racoco::Report::Reporter;
+use App::Racoco::RunProc;
 use App::Racoco::X;
+use App::Racoco::Configuration;
 
 multi sub get(:$lib) {
   return $lib.IO.absolute.IO if $lib.IO ~~ :e & :d;
@@ -83,6 +84,14 @@ our sub MAIN(
   Int() :$fail-level is copy,
   Str :$properties,
 ) is export {
+	my $config = ConfigurationFactory
+		.args(:$lib, :$raku-bin-dir, :$exec, :$reporter, :$silent, :$append, :$fail-level).or
+		.property-line($properties).or
+		.env.or
+		.ini(configuration-file-content(), section => $config-file-section).or
+		.ini(configuration-file-content(), section => '_').or
+		.defaults;
+
   my $p = Properties.new(:$lib, command-line => $properties, mode => $config-file-section);
 
   $lib = $_ with $p.property('lib');

@@ -70,6 +70,10 @@ our sub config-file(IO() :$lib) is export {
 	absolute($lib).parent.add(CONFIG-FILE)
 }
 
+our sub config-path(IO() :$root) is export {
+	$root.add(CONFIG-FILE)
+}
+
 class Paths is export {
 	has IO::Path $.root;
 	has IO::Path $.lib;

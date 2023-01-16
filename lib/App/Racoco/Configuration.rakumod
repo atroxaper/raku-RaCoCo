@@ -1,6 +1,7 @@
 unit module App::Racoco::Configuration;
 
 use App::Racoco::ConfigFile;
+use App::Racoco::Paths;
 
 role Factory { ... }
 class ConfigurationFactoryOr { ... }
@@ -18,14 +19,23 @@ class IntKey does Key[Int] is export {
 	}
 }
 
-class PathKey does Key[IO::Path] is export {
-	method convert($value --> IO::Path) { 
+role PathKey does Key[IO::Path] {
+	method convert($value --> IO::Path) {
 		return Nil without $value;
 		given $value.IO {
-			return $_.absolute.IO if .f;
+			return $_.absolute.IO if self.is-my($_)
 		}
 		Nil
 	}
+	method is-my(IO $path) { ... }
+}
+
+class FilePathKey does PathKey is export {
+	method is-my(IO $path) { $path.f }
+}
+
+class DirPathKey does PathKey is export {
+	method is-my(IO $path) { $path.d }
 }
 
 role Configuration is export {
@@ -78,13 +88,13 @@ class ConfigurationFactory does Factory is export {
 	method env(--> Configuration:D) { Env.new }
 	method args(*%values) { Args.new(:%values) }
 	method property-line($line) {
-		my %values = $line.split(';', :skip-empty)
+		my %values = ($line // '').split(';', :skip-empty)
 				.map(*.split(':', :skip-empty)).flat
 				.map(*.trim).map({ $^a => $^b }).Map;
 		Args.new(:%values);
 	}
 	method ini($content, :$section = '_') {
-		my %values = ConfigFile::parse($content ~ "\n"){$section} // %();
+		my %values = ConfigFile::parse(($content // '') ~ "\n"){$section} // %();
 		Args.new(:%values)
 	}
 	method defaults() {
@@ -127,3 +137,8 @@ class ConfigurationFactoryOr does Factory {
 	}
 }
 
+our sub configuration-file-content() is export {
+	my $path =
+		config-path(root => ConfigurationFactory.defaults{DirPathKey.of: 'root'});
+	return $path.f ?? $path.slurp !! '';
+}

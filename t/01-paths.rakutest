@@ -1,12 +1,13 @@
 use Test;
 use lib 'lib';
+use App::Racoco::Configuration;
 use App::Racoco::Paths;
 use App::Racoco::X;
 use lib 't/lib';
-use TestResources;
 use TestHelper;
+use TestResources;
 
-plan 11;
+plan 12;
 
 my $exam = TestResources::exam-directory;
 sub setup() {
@@ -41,6 +42,12 @@ sub setup() {
 	my $path = racoco-path(lib => TestResources::exam-directory.add('lib'));
 	ok $path.add('.keep').e, 'racoco path with root id';
 });
+
+subtest '04-config-path-from-config', {
+	plan 1;
+	is config-path(root => $*CWD), $*CWD.add(App::Racoco::Paths::CONFIG-FILE),
+		'config file from configuration';
+}
 
 TestResources::prepare('whole');
 my $lib = TestResources::exam-directory.add('lib');
