@@ -165,8 +165,9 @@ subtest '14-dir-path-key', {
 
 subtest '15-configuration-file-content', {
 	plan 1;
-	indir('t-resources'.IO.add('20-configuration'), {
-		is configuration-file-content, 'foo = bar', 'config file content';
+	my $root = 't-resources'.IO.add('20-configuration');
+	indir($root, {
+		is configuration-file-content(:$root), 'foo = bar', 'config file content';
 	});
 }
 
@@ -178,12 +179,14 @@ sub setup() {
 
 '16-make-paths'.&test(:4plan, {
 	setup();
-	indir(TestResources::exam-directory, {
-		my $path = make-paths-from(ConfigurationFactory.defaults);
+	my $root = TestResources::exam-directory;
+	indir($root, {
+		my $path =
+			make-paths-from(:config(ConfigurationFactory.defaults), :root($*CWD));
 		isa-ok $path, Paths, 'make type';
 		ok $path.racoco.d, '.racoco exists';
 		ok $path.lib.d, 'lib exists';
-		ok $path.root.d, 'root exists';
+		is $path.root, $root, 'root';
 	});
 });
 

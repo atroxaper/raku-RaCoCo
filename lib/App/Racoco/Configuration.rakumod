@@ -105,7 +105,6 @@ class ConfigurationFactory does Factory is export {
 			fail-level => 0,
 			lib => 'lib',
 			raku-bin-dir => $*EXECUTABLE.parent.Str,
-			root => $*CWD,
 			silent => False,
 		);
 		Args.new(:%values)
@@ -137,16 +136,15 @@ class ConfigurationFactoryOr does Factory {
 	}
 }
 
-our sub configuration-file-content() is export {
-	my $path =
-		config-path(root => ConfigurationFactory.defaults{DirPathKey.of: 'root'});
+our sub configuration-file-content(IO() :$root) is export {
+	my $path = config-path(:$root);
 	return $path.f ?? $path.slurp !! '';
 }
 
-our sub make-paths-from(Configuration $config) is export {
+our sub make-paths-from(Configuration :$config, IO() :$root) is export {
 	Paths.new(
-		root => $config{DirPathKey.of: 'root'},
-		lib => $config{DirPathKey.of: 'lib'},
+		root => $root,
+		lib => $config{PathKey.of: 'lib'},
 		racoco => $config<cache-dir>,
 	)
 }

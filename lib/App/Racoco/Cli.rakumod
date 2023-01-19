@@ -18,11 +18,6 @@ use App::Racoco::RunProc;
 use App::Racoco::X;
 use App::Racoco::Configuration;
 
-multi sub get(:$lib) {
-  return $lib.IO.absolute.IO if $lib.IO ~~ :e & :d;
-  App::Racoco::X::WrongLibPath.new(path => $lib).throw
-}
-
 multi sub get(:$raku-bin-dir, :$name) {
   my $result = ($raku-bin-dir // $*EXECUTABLE.parent.Str);
   unless $result.IO ~~ :e & :d {
@@ -84,18 +79,20 @@ our sub MAIN(
   Int() :$fail-level is copy,
   Str :$properties,
 ) is export {
-	my $config = ConfigurationFactory
+	my $root = $*CWD;
+	my Configuration $config = ConfigurationFactory
 		.args(:$lib, :$raku-bin-dir, :$exec, :$reporter, :$silent, :$append, :$fail-level).or
 		.property-line($properties).or
 		.env.or
-		.ini(configuration-file-content(), section => $config-file-section).or
-		.ini(configuration-file-content(), section => '_').or
+		.ini(configuration-file-content(:$root), section => $config-file-section).or
+		.ini(configuration-file-content(:$root), section => '_').or
 		.defaults;
+
+	my Paths $paths = make-paths-from(:$config, :$root);
 
   my $p = Properties.new(:$lib, command-line => $properties, mode => $config-file-section);
 
-  $lib = $_ with $p.property('lib');
-  $lib = get(:$lib);
+  $lib = $paths.lib;
 
   $raku-bin-dir = $raku-bin-dir // $p.property('raku-bin-dir');
   my $moar = get(:name<moar>, :$raku-bin-dir);
