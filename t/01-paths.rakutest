@@ -1,15 +1,16 @@
 use Test;
 use lib 'lib';
+use lib 't/lib';
 use App::Racoco::Configuration;
 use App::Racoco::Paths;
 use App::Racoco::X;
-use lib 't/lib';
+use Fixture;
 use TestHelper;
 use TestResources;
 
-plan 12;
+plan 13;
 
-my $exam = TestResources::exam-directory;
+my $root = TestResources::exam-directory;
 sub setup() {
 	plan $*plan;
 	TestResources::prepare($*subtest) unless $*wo-resources;
@@ -17,7 +18,7 @@ sub setup() {
 
 '01-from-lib'.&test(:6plan, {
 	setup();
-	indir($exam, {
+	indir($root, {
 		throws-like { Paths.from(:lib<non-exist>) }, App::Racoco::X::WrongLibPath,
 				'throw non-esist';
 		throws-like { Paths.from(:lib<non-lib-dir>) }, App::Racoco::X::WrongLibPath,
@@ -37,10 +38,10 @@ sub setup() {
 		'root hash name';
 });
 
-'03-racoco-path'.&test(:1plan, {
+'03-current-racoco'.&test(:1plan, {
 	setup();
-	my $path = racoco-path(lib => TestResources::exam-directory.add('lib'));
-	ok $path.add('.keep').e, 'racoco path with root id';
+	my $paths = Fixture::make-paths(TestResources::exam-directory);
+	ok $paths.current-racoco.add('.keep').e, 'racoco path with root id';
 });
 
 subtest '04-config-path-from-config', {
@@ -48,6 +49,19 @@ subtest '04-config-path-from-config', {
 	is config-path(root => $*CWD), $*CWD.add(App::Racoco::Paths::CONFIG-FILE),
 		'config file from configuration';
 }
+
+'05-constructor'.&test(:6plan, {
+	setup();
+	throws-like { Paths.new(:$root, :lib<non-exist>, :racoco<.racoco>) },
+			App::Racoco::X::WrongLibPath, 'throw non-esist';
+	throws-like { Paths.new(:$root, :lib<non-lib-dir>, :racoco<.racoco>) },
+			App::Racoco::X::WrongLibPath, 'throw non-lib-dir';
+	my $p = Paths.new(:$root, :lib<exist-lib>, :racoco<.racoco>);
+	ok $p.lib.e, 'lib exist';
+	ok $p.root.e, 'root exist';
+	ok $p.racoco.e, 'racoco exist';
+	is $p.lib.parent, $p.root, 'root is parent of lib';
+});
 
 TestResources::prepare('whole');
 my $lib = TestResources::exam-directory.add('lib');

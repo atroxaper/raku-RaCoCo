@@ -1,5 +1,6 @@
 unit module Fixture;
 
+use App::Racoco::Configuration;
 use App::Racoco::Coverable::Precomp::PrecompSupplier;
 use App::Racoco::Coverable::Precomp::PrecompHashcodeReader;
 use App::Racoco::RunProc;
@@ -7,6 +8,10 @@ use App::Racoco::Coverable::Coverable;
 use App::Racoco::Coverable::CoverableIndex;
 use App::Racoco::Coverable::CoverableOutliner;
 use App::Racoco::Coverable::CoverableLinesSupplier;
+
+our sub make-paths($root) {
+	make-paths-from(config => ConfigurationFactory.defaults, :$root)
+}
 
 our sub instant($time) {
 	Instant.from-posix($time.Str)

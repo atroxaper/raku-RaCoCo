@@ -85,13 +85,27 @@ class Paths is export {
 
 	submethod BUILD(IO() :$root, IO() :$lib, IO() :$racoco) {
 		$!root = check-dir-path($root, App::Racoco::X::WrongRootPath);
-		$!lib = check-dir-path($lib, App::Racoco::X::WrongLibPath);
-		mkdir $racoco;
-		$!racoco = check-dir-path($racoco, App::Racoco::X::WrongRacocoPath);
+		$!lib = check-dir-path(concat($!root, $lib), App::Racoco::X::WrongLibPath);
+		$!racoco = concat($!root, $racoco);
+		mkdir $!racoco;
+		$!racoco = check-dir-path($!racoco, App::Racoco::X::WrongRacocoPath);
+		mkdir self.current-racoco;
+	}
+
+	sub concat($root, $path) {
+		$path.is-absolute ?? $path !! $root.add($path)
 	}
 
 	sub check-dir-path(IO $path, App::Racoco::X::WrongPath:U $err-class) {
 		$err-class.new(:$path).throw unless $path ~~ :e & :d;
 		absolute($path);
+	}
+
+	method current-racoco(--> IO::Path:D) {
+		$!racoco.add(root-hash-name($!root))
+	}
+
+	method coverage-log-path(--> IO::Path:D) {
+		self.current-racoco.add(COVERAGE-LOG)
 	}
 }

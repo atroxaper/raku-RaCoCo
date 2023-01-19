@@ -144,7 +144,7 @@ our sub configuration-file-content(IO() :$root) is export {
 our sub make-paths-from(Configuration :$config, IO() :$root) is export {
 	Paths.new(
 		root => $root,
-		lib => $config{PathKey.of: 'lib'},
+		lib => $config<lib>,
 		racoco => $config<cache-dir>,
 	)
 }
