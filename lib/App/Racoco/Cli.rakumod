@@ -116,7 +116,7 @@ our sub MAIN(
     my $covered-collector = CoveredLinesCollector.new(
         :$exec, :$paths, :$proc, print-test-log => !$silent, :$append);
     my $precomp-supplier = PrecompSupplierReal.new(
-        lookup => PrecompLookup.new(:$lib, compiler-id => compiler-id(:$raku, :$proc)),
+        lookup => PrecompLookup.new(:$paths, compiler-id => compiler-id(:$raku, :$proc)),
         precompiler => Precompiler.new(:$lib, :$raku, :$proc)
         );
     my $index = CoverableIndexFile.new(:$lib);

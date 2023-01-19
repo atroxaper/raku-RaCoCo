@@ -90,6 +90,7 @@ class Paths is export {
 		mkdir $!racoco;
 		$!racoco = check-dir-path($!racoco, App::Racoco::X::WrongRacocoPath);
 		mkdir self.current-racoco;
+		mkdir self.our-precomp-path;
 	}
 
 	sub concat($root, $path) {
@@ -107,5 +108,13 @@ class Paths is export {
 
 	method coverage-log-path(--> IO::Path:D) {
 		self.current-racoco.add(COVERAGE-LOG)
+	}
+
+	method lib-precomp-path(--> IO::Path:D) {
+		$!lib.add(DOT-PRECOMP)
+	}
+
+	method our-precomp-path(--> IO::Path:D) {
+		self.current-racoco.add(DOT-PRECOMP)
 	}
 }

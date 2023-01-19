@@ -19,8 +19,9 @@ sub setup($file, $lib-name) {
 	$lib = TestResources::exam-directory.add($lib-name);
 	$file-name = $file;
 	$proc = Fixture::realProc;
+	my $paths = Paths.from(:$lib);
 	$supplier = PrecompSupplierReal.new(
-		lookup => PrecompLookup.new(:$lib, compiler-id => -> {Fixture::compiler-id}),
+		lookup => PrecompLookup.new(:$paths, compiler-id => -> {Fixture::compiler-id}),
 		precompiler => Precompiler.new(:$lib, :raku<raku>, :$proc)
 	);
 }
