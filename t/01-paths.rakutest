@@ -8,7 +8,7 @@ use Fixture;
 use TestHelper;
 use TestResources;
 
-plan 13;
+plan 14;
 
 my $root = TestResources::exam-directory;
 sub setup() {
@@ -61,6 +61,12 @@ subtest '04-config-path-from-config', {
 	ok $p.root.e, 'root exist';
 	ok $p.racoco.e, 'racoco exist';
 	is $p.lib.parent, $p.root, 'root is parent of lib';
+});
+
+'06-coverage-log-path'.&test(:1plan, {
+	setup();
+	my $paths = Fixture::make-paths(TestResources::exam-directory);
+	ok $paths.coverage-log-path.e, 'coverage-log-path';
 });
 
 TestResources::prepare('whole');

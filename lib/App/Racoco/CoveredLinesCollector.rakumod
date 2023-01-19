@@ -1,21 +1,20 @@
 unit module App::Racoco::CoveredLinesCollector;
 
 use App::Racoco::RunProc;
-use App::Racoco::Paths;
 use App::Racoco::Misc;
 use App::Racoco::X;
 
 class CoveredLinesCollector is export {
-  has IO::Path $.lib;
+  has IO::Path $!lib;
   has RunProc $.proc;
   has $.exec;
   has Bool $.append = False;
   has Bool $.print-test-log = True;
-  has $!coverage-log-path;
+  has IO::Path $!coverage-log-path;
 
-  submethod TWEAK() {
-    $!lib = $!lib.absolute.IO;
-    $!coverage-log-path = coverage-log-path(:$!lib);
+  submethod TWEAK(:$paths) {
+    $!lib = $paths.lib;
+    $!coverage-log-path = $paths.coverage-log-path;
   }
 
   method !need-save-log() {

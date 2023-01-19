@@ -114,7 +114,7 @@ our sub MAIN(
     my $previous-report = $append ?? read-report(:$lib) !! Nil;
     my $proc = RunProc.new;
     my $covered-collector = CoveredLinesCollector.new(
-        :$exec, :$lib, :$proc, print-test-log => !$silent, :$append);
+        :$exec, :$paths, :$proc, print-test-log => !$silent, :$append);
     my $precomp-supplier = PrecompSupplierReal.new(
         lookup => PrecompLookup.new(:$lib, compiler-id => compiler-id(:$raku, :$proc)),
         precompiler => Precompiler.new(:$lib, :$raku, :$proc)
