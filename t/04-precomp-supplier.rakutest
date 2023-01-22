@@ -22,7 +22,7 @@ sub setup($file, $lib-name) {
 	my $paths = Paths.from(:$lib);
 	$supplier = PrecompSupplierReal.new(
 		lookup => PrecompLookup.new(:$paths, compiler-id => -> {Fixture::compiler-id}),
-		precompiler => Precompiler.new(:$lib, :raku<raku>, :$proc)
+		precompiler => Precompiler.new(:$paths, :raku<raku>, :$proc)
 	);
 }
 

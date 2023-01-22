@@ -79,11 +79,11 @@ class Paths is export {
 	has IO::Path $.lib;
 	has IO::Path $.racoco;
 
-	multi method from(IO() :$lib --> Paths:D) {
+	multi method from(IO() :$lib! --> Paths:D) {
 		self.bless(:root($lib.parent), :$lib, :racoco($lib.parent.add(DOT-RACOCO)))
 	}
 
-	submethod BUILD(IO() :$root, IO() :$lib, IO() :$racoco) {
+	submethod BUILD(IO() :$root!, IO() :$lib!, IO() :$racoco!) {
 		$!root = check-dir-path($root, App::Racoco::X::WrongRootPath);
 		$!lib = check-dir-path(concat($!root, $lib), App::Racoco::X::WrongLibPath);
 		$!racoco = concat($!root, $racoco);

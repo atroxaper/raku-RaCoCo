@@ -117,7 +117,7 @@ our sub MAIN(
         :$exec, :$paths, :$proc, print-test-log => !$silent, :$append);
     my $precomp-supplier = PrecompSupplierReal.new(
         lookup => PrecompLookup.new(:$paths, compiler-id => compiler-id(:$raku, :$proc)),
-        precompiler => Precompiler.new(:$lib, :$raku, :$proc)
+        precompiler => Precompiler.new(:$paths, :$raku, :$proc)
         );
     my $index = CoverableIndexFile.new(:$lib);
     my $outliner = CoverableOutlinerReal.new(:$proc, :$moar);
