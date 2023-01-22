@@ -12,6 +12,18 @@ role Key[::Type] {
 	method of(Str() $name) { self.bless: :$name }
 }
 
+class BoolKey does Key[Bool] is export {
+	method convert($value --> Bool) {
+		return Nil without $value;
+		if $value ~~ Str {
+			if $value.lc eq 'false' || $value eq '0' || $value.chars == 0 {
+				return False;
+			}
+		}
+		return so $value;
+	}
+}
+
 class IntKey does Key[Int] is export {
 	method convert($value --> Int) {
 		return Nil without $value;

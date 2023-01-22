@@ -6,7 +6,7 @@ use lib 't/lib';
 use TestResources;
 use TestHelper;
 
-plan 17;
+plan 18;
 
 subtest '01-empty', {
 	plan 2;
@@ -202,4 +202,25 @@ subtest '17-path-key', {
 	ok $report.is-absolute, 'path key absolute';
 	ok $config.get(PathKey.of: 'file'), 'path key for file ok';
 	ok $config.get(PathKey.of: 'not-path'), 'path key ok';
+}
+
+subtest '18-bool-key', {
+	plan 15;
+	my $key = BoolKey.of('');
+	ok $key.convert('true'), 'true';
+	ok $key.convert('True'), 'True';
+	ok $key.convert('TRUE'), 'TRUE';
+	ok $key.convert(1), '1';
+	ok $key.convert(True), 'True bool';
+	ok $key.convert("Any"), 'Any';
+
+	nok $key.convert('false'), 'false';
+	nok $key.convert('False'), 'False';
+	nok $key.convert('FALSE'), 'FALSE';
+	nok $key.convert('0'), '"0"';
+	nok $key.convert(0), '0';
+	nok $key.convert(''), 'empty';
+	nok $key.convert(Nil), 'Nil';
+	nok $key.convert(Any), 'Any';
+	nok $key.convert(Str), 'Any';
 }

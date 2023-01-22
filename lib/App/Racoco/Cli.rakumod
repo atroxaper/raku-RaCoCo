@@ -94,11 +94,11 @@ our sub MAIN(
 
   $lib = $paths.lib;
 
-  $raku-bin-dir = $raku-bin-dir // $p.property('raku-bin-dir');
+  $raku-bin-dir = $config<raku-bin-dir>;
   my $moar = get(:name<moar>, :$raku-bin-dir);
   my $raku = get(:name<raku>, :$raku-bin-dir);
 
-  $exec = $exec // $p.property('exec') // 'prove6';
+  $exec = $config<exec>;
 
   $reporter = $reporter // $p.property('reporter');
   my @reporter-classes = reporter-classes($reporter);
