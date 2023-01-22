@@ -119,7 +119,7 @@ our sub MAIN(
         lookup => PrecompLookup.new(:$paths, compiler-id => compiler-id(:$raku, :$proc)),
         precompiler => Precompiler.new(:$paths, :$raku, :$proc)
         );
-    my $index = CoverableIndexFile.new(:$lib);
+    my $index = CoverableIndexFile.new(:$paths);
     my $outliner = CoverableOutlinerReal.new(:$proc, :$moar);
     my $hashcode-reader = PrecompHashcodeReaderReal.new;
     my $coverable-supplier = CoverableLinesSupplier.new(

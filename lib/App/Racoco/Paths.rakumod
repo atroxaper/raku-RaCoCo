@@ -117,4 +117,8 @@ class Paths is export {
 	method our-precomp-path(--> IO::Path:D) {
 		self.current-racoco.add(DOT-PRECOMP)
 	}
+
+	method index-path(--> IO::Path:D) {
+		self.current-racoco.add(INDEX)
+	}
 }
