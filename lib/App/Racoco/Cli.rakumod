@@ -103,11 +103,11 @@ our sub MAIN(
   $reporter = $reporter // $p.property('reporter');
   my @reporter-classes = reporter-classes($reporter);
 
-  $silent = $silent // $p.property('silent') // False;
+  $silent = $config<silent>;
 
-  $append = $append // $p.property('append') // False;
+  $append = $config<append>;
 
-  $fail-level = $fail-level // $p.property('fail-level') // 0;
+  $fail-level = $config<fail-level>;
 
   my $report;
   if $exec {
