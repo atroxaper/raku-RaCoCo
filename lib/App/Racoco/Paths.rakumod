@@ -121,4 +121,8 @@ class Paths is export {
 	method index-path(--> IO::Path:D) {
 		self.current-racoco.add(INDEX)
 	}
+
+	method report-data-path(--> IO::Path:D) {
+		self.current-racoco.add(REPORT-TXT)
+	}
 }

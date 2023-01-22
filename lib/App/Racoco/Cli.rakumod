@@ -46,8 +46,8 @@ sub calculate-report(:$covered-collector, :$coverable-collector) {
   Data.new(:%coverable, :%covered)
 }
 
-sub read-report(:$lib) {
-  Data.read(:$lib)
+sub read-report(:$paths) {
+  Data.read(:$paths)
 }
 
 sub reporter-classes($reporter) {
@@ -111,7 +111,7 @@ our sub MAIN(
 
   my $report;
   if $exec {
-    my $previous-report = $append ?? read-report(:$lib) !! Nil;
+    my $previous-report = $append ?? read-report(:$paths) !! Nil;
     my $proc = RunProc.new;
     my $covered-collector = CoveredLinesCollector.new(
         :$exec, :$paths, :$proc, print-test-log => !$silent, :$append);
@@ -125,17 +125,17 @@ our sub MAIN(
     my $coverable-supplier = CoverableLinesSupplier.new(
         supplier => $precomp-supplier, :$index, :$outliner, :$hashcode-reader);
     my $coverable-collector = CoverableLinesCollector.new(
-        supplier => $coverable-supplier, :$lib);
+        supplier => $coverable-supplier, :$paths);
     $report = Data.plus(
       calculate-report(:$covered-collector, :$coverable-collector),
       $previous-report
     )
   } else {
-    $report = read-report(:$lib);
+    $report = read-report(:$paths);
   }
 
   print-simple-coverage($report);
-  $report.write(:$lib);
+  $report.write(:$paths);
   @reporter-classes.map({ ::($_).new.do(:$lib, data => $report, properties => $p) });
   check-fail-level($fail-level, $report);
 

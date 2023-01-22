@@ -21,9 +21,9 @@ method new(::?CLASS:U: :%coverable, :%covered --> ::?CLASS) {
 	self.bless(:$parts)
 }
 
-method read(::?CLASS:U: :$lib! --> ::?CLASS) {
-	my $path = report-data-path(:$lib);
-	CannotReadReport.new(path => $lib).throw unless $path.e;
+method read(::?CLASS:U: :$paths! --> ::?CLASS) {
+	my $path = $paths.report-data-path;
+	CannotReadReport.new(path => $paths.lib).throw unless $path.e;
 
 	my $lines := $path.slurp.lines;
 	if $lines[0] ne HEADER || $lines[1] ne LEGEND {
@@ -62,8 +62,8 @@ method get-all-parts(--> Positional) {
 	$!parts.values.sort(*.file-name).List
 }
 
-method write(:$lib!) {
-	report-data-path(:$lib).spurt:
+method write(:$paths!) {
+	$paths.report-data-path.spurt:
 		join $?NL,
 			HEADER,
 			LEGEND,

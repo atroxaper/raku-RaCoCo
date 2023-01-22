@@ -8,7 +8,7 @@ use Fixture;
 use TestHelper;
 use TestResources;
 
-plan 17;
+plan 18;
 
 my $root = TestResources::exam-directory;
 sub setup() {
@@ -85,6 +85,12 @@ subtest '04-config-path-from-config', {
 	setup();
 	my $paths = Fixture::make-paths(TestResources::exam-directory);
 	ok $paths.index-path.e, 'index-path';
+});
+
+'10-report-data-path'.&test(:1plan, {
+	setup();
+	my $paths = Fixture::make-paths(TestResources::exam-directory);
+	ok $paths.report-data-path.e, 'report-data-path';
 });
 
 TestResources::prepare('whole');

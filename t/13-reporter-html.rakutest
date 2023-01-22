@@ -12,11 +12,12 @@ use TestHelper;
 
 plan 2;
 
-my ($lib, $data);
+my ($lib, $paths, $data);
 sub setup($lib-name) {
 	plan $*plan;
 	TestResources::prepare($*subtest);
 	$lib = TestResources::exam-directory.add($lib-name);
+	$paths = Paths.from(:$lib);
 }
 
 sub check-page($data, $file-name, $page-name, :$color-blind = False) {
@@ -50,7 +51,7 @@ sub check-main-page($content, $file-name, $page-name) {
 
 '01-render'.&test(:37plan, {
 	setup('lib');
-  $data = Data.read(:$lib);
+  $data = Data.read(:$paths);
   Fixture::silently({ indir($lib.parent, { ReporterHtml.new.do(:$lib, :$data) }) });
   is report-html-data-path(:$lib).dir.elems, 3, 'data dir with pages';
   my $file-name-page-name = $data.get-all-parts
@@ -72,7 +73,7 @@ sub check-main-page($content, $file-name, $page-name) {
 
 '02-color-blind'.&test(:7plan, {
 	setup('lib');
-	$data = Data.read(:$lib);
+	$data = Data.read(:$paths);
 	my $reporter = ReporterHtmlColorBlind.new;
   Fixture::silently({ indir($lib.parent, { $reporter.do(:$lib, :$data) }) });
   check-page($data, 'RootModule.rakumod', 'RootModule', :color-blind);
