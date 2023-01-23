@@ -26,7 +26,7 @@ sub setup() {
 		my $p = Paths.from(:lib<exist-lib>);
 		ok $p.lib.e, 'lib exist';
 		ok $p.root.e, 'root exist';
-		ok $p.current-racoco.e, 'racoco exist';
+		ok $p.root-racoco.e, 'root racoco exist';
 		is $p.lib.parent, $p.root, 'root is parent of lib';
 	});
 });
@@ -38,13 +38,13 @@ sub setup() {
 		'root hash name';
 });
 
-'03-current-racoco-in-root'.&test(:1plan, {
+'03-root-racoco-in-root'.&test(:1plan, {
 	setup();
 	my $paths = Fixture::make-paths(TestResources::exam-directory);
-	ok $paths.current-racoco.add('.keep').e, 'current racoco in root';
+	ok $paths.root-racoco.add('.keep').e, 'root racoco in root';
 });
 
-'04-current-racoco-out-root'.&test(:1plan, {
+'04-root-racoco-out-root'.&test(:1plan, {
 	setup();
 	my $root = TestResources::exam-directory.add('root');
 	my $paths = Paths.new(
@@ -52,7 +52,7 @@ sub setup() {
 		lib => $root.add('lib'),
 		racoco => $root.parent.add('.racoco')
 	);
-	ok $paths.current-racoco.add('.keep').e, 'current racoco out root';
+	ok $paths.root-racoco.add('.keep').e, 'root racoco out root';
 });
 
 subtest '05-config-path-from-config', {
@@ -70,7 +70,7 @@ subtest '05-config-path-from-config', {
 	my $p = Paths.new(:$root, :lib<exist-lib>, :racoco<.racoco>);
 	ok $p.lib.e, 'lib exist';
 	ok $p.root.e, 'root exist';
-	ok $p.current-racoco.e, 'racoco exist';
+	ok $p.root-racoco.e, 'root racoco exist';
 	is $p.lib.parent, $p.root, 'root is parent of lib';
 });
 

@@ -184,7 +184,7 @@ sub setup() {
 		my $path =
 			make-paths-from(:config(ConfigurationFactory.defaults), :root($*CWD));
 		isa-ok $path, Paths, 'make type';
-		ok $path.current-racoco.d, '.racoco exists';
+		ok $path.root-racoco.d, '.racoco exists';
 		ok $path.lib.d, 'lib exists';
 		is $path.root, $root, 'root';
 	});
