@@ -8,7 +8,7 @@ use Fixture;
 use TestHelper;
 use TestResources;
 
-plan 18;
+plan 19;
 
 my $root = TestResources::exam-directory;
 sub setup() {
@@ -26,7 +26,7 @@ sub setup() {
 		my $p = Paths.from(:lib<exist-lib>);
 		ok $p.lib.e, 'lib exist';
 		ok $p.root.e, 'root exist';
-		ok $p.racoco.e, 'racoco exist';
+		ok $p.current-racoco.e, 'racoco exist';
 		is $p.lib.parent, $p.root, 'root is parent of lib';
 	});
 });
@@ -38,19 +38,30 @@ sub setup() {
 		'root hash name';
 });
 
-'03-current-racoco'.&test(:1plan, {
+'03-current-racoco-in-root'.&test(:1plan, {
 	setup();
 	my $paths = Fixture::make-paths(TestResources::exam-directory);
-	ok $paths.current-racoco.add('.keep').e, 'racoco path with root id';
+	ok $paths.current-racoco.add('.keep').e, 'current racoco in root';
 });
 
-subtest '04-config-path-from-config', {
+'04-current-racoco-out-root'.&test(:1plan, {
+	setup();
+	my $root = TestResources::exam-directory.add('root');
+	my $paths = Paths.new(
+		root => $root,
+		lib => $root.add('lib'),
+		racoco => $root.parent.add('.racoco')
+	);
+	ok $paths.current-racoco.add('.keep').e, 'current racoco out root';
+});
+
+subtest '05-config-path-from-config', {
 	plan 1;
 	is config-path(root => $*CWD), $*CWD.add(App::Racoco::Paths::CONFIG-FILE),
 		'config file from configuration';
 }
 
-'05-constructor'.&test(:6plan, {
+'06-constructor'.&test(:6plan, {
 	setup();
 	throws-like { Paths.new(:$root, :lib<non-exist>, :racoco<.racoco>) },
 			App::Racoco::X::WrongLibPath, 'throw non-esist';
@@ -59,35 +70,35 @@ subtest '04-config-path-from-config', {
 	my $p = Paths.new(:$root, :lib<exist-lib>, :racoco<.racoco>);
 	ok $p.lib.e, 'lib exist';
 	ok $p.root.e, 'root exist';
-	ok $p.racoco.e, 'racoco exist';
+	ok $p.current-racoco.e, 'racoco exist';
 	is $p.lib.parent, $p.root, 'root is parent of lib';
 });
 
-'06-coverage-log-path'.&test(:1plan, {
+'07-coverage-log-path'.&test(:1plan, {
 	setup();
 	my $paths = Fixture::make-paths(TestResources::exam-directory);
 	ok $paths.coverage-log-path.e, 'coverage-log-path';
 });
 
-'07-lib-precomp-path'.&test(:1plan, {
+'08-lib-precomp-path'.&test(:1plan, {
 	setup();
 	my $paths = Fixture::make-paths(TestResources::exam-directory);
 	ok $paths.lib-precomp-path.e, 'lib-precomp-path';
 });
 
-'08-our-precomp-path'.&test(:1plan, {
+'09-our-precomp-path'.&test(:1plan, {
 	setup();
 	my $paths = Fixture::make-paths(TestResources::exam-directory);
 	ok $paths.our-precomp-path.add('.keep').e, 'our-precomp-path';
 });
 
-'09-index-path'.&test(:1plan, {
+'10-index-path'.&test(:1plan, {
 	setup();
 	my $paths = Fixture::make-paths(TestResources::exam-directory);
 	ok $paths.index-path.e, 'index-path';
 });
 
-'10-report-data-path'.&test(:1plan, {
+'11-report-data-path'.&test(:1plan, {
 	setup();
 	my $paths = Fixture::make-paths(TestResources::exam-directory);
 	ok $paths.report-data-path.e, 'report-data-path';

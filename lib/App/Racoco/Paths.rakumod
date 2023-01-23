@@ -77,7 +77,8 @@ our sub config-path(IO() :$root) is export {
 class Paths is export {
 	has IO::Path $.root;
 	has IO::Path $.lib;
-	has IO::Path $.racoco;
+	has IO::Path $!racoco;
+	has IO::Path $.current-racoco is built(False);
 
 	multi method from(IO() :$lib! --> Paths:D) {
 		self.bless(:root($lib.parent), :$lib, :racoco($lib.parent.add(DOT-RACOCO)))
@@ -89,7 +90,8 @@ class Paths is export {
 		$!racoco = concat($!root, $racoco);
 		mkdir $!racoco;
 		$!racoco = check-dir-path($!racoco, App::Racoco::X::WrongRacocoPath);
-		mkdir self.current-racoco;
+		$!current-racoco = self!calc-current-racoco;
+		mkdir $!current-racoco;
 		mkdir self.our-precomp-path;
 	}
 
@@ -102,12 +104,14 @@ class Paths is export {
 		absolute($path);
 	}
 
-	method current-racoco(--> IO::Path:D) {
-		$!racoco.add(root-hash-name($!root))
+	method !calc-current-racoco(--> IO::Path:D) {
+		$!root ~~ $!racoco.parent
+			?? $!racoco
+			!! $!racoco.add(root-hash-name($!root))
 	}
 
 	method coverage-log-path(--> IO::Path:D) {
-		self.current-racoco.add(COVERAGE-LOG)
+		$!current-racoco.add(COVERAGE-LOG)
 	}
 
 	method lib-precomp-path(--> IO::Path:D) {
@@ -115,14 +119,14 @@ class Paths is export {
 	}
 
 	method our-precomp-path(--> IO::Path:D) {
-		self.current-racoco.add(DOT-PRECOMP)
+		$!current-racoco.add(DOT-PRECOMP)
 	}
 
 	method index-path(--> IO::Path:D) {
-		self.current-racoco.add(INDEX)
+		$!current-racoco.add(INDEX)
 	}
 
 	method report-data-path(--> IO::Path:D) {
-		self.current-racoco.add(REPORT-TXT)
+		$!current-racoco.add(REPORT-TXT)
 	}
 }

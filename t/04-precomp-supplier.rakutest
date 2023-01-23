@@ -12,14 +12,14 @@ use TestHelper;
 
 plan 3;
 
-my ($lib, $file-name, $proc, $supplier);
+my ($lib, $paths, $file-name, $proc, $supplier);
 sub setup($file, $lib-name) {
 	plan $*plan;
 	TestResources::prepare($*subtest);
 	$lib = TestResources::exam-directory.add($lib-name);
 	$file-name = $file;
 	$proc = Fixture::realProc;
-	my $paths = Paths.from(:$lib);
+	$paths = Paths.from(:$lib);
 	$supplier = PrecompSupplierReal.new(
 		lookup => PrecompLookup.new(:$paths, compiler-id => -> {Fixture::compiler-id}),
 		precompiler => Precompiler.new(:$paths, :raku<raku>, :$proc)
@@ -28,7 +28,7 @@ sub setup($file, $lib-name) {
 
 '01-supply-precomp-in-lib'.&test(:2plan, {
 	setup('Module.rakumod', 'lib');
-	my $expected = lib-precomp-path(:$lib)
+	my $expected = $paths.lib-precomp-path
 		.add(Fixture::compiler-id()).add(file-precomp-path(:$lib, path => $file-name)).IO;
 	is $supplier.supply(:$file-name), $expected, 'precomp ok';
 	nok $proc.c, 'cold proc';
@@ -36,14 +36,14 @@ sub setup($file, $lib-name) {
 
 '02-supply-compile'.&test(:2plan, {
 	setup('Module.rakumod', 'lib');
-	my $expected = our-precomp-path(:$lib).add(file-precomp-path(:$lib, path => $file-name)).IO;
+	my $expected = $paths.our-precomp-path.add(file-precomp-path(:$lib, path => $file-name)).IO;
 	is $supplier.supply(:$file-name), $expected, 'compile ok';
 	ok $proc.c, 'hot proc';
 });
 
 '03-our-precomp'.&test(:2plan, {
 	setup('Module.rakumod', 'lib');
-	my $expected = our-precomp-path(:$lib).add(file-precomp-path(:$lib, path => $file-name)).IO;
+	my $expected = $paths.our-precomp-path.add(file-precomp-path(:$lib, path => $file-name)).IO;
 	is $supplier.supply(:$file-name), $expected, 'compile ok';
 	nok $proc.c, 'cold proc';
 });

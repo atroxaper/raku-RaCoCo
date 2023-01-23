@@ -62,7 +62,8 @@ sub fix-name(IO::Path $path --> IO::Path) {
     try $path.parent.add($precomp-path.parent).mkdir;
     return $path.parent.add($precomp-path);
   } elsif $basename eq 'root-id' {
-    my $root-hash-name = App::Racoco::Sha::create.uc(exam-directory());
+    my $root-hash-name =
+    	App::Racoco::Sha::create.uc(exam-directory().add('root'));
     return $path.parent.add($root-hash-name);
   }
   return $path;
