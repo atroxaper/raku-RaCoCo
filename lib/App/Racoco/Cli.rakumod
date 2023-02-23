@@ -50,30 +50,12 @@ sub read-report(:$paths) {
   Data.read(:$paths)
 }
 
-sub reporter-classes($reporter) {
-  my @result;
-  my @reporter = ($reporter // '').split(',').grep(*.chars).Array;
-
-  for @reporter -> $r-name {
-    my $r-compunit-name = Reporter.^name ~ $r-name.split('-').map(*.tc).join('');
-    try require ::($r-compunit-name);
-    my $require = ::($r-compunit-name);
-    if $require ~~ Failure {
-      $require.so;
-      note "Cannot use $r-compunit-name package as reporter.";
-      next;
-    }
-    @result.push: $r-compunit-name;
-  }
-  @result
-}
-
 our sub MAIN(
   Str $config-file-section = '_',
   :$lib is copy = 'lib',
   Str :$raku-bin-dir is copy,
   :$exec is copy,
-  Str :$reporter is copy ,
+  Str :$reporter is copy,
   Bool :$silent is copy,
   Bool :$append is copy,
   Int() :$fail-level is copy,
@@ -92,40 +74,40 @@ our sub MAIN(
 
   my $p = Properties.new(:$lib, command-line => $properties, mode => $config-file-section);
 
-  $lib = $paths.lib;
-
   $raku-bin-dir = $config<raku-bin-dir>;
   my $moar = get(:name<moar>, :$raku-bin-dir);
   my $raku = get(:name<raku>, :$raku-bin-dir);
 
   $exec = $config<exec>;
 
-  $reporter = $reporter // $p.property('reporter');
-  my @reporter-classes = reporter-classes($reporter);
+  my @reporter-classes = $config{ReporterClassesKey.of: 'reporter'};
 
-  $silent = $config<silent>;
+  $silent = $config{BoolKey.of: 'silent'};
 
-  $append = $config<append>;
+  $append = $config{BoolKey.of: 'append'};
 
-  $fail-level = $config<fail-level>;
+  $fail-level = $config{IntKey.of: 'fail-level'};
 
   my $report;
   if $exec {
     my $previous-report = $append ?? read-report(:$paths) !! Nil;
     my $proc = RunProc.new;
     my $covered-collector = CoveredLinesCollector.new(
-        :$exec, :$paths, :$proc, print-test-log => !$silent, :$append);
+        :$exec, :$paths, :$proc, print-test-log => !$silent, :$append
+		);
     my $precomp-supplier = PrecompSupplierReal.new(
         lookup => PrecompLookup.new(:$paths, compiler-id => compiler-id(:$raku, :$proc)),
         precompiler => Precompiler.new(:$paths, :$raku, :$proc)
-        );
+		);
     my $index = CoverableIndexFile.new(:$paths);
     my $outliner = CoverableOutlinerReal.new(:$proc, :$moar);
     my $hashcode-reader = PrecompHashcodeReaderReal.new;
     my $coverable-supplier = CoverableLinesSupplier.new(
-        supplier => $precomp-supplier, :$index, :$outliner, :$hashcode-reader);
+        supplier => $precomp-supplier, :$index, :$outliner, :$hashcode-reader
+		);
     my $coverable-collector = CoverableLinesCollector.new(
-        supplier => $coverable-supplier, :$paths);
+        supplier => $coverable-supplier, :$paths
+		);
     $report = Data.plus(
       calculate-report(:$covered-collector, :$coverable-collector),
       $previous-report
@@ -136,7 +118,7 @@ our sub MAIN(
 
   print-simple-coverage($report);
   $report.write(:$paths);
-  @reporter-classes.map({ ::($_).new.do(:$paths, data => $report, properties => $p) });
+  @reporter-classes.map({ $_.new.do(:$paths, data => $report, properties => $p) });
   check-fail-level($fail-level, $report);
 
   CATCH {

@@ -2,6 +2,7 @@ unit module App::Racoco::Configuration;
 
 use App::Racoco::ConfigFile;
 use App::Racoco::Paths;
+use App::Racoco::Report::Reporter;
 
 role Factory { ... }
 class ConfigurationFactoryOr { ... }
@@ -48,6 +49,28 @@ class FilePathKey does PathKey is export {
 
 class DirPathKey does PathKey is export {
 	method is-my(IO $path) { $path.d }
+}
+
+class ReporterClassesKey does Key[List] is export {
+	method convert($value --> List) {
+		return Nil without $value;
+		return $value
+			.split(',')
+			.grep(*.chars)
+			.map(*.split('-').map(*.tc).join)
+			.map(-> $name { Reporter.^name ~ $name })
+			.map(-> $compunit-name {
+				try require ::($compunit-name);
+				my $class = ::($compunit-name);
+				if $class ~~ Failure {
+					$class.so;
+					note "Cannot use $compunit-name package as reporter.";
+				}
+				$class;
+			})
+			.grep(* !~~ Failure)
+			.List;
+	}
 }
 
 role Configuration is export {
@@ -118,6 +141,7 @@ class ConfigurationFactory does Factory is export {
 			lib => 'lib',
 			raku-bin-dir => $*EXECUTABLE.parent.Str,
 			silent => False,
+			reporter => ''
 		);
 		Args.new(:%values)
 	}

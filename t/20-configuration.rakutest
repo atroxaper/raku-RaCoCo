@@ -3,10 +3,15 @@ use lib 'lib';
 use lib 't/lib';
 use App::Racoco::Configuration;
 use App::Racoco::Paths;
+use App::Racoco::Report::ReporterHtml;
+use App::Racoco::Report::ReporterHtmlColorBlind;
+use App::Racoco::Report::ReporterCustomOne;
+use App::Racoco::Report::ReporterCustomThree;
+use App::Racoco::Report::ReporterTwo;
 use TestResources;
 use TestHelper;
 
-plan 18;
+plan 19;
 
 subtest '01-empty', {
 	plan 2;
@@ -25,10 +30,11 @@ subtest '02-env', {
 }
 
 subtest '03-args', {
-	plan 3;
+	plan 4;
 	my $config = ConfigurationFactory.args(:foo(42));
 	isa-ok $config, Configuration, 'args type';
 	is $config.get('foo'), 42, 'args get';
+	is $config.get('bar'), Nil, 'args omit';
 	is ConfigurationFactory.args(:foo(42), :bar<baz>).get('bar'), 'baz',
 			'args get';
 }
@@ -223,4 +229,32 @@ subtest '18-bool-key', {
 	nok $key.convert(Nil), 'Nil';
 	nok $key.convert(Any), 'Any';
 	nok $key.convert(Str), 'Any';
+}
+
+subtest '19-reporter-classes-key', {
+	plan 5;
+	my $key = ReporterClassesKey.of('');
+	is $key.convert(Nil), Nil, 'nil';
+	is-deeply
+		$key.convert('html-color-blind'),
+		(App::Racoco::Report::ReporterHtmlColorBlind,),
+		'single blind';
+	is-deeply
+		$key.convert('html,html-color-blind'),
+		(
+			App::Racoco::Report::ReporterHtml,
+			App::Racoco::Report::ReporterHtmlColorBlind,
+		),
+		'html and blind';
+	is-deeply
+		$key.convert('html,custom-one,custom-three,two'),
+		(
+			App::Racoco::Report::ReporterHtml,
+			App::Racoco::Report::ReporterCustomOne,
+			App::Racoco::Report::ReporterCustomThree,
+			App::Racoco::Report::ReporterTwo,
+		),
+		'html with customs';
+	is-deeply
+		$key.convert(''), (), 'empty';
 }
