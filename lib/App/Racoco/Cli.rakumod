@@ -136,7 +136,7 @@ our sub MAIN(
 
   print-simple-coverage($report);
   $report.write(:$paths);
-  @reporter-classes.map({ ::($_).new.do(:$lib, data => $report, properties => $p) });
+  @reporter-classes.map({ ::($_).new.do(:$paths, data => $report, properties => $p) });
   check-fail-level($fail-level, $report);
 
   CATCH {

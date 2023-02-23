@@ -26,34 +26,6 @@ our sub racoco-path(IO() :$lib --> IO::Path:D) is export {
 		.add(root-hash-name($lib.parent));
 }
 
-our sub our-precomp-path(IO() :$lib --> IO::Path:D) is export {
-	mkdir racoco-path(:$lib).add(DOT-PRECOMP)
-}
-
-our sub lib-precomp-path(IO() :$lib --> IO::Path:D) is export {
-	absolute($lib).add(DOT-PRECOMP)
-}
-
-our sub index-path(IO() :$lib --> IO::Path:D) is export {
-	racoco-path(:$lib).add(INDEX)
-}
-
-our sub coverage-log-path(IO() :$lib --> IO::Path:D) is export {
-	racoco-path(:$lib).add(COVERAGE-LOG)
-}
-
-our sub report-data-path(IO() :$lib --> IO::Path:D) is export {
-	racoco-path(:$lib).add(REPORT-TXT)
-}
-
-our sub report-html-data-path(IO() :$lib --> IO::Path:D) is export {
-	mkdir racoco-path(:$lib).add(REPORT-DATA)
-}
-
-our sub report-html-path(IO() :$lib --> IO::Path:D) is export {
-	racoco-path(:$lib).add(REPORT-HTML)
-}
-
 our sub meta6-path(IO() :$lib --> IO::Path:D) is export {
   absolute($lib).parent.add(META6)
 }
@@ -93,6 +65,7 @@ class Paths is export {
 		$!root-racoco = self!calc-root-racoco;
 		mkdir $!root-racoco;
 		mkdir self.our-precomp-path;
+		mkdir self.report-html-data-path;
 	}
 
 	sub concat($root, $path) {
@@ -128,5 +101,13 @@ class Paths is export {
 
 	method report-data-path(--> IO::Path:D) {
 		$!root-racoco.add(REPORT-TXT)
+	}
+
+	method report-html-path(--> IO::Path:D) {
+		$!root-racoco.add(REPORT-HTML)
+	}
+
+	method report-html-data-path(--> IO::Path:D) {
+		$!root-racoco.add(REPORT-DATA)
 	}
 }

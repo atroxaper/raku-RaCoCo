@@ -8,7 +8,7 @@ use Fixture;
 use TestHelper;
 use TestResources;
 
-plan 19;
+plan 13;
 
 my $root = TestResources::exam-directory;
 sub setup() {
@@ -104,30 +104,14 @@ subtest '05-config-path-from-config', {
 	ok $paths.report-data-path.e, 'report-data-path';
 });
 
-TestResources::prepare('whole');
-my $lib = TestResources::exam-directory.add('lib');
+'12-report-html-path'.&test(:1plan, {
+	setup();
+	my $paths = Fixture::make-paths(TestResources::exam-directory);
+	ok $paths.report-html-path.e, 'report-html-path';
+});
 
-{
-	my $racoco-path = racoco-path(:$lib);
-	ok $racoco-path.is-absolute, 'racoco path is absolute';
-	ok $racoco-path.e, 'racoco path exists';
-}
-
-{
-	my $precomp-path = our-precomp-path(:$lib);
-	ok $precomp-path.is-absolute, 'precomp path is absolute';
-	ok $precomp-path.e, 'precomp path exists';
-}
-
-{
-	nok lib-precomp-path(:$lib).e, 'lib precomp path does not exists by default';
-}
-
-{
-	is our-precomp-path(:$lib).parent, racoco-path(:$lib), 'out precomp parent';
-	isnt our-precomp-path(:$lib), lib-precomp-path(:$lib), 'lib and our precomp';
-}
-
-{
-  is parent-name($lib), 'exam', 'parent name ok';
-}
+'13-report-html-data-path'.&test(:1plan, {
+	setup();
+	my $paths = Fixture::make-paths(TestResources::exam-directory);
+	ok $paths.report-html-data-path.add('.keep').e, 'report-html-data-path';
+});

@@ -56,7 +56,7 @@ sub do-main(&bloc) {
   	APP_MAIN(:silent);
   });
   is $captured.out.text.trim, 'Coverage: 75%', 'simple run ok';
-  nok coverage-log-path(:$lib).e, 'coverage.log deleted';
+  nok Paths.from(:$lib).coverage-log-path.e, 'coverage.log deleted';
 });
 
 '05-with-raku-bin-dir'.&test(:1plan, {
@@ -90,7 +90,7 @@ sub do-main(&bloc) {
   	APP_MAIN(:append, exec => 'prove6 xt', :silent);
   });
   is $captured.out.text.lines.join, "Coverage: 20%Coverage: 60%", 'pass append';
-  nok coverage-log-path(:$lib).e, 'coverage.log deleted';
+  nok Paths.from(:$lib).coverage-log-path.e, 'coverage.log deleted';
 });
 
 '09-two-precomp-ok'.&test(:1plan, {
@@ -126,9 +126,10 @@ sub do-main(&bloc) {
   my $captured = do-main({
   	APP_MAIN(:reporter<html>, :silent);
   });
-  ok report-html-path(:$lib).e, 'ok html';
-  ok $captured.out.text.contains(report-html-path(:$lib)), 'pass html';
-  ok report-html-data-path(:$lib).dir()[0].slurp ~~ /'color-blind'/, 'no color-blind';
+  my $paths = Paths.from(:$lib);
+  ok $paths.report-html-path.e, 'ok html';
+  ok $captured.out.text.contains($paths.report-html-path), 'pass html';
+  ok $paths.report-html-data-path.dir()[0].slurp ~~ /'color-blind'/, 'no color-blind';
 });
 
 '14-pass-html-color-blind'.&test(:3plan, {
@@ -136,9 +137,10 @@ sub do-main(&bloc) {
   my $captured = do-main({
   	APP_MAIN(:reporter<html-color-blind>, :silent);
   });
-  ok report-html-path(:$lib).e, 'ok html';
-	ok $captured.out.text.contains(report-html-path(:$lib)), 'pass html';
-	nok report-html-data-path(:$lib).dir()[0].slurp ~~ /'color-blind'/, 'color-blind';
+  my $paths = Paths.from(:$lib);
+  ok $paths.report-html-path.e, 'ok html';
+	ok $captured.out.text.contains($paths.report-html-path), 'pass html';
+	nok $paths.report-html-data-path(:$lib).dir()[0].slurp ~~ /'color-blind'/, 'color-blind';
 });
 
 '15-with-command-line-properties'.&test(:1plan, {

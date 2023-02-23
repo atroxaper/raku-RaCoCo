@@ -1,8 +1,8 @@
 use Test;
 use lib 'lib';
+use lib 't/lib';
 use App::Racoco::Configuration;
 use App::Racoco::Paths;
-use lib 't/lib';
 use TestResources;
 use TestHelper;
 

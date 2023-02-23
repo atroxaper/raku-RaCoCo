@@ -6,11 +6,11 @@ use App::Racoco::Paths;
 use App::Racoco::ModuleNames;
 use App::Racoco::ProjectName;
 
-has IO::Path $!lib;
+has Paths $.paths;
 has Bool $.color-blind is rw;
 
-method do(:$lib, :$data, :$properties) {
-  $!lib = $lib;
+method do(:$paths, :$data, :$properties) {
+  $!paths = $paths;
   my %module-links = self!write-module-pages($data);
   self!write-main-page($data, %module-links);
   self!write-main-page-url();
@@ -24,21 +24,21 @@ method !write-module-pages($data --> Associative) {
 }
 
 method !write-main-page($data, %module-links) {
-  my $path = report-html-path(:$!lib);
+  my $path = $!paths.report-html-path;
   my $template = %?RESOURCES<report.html>.slurp;
 
   $template .= subst('%%report-lines%%', self!code-main-page-content($data, %module-links));
-  $template .= subst('%%project-name%%', project-name(:$!lib), :g);
+  $template .= subst('%%project-name%%', project-name(:lib($!paths.lib)), :g);
 
   $path.spurt: $template;
 }
 
 method !write-main-page-url() {
-  say "Visualisation: file://", report-html-path(:$!lib).Str
+  say "Visualisation: file://", $!paths.report-html-path.Str
 }
 
 method !write-module-page($part, Str $template is copy --> Str) {
-  my $path = report-html-data-path(:$!lib)
+  my $path = $!paths.report-html-data-path
     .add(self!module-page-name($part.file-name));
 
   $template .= subst('%%pre%%', self!code-module-content($part));
@@ -47,7 +47,7 @@ method !write-module-page($part, Str $template is copy --> Str) {
   $template .= subst('/*color-blind', '') if $!color-blind;
 
   $path.spurt: $template;
-  $path.Str.substr(report-html-data-path(:$!lib).Str.chars + '/'.chars)
+  $path.Str.substr($!paths.report-html-data-path.Str.chars + '/'.chars)
 }
 
 method !module-page-name(Str $file-name --> Str) {
@@ -84,7 +84,7 @@ method !code-main-page-module-content($part, %module-links --> Str) {
 }
 
 method !code-module-content($part --> Str) {
-  $!lib.add($part.file-name).lines.kv.map(-> $i, $line {
+  $!paths.lib.add($part.file-name).lines.kv.map(-> $i, $line {
     my $color = self!get-color($part, $i + 1);
     my $esc = self!esc-line($line);
     sprintf('<span class="coverage-%s">%s</span>', $color, $esc)
