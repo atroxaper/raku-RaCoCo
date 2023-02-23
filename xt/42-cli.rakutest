@@ -23,6 +23,30 @@ sub do-main(&bloc) {
   Fixture::silently({ indir($sources, &bloc) });
 }
 
+'15-with-command-line-properties'.&test(:1plan, {
+	setup();
+	my $captured = do-main({ APP_MAIN(:silent, reporter => 'custom-three', properties => 'command-line:pass') });
+	is $captured.out.text.trim.lines.join('|'), 'Coverage: 75%|CustomThree: pass',
+		'properties from command-line';
+});
+
+'16-with-config-file-properties'.&test(:1plan, {
+	setup();
+	my $captured = do-main({ APP_MAIN(:silent) });
+	is $captured.out.text.trim.lines.join('|'), 'Coverage: 75%|CustomThree: pass',
+		'properties from config';
+});
+
+'17-module-with-no-precompilation'.&test(:2plan, {
+	setup();
+	my $captured = do-main({
+		APP_MAIN(:silent);
+	});
+	is $captured.err.text.trim, '', 'no error';
+	is $captured.out.text.trim.lines.join(' '), 'Module.rakumod cannot be precompiled. ' ~
+			'Coverage results may be inaccurate. Coverage: 75%', 'warn and inaccurate';
+});
+
 '01-lib-not-exists'.&test(:1plan, {
   setup();
   do-main({
@@ -143,26 +167,4 @@ sub do-main(&bloc) {
 	nok $paths.report-html-data-path(:$lib).dir()[0].slurp ~~ /'color-blind'/, 'color-blind';
 });
 
-'15-with-command-line-properties'.&test(:1plan, {
-	setup();
-	my $captured = do-main({ APP_MAIN(:silent, reporter => 'custom-three', properties => 'command-line:pass') });
-	is $captured.out.text.trim.lines.join('|'), 'Coverage: 75%|CustomThree: pass',
-		'properties from command-line';
-});
 
-'16-with-config-file-properties'.&test(:1plan, {
-	setup();
-	my $captured = do-main({ APP_MAIN(:silent) });
-	is $captured.out.text.trim.lines.join('|'), 'Coverage: 75%|CustomThree: pass',
-		'properties from config';
-});
-
-'17-module-with-no-precompilation'.&test(:2plan, {
-	setup();
-	my $captured = do-main({
-		APP_MAIN(:silent);
-	});
-	is $captured.err.text.trim, '', 'no error';
-	is $captured.out.text.trim.lines.join(' '), 'Module.rakumod cannot be precompiled. ' ~
-			'Coverage results may be inaccurate. Coverage: 75%', 'warn and inaccurate';
-});

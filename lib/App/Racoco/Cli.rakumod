@@ -17,10 +17,6 @@ use App::Racoco::RunProc;
 use App::Racoco::X;
 use App::Racoco::Configuration;
 
-sub print-simple-coverage(Data $report) {
-  say "Coverage: {$report.percent}%"
-}
-
 sub check-fail-level(Int $fail-level, Data $report) {
   if $report.percent < $fail-level {
     exit max(1, ($fail-level - $report.percent).Int);
@@ -101,7 +97,6 @@ our sub MAIN(
     $report = read-report(:$paths);
   }
 
-  print-simple-coverage($report);
   $report.write(:$paths);
   @reporter-classes.map({ $_.new.do(:$paths, data => $report, :$config) });
   check-fail-level($fail-level, $report);

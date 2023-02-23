@@ -53,7 +53,7 @@ class DirPathKey does PathKey is export {
 class ReporterClassesKey does Key[List] is export {
 	method convert($value --> List) {
 		return Nil without $value;
-		return $value
+		return ('simple,' ~ $value)
 			.split(',')
 			.grep(*.chars)
 			.map(*.split('-').map(*.tc).join)
