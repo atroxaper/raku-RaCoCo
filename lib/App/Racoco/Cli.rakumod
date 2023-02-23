@@ -18,18 +18,6 @@ use App::Racoco::RunProc;
 use App::Racoco::X;
 use App::Racoco::Configuration;
 
-multi sub get(:$raku-bin-dir, :$name) {
-  my $result = ($raku-bin-dir // $*EXECUTABLE.parent.Str);
-  unless $result.IO ~~ :e & :d {
-    App::Racoco::X::WrongRakuBinDirPath.new(path => $result).throw
-  }
-  my $app = $result.IO.add($name ~ ($*DISTRO.is-win ?? '.exe' !! ''));
-  unless $app.e {
-    App::Racoco::X::WrongRakuBinDirPath.new(path => $result).throw
-  }
-  $app.Str
-}
-
 sub print-simple-coverage(Data $report) {
   say "Coverage: {$report.percent}%"
 }
@@ -75,8 +63,8 @@ our sub MAIN(
   my $p = Properties.new(:$lib, command-line => $properties, mode => $config-file-section);
 
   $raku-bin-dir = $config<raku-bin-dir>;
-  my $moar = get(:name<moar>, :$raku-bin-dir);
-  my $raku = get(:name<raku>, :$raku-bin-dir);
+  my $moar = $config{ExecutableInDirKey.of: 'raku-bin-dir', 'moar'};
+  my $raku = $config{ExecutableInDirKey.of: 'raku-bin-dir', 'raku'};
 
   $exec = $config<exec>;
 

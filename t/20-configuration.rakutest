@@ -11,7 +11,7 @@ use App::Racoco::Report::ReporterTwo;
 use TestResources;
 use TestHelper;
 
-plan 19;
+plan 20;
 
 subtest '01-empty', {
 	plan 2;
@@ -257,4 +257,23 @@ subtest '19-reporter-classes-key', {
 		'html with customs';
 	is-deeply
 		$key.convert(''), (), 'empty';
+}
+
+subtest '20-executable-in-dir-key', {
+	plan 4;
+	my $key = ExecutableInDirKey.of('', 'raku');
+	is $key.convert(Nil), Nil, 'nil';
+
+	my $dir = $*EXECUTABLE.parent;
+	my $expected = $dir.add('raku' ~ ($*DISTRO.is-win ?? '.exe' !! ''));
+	is $key.convert($dir.Str), $expected, 'good executable';
+
+	$dir = $*TMPDIR;
+	throws-like
+		{ $key.convert($dir) },
+		App::Racoco::X::WrongRakuBinDirPath,
+		'bad executable',
+		message => /$dir/;
+
+	dies-ok { ExecutableInDirKey.of('') }, 'of with one param';
 }

@@ -10,7 +10,7 @@ class ConfigurationFactoryOr { ... }
 role Key[::Type] {
 	has Str $.name is required;
 	method convert(Str $value --> Type) { ... }
-	method of(Str() $name) { self.bless: :$name }
+	multi method of(Str() $name) { self.bless: :$name }
 }
 
 class BoolKey does Key[Bool] is export {
@@ -70,6 +70,22 @@ class ReporterClassesKey does Key[List] is export {
 			})
 			.grep(* !~~ Failure)
 			.List;
+	}
+}
+
+class ExecutableInDirKey does Key[Str] is export {
+	has Str $.exec-name;
+	multi method of(Str() $name) {
+		die 'use .of with two params for ExecutableInDirKey';
+	}
+	multi method of(Str() $name, Str() $exec-name) {
+		self.bless: :$name, :$exec-name
+	}
+	method convert($value --> Str) {
+		return Nil without $value;
+		my $app = $value.IO.add($!exec-name ~ ($*DISTRO.is-win ?? '.exe' !! ''));
+		App::Racoco::X::WrongRakuBinDirPath.new(path => $value).throw unless $app.e;
+		$app.Str
 	}
 }
 
