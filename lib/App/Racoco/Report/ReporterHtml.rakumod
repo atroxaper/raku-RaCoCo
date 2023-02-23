@@ -9,7 +9,7 @@ use App::Racoco::ProjectName;
 has Paths $.paths;
 has Bool $.color-blind is rw;
 
-method do(:$paths, :$data, :$properties) {
+method do(:$paths, :$data, :$config) {
   $!paths = $paths;
   my %module-links = self!write-module-pages($data);
   self!write-main-page($data, %module-links);

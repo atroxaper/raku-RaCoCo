@@ -11,7 +11,6 @@ use App::Racoco::CoverableLinesCollector;
 use App::Racoco::CoveredLinesCollector;
 use App::Racoco::Misc;
 use App::Racoco::Paths;
-use App::Racoco::Properties;
 use App::Racoco::Report::Data;
 use App::Racoco::Report::Reporter;
 use App::Racoco::RunProc;
@@ -60,8 +59,6 @@ our sub MAIN(
 
 	my Paths $paths = make-paths-from(:$config, :$root);
 
-  my $p = Properties.new(:$lib, command-line => $properties, mode => $config-file-section);
-
   $raku-bin-dir = $config<raku-bin-dir>;
   my $moar = $config{ExecutableInDirKey.of: 'raku-bin-dir', 'moar'};
   my $raku = $config{ExecutableInDirKey.of: 'raku-bin-dir', 'raku'};
@@ -106,7 +103,7 @@ our sub MAIN(
 
   print-simple-coverage($report);
   $report.write(:$paths);
-  @reporter-classes.map({ $_.new.do(:$paths, data => $report, properties => $p) });
+  @reporter-classes.map({ $_.new.do(:$paths, data => $report, :$config) });
   check-fail-level($fail-level, $report);
 
   CATCH {

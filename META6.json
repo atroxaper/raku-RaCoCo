@@ -30,7 +30,6 @@
     "App::Racoco::ModuleNames": "lib/App/Racoco/ModuleNames.rakumod",
     "App::Racoco::Paths": "lib/App/Racoco/Paths.rakumod",
     "App::Racoco::ProjectName": "lib/App/Racoco/ProjectName.rakumod",
-    "App::Racoco::Properties": "lib/App/Racoco/Properties.rakumod",
     "App::Racoco::Report::Data": "lib/App/Racoco/Report/Data.rakumod",
     "App::Racoco::Report::DataPart": "lib/App/Racoco/Report/DataPart.rakumod",
     "App::Racoco::Report::Reporter": "lib/App/Racoco/Report/Reporter.rakumod",

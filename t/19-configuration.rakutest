@@ -169,19 +169,19 @@ subtest '14-dir-path-key', {
 	nok $config.get(DirPathKey.of: 'miss'), 'dir path key nok';
 }
 
-subtest '15-configuration-file-content', {
-	plan 1;
-	my $root = 't-resources'.IO.add('20-configuration');
-	indir($root, {
-		is configuration-file-content(:$root), 'foo = bar', 'config file content';
-	});
-}
-
 sub setup() {
 	plan $*plan;
 	TestResources::prepare($*subtest);
 	my $sources = TestResources::exam-directory;
 }
+
+'15-configuration-file-content'.&test(:1plan, {
+	setup();
+	my $root = TestResources::exam-directory;
+	indir($root, {
+		is configuration-file-content(:$root), 'foo = bar', 'config file content';
+	});
+});
 
 '16-make-paths'.&test(:4plan, {
 	setup();

@@ -10,6 +10,6 @@ submethod TWEAK() {
   $!reporter.color-blind = True;
 }
 
-method do(:$paths, :$data, :$properties) {
-  $!reporter.do(:$paths, :$data, :$properties);
+method do(:$paths, :$data, :$config) {
+  $!reporter.do(:$paths, :$data, :$config);
 }
