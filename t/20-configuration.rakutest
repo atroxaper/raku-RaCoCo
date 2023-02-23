@@ -11,7 +11,7 @@ use App::Racoco::Report::ReporterTwo;
 use TestResources;
 use TestHelper;
 
-plan 20;
+plan 21;
 
 subtest '01-empty', {
 	plan 2;
@@ -276,4 +276,12 @@ subtest '20-executable-in-dir-key', {
 		message => /$dir/;
 
 	dies-ok { ExecutableInDirKey.of('') }, 'of with one param';
+}
+
+subtest '21-associative-subscripting', {
+	plan 3;
+	my $config = ConfigurationFactory.args(:foo(42));
+	is $config<foo>, 42, 'associative get';
+	ok $config<foo>:exists, 'associative exists';
+	nok $config<bar>:exists, 'associative not exists';
 }

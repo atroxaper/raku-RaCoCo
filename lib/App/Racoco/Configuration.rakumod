@@ -2,7 +2,6 @@ unit module App::Racoco::Configuration;
 
 use App::Racoco::ConfigFile;
 use App::Racoco::Paths;
-use App::Racoco::Report::Reporter;
 
 role Factory { ... }
 class ConfigurationFactoryOr { ... }
@@ -58,7 +57,7 @@ class ReporterClassesKey does Key[List] is export {
 			.split(',')
 			.grep(*.chars)
 			.map(*.split('-').map(*.tc).join)
-			.map(-> $name { Reporter.^name ~ $name })
+			.map(-> $name { 'App::Racoco::Report::Reporter' ~ $name })
 			.map(-> $compunit-name {
 				try require ::($compunit-name);
 				my $class = ::($compunit-name);
@@ -90,39 +89,35 @@ class ExecutableInDirKey does Key[Str] is export {
 }
 
 role Configuration is export {
-	multi method get(Str() $key) { ... }
-	multi method get(Key $key) { $key.convert(self.get($key.name)) }
 	method or(--> Factory) { ConfigurationFactoryOr.new(get => self) }
-}
-
-multi sub postcircumfix:<{ }>(Configuration $config, Str() $key) is export {
-	$config.get($key)
-}
-
-multi sub postcircumfix:<{ }>(Configuration $config, Key $key) is export {
-	$config.get($key)
+	multi method get(::?CLASS:D: Str() $key) { ... }
+	multi method get(::?CLASS:D: Key $key) { $key.convert(self.get($key.name)) }
+	multi method AT-KEY (::?CLASS:D: Str() $key) { self.get($key) }
+	multi method AT-KEY (::?CLASS:D: Key $key) { self.get($key) }
+	multi method EXISTS-KEY (::?CLASS:D: Str() $key) { self.get($key).defined }
+	multi method EXISTS-KEY (::?CLASS:D: Key $key) { self.get($key).defined }
 }
 
 class Or does Configuration {
 	has $!get is built is required;
 	has $!or is built is required;
-	multi method get(Str() $key) { $!get.get($key) // $!or.get($key) }
-	multi method get(Key $key) {
+	multi method get(::?CLASS:D: Str() $key) { $!get.get($key) // $!or.get($key) }
+	multi method get(::?CLASS:D: Key $key) {
 		$key.convert($!get.get($key.name)) // $key.convert($!or.get($key.name))
 	}
 }
 
 class Empty does Configuration {
-	multi method get(Str() $key) { Nil }
+	multi method get(::?CLASS:D: Str() $key) { Nil }
 }
 
 class Env does Configuration {
-	multi method get(Str() $key) { %*ENV{$key} // Nil }
+	multi method get(::?CLASS:D: Str() $key) { %*ENV{$key} // Nil }
 }
 
 class Args does Configuration {
 	has %!values is built;
-	multi method get(Str() $key) { %!values{$key} // Nil }
+	multi method get(::?CLASS:D: Str() $key) { %!values{$key} // Nil }
 }
 
 role Factory {
