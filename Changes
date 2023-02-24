@@ -1,6 +1,6 @@
 Version history:
 
-2.0.1		2023-02-24	''
+2.0.1		2023-02-24	'RaCoCo as library and configurable cache directory'
 	- Add '--cache-dir' option. With the option we can point to directory to store index, reports, precomp files and so on for racoco. It is possible to have the directory outside of a project
 	- Encapsulate racoco login in one class App::Racoco. With that we can use RaCoCo as library in any Raku code
 	- Refactor Cli - stay only work with options in it
