@@ -1,0 +1,103 @@
+use Test;
+use lib 'lib';
+use lib 't/lib';
+need App::Racoco::Cli;
+use App::RacocoTest;
+use Fixture;
+use App::Racoco::Paths;
+use App::Racoco::X;
+use TestResources;
+use TestHelper;
+
+plan 4;
+
+my ($*config, $*racoco-stages, $*root);
+my $*RACOCO-TEST = True;
+constant &APP_MAIN = &App::Racoco::Cli::MAIN;
+my ($sources);
+sub setup() {
+	plan $*plan;
+	TestResources::prepare($*subtest);
+	$sources = TestResources::exam-directory;
+}
+
+'01-configuration'.&test(:8plan, {
+  setup();
+  %*ENV<lib> = 'lib-env';
+  %*ENV<cache-dir> = 'cache-dir-env';
+	%*ENV<raku-bin-dir> = 'raku-bin-dir-env';
+  indir $sources, {
+  	APP_MAIN(
+  		'sub',
+  		lib => 'lib-args',
+  		properties => 'cache-dir:cache-dir-properties;lib:lib-properties',
+  	);
+  };
+  my %expected = %(
+		lib => 'lib-args',
+		cache-dir => 'cache-dir-properties',
+		raku-bin-dir => 'raku-bin-dir-env',
+		reporter => 'reporter-config-sub',
+		exec => 'exec-config-',
+		append => False,
+		fail-level => 0,
+		silent => False,
+	);
+	my $config = $*config;
+	is $config<lib>, %expected<lib>, 'lib';
+	is $config<cache-dir>, %expected<cache-dir>, 'cache-dir';
+	is $config<raku-bin-dir>, %expected<raku-bin-dir>, 'raku-bin-dir';
+	is $config<reporter>, %expected<reporter>, 'reporter';
+	is $config<exec>, %expected<exec>, 'exec';
+	is $config<append>, %expected<append>, 'append';
+	is $config<fail-level>, %expected<fail-level>, 'fail-level';
+	is $config<silent>, %expected<silent>, 'silent';
+});
+
+'02-configuration-args'.&test(:8plan, {
+  setup();
+  my %expected = %(
+		lib => 'lib-args',
+		cache-dir => 'cache-dir-args',
+		raku-bin-dir => 'raku-bin-dir-args',
+		reporter => 'reporter-args',
+		exec => 'exec-args',
+		append => True,
+		fail-level => 100,
+		silent => True,
+	);
+  indir $sources, {
+  	APP_MAIN(
+  		|%expected,
+  		properties => 'lib:0;cache-dir:0;raku-bin-dir:0;reporter:0;exec:0;append:0;fail-level:0;silent:0',
+  	);
+  };
+	my $config = $*config;
+	is $config<lib>, %expected<lib>, 'lib';
+	is $config<cache-dir>, %expected<cache-dir>, 'cache-dir';
+	is $config<raku-bin-dir>, %expected<raku-bin-dir>, 'raku-bin-dir';
+	is $config<reporter>, %expected<reporter>, 'reporter';
+	is $config<exec>, %expected<exec>, 'exec';
+	is $config<append>, %expected<append>, 'append';
+	is $config<fail-level>, %expected<fail-level>, 'fail-level';
+	is $config<silent>, %expected<silent>, 'silent';
+});
+
+'03-stages'.&test(:1plan, {
+	setup();
+	$*racoco-stages = Nil;
+	indir $sources, { APP_MAIN() };
+	is $*racoco-stages.join('->'), 'calculate->report->fail-level', 'stages';
+});
+
+'04-root'.&test(:1plan, {
+	setup();
+	indir $sources, { APP_MAIN() };
+	is $*root, $sources, 'root';
+});
+
+
+
+
+
+

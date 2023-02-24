@@ -7,24 +7,25 @@ use App::Racoco::Configuration;
 our sub MAIN(
   Str $config-file-section = '_',
   :$lib is copy = 'lib',
-  Str :$raku-bin-dir is copy,
-  :$exec is copy,
-  Str :$reporter is copy,
-  Bool :$silent is copy,
-  Bool :$append is copy,
-  Int() :$fail-level is copy,
+  Str :$raku-bin-dir,
+  Str :$cache-dir,
+  :$exec,
+  Str :$reporter,
+  Bool :$silent,
+  Bool :$append,
+  Int() :$fail-level,
   Str :$properties,
 ) is export {
 	my $root = $*CWD;
 	my Configuration $config = ConfigurationFactory
-		.args(:$lib, :$raku-bin-dir, :$exec, :$reporter, :$silent, :$append, :$fail-level).or
+		.args(:$lib, :$raku-bin-dir, :$cache-dir, :$exec, :$reporter, :$silent, :$append, :$fail-level).or
 		.property-line($properties).or
 		.env.or
 		.ini(configuration-file-content(:$root), section => $config-file-section).or
 		.ini(configuration-file-content(:$root), section => '_').or
 		.defaults;
 
-	my $below-fail-level = App::Racoco.new(:$root, :$config)
+	my $below-fail-level = racoco-class().new(:$root, :$config)
 		.calculate-coverage
 		.do-report
 		.how-below-fail-level;
@@ -37,6 +38,10 @@ our sub MAIN(
       exit .exitcode;
     }
   }
+}
+
+sub racoco-class() {
+	$*RACOCO-TEST ?? ::('App::RacocoTest') !! App::Racoco;
 }
 
 sub clean-execs-args(@args --> Str) {

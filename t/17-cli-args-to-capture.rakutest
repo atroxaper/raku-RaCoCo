@@ -19,6 +19,7 @@ test((),(), desc => 'empty');
 test(my $enter = ('
 --lib=libdir
 --raku-bin-dir=rakudir
+--cache-dir=cachedir
 --exec
 --reporter=custom-reporter
 --silent
