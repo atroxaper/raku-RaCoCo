@@ -1,0 +1,44 @@
+use Test;
+use lib 'lib';
+use lib 't/lib';
+use App::Racoco;
+use App::Racoco::Configuration;
+use Fixture;
+use TestResources;
+use TestHelper;
+
+plan 1;
+
+my %default-args = %(
+	append => False,
+	cache-dir => App::Racoco::Paths::DOT-RACOCO,
+	exec => 'prove6',
+	fail-level => 0,
+	lib => 'lib',
+	raku-bin-dir => $*EXECUTABLE.parent.Str,
+	silent => True,
+	reporter => ''
+);
+
+my ($root);
+sub setup {
+	plan $*plan;
+	TestResources::prepare($*subtest);
+	$root = TestResources::exam-directory;
+}
+
+'01-full-without-reporters'.&test(:2plan, {
+	setup();
+	my $racoco = App::Racoco.new: :$root,
+		config => ConfigurationFactory.args(|%default-args,);
+	ok True;
+
+	my $fail-by-level;
+	my $captured = Fixture::silently {
+		$fail-by-level = $racoco
+			.calculate-coverage
+			.do-report
+			.how-below-fail-level
+	};
+	ok $fail-by-level < 0;
+});

@@ -1,37 +1,8 @@
 unit module App::Racoco::Cli;
 
-use App::Racoco::Coverable::CoverableIndex;
-use App::Racoco::Coverable::CoverableLinesSupplier;
-use App::Racoco::Coverable::CoverableOutliner;
-use App::Racoco::Coverable::Precomp::PrecompHashcodeReader;
-use App::Racoco::Coverable::Precomp::PrecompLookup;
-use App::Racoco::Coverable::Precomp::PrecompSupplier;
-use App::Racoco::Coverable::Precomp::Precompiler;
-use App::Racoco::CoverableLinesCollector;
-use App::Racoco::CoveredLinesCollector;
-use App::Racoco::Misc;
-use App::Racoco::Paths;
-use App::Racoco::Report::Data;
-use App::Racoco::Report::Reporter;
-use App::Racoco::RunProc;
+use App::Racoco;
 use App::Racoco::X;
 use App::Racoco::Configuration;
-
-sub check-fail-level(Int $fail-level, Data $report) {
-  if $report.percent < $fail-level {
-    exit max(1, ($fail-level - $report.percent).Int);
-  }
-}
-
-sub calculate-report(:$covered-collector, :$coverable-collector) {
-  my %covered = $covered-collector.collect();
-  my %coverable = $coverable-collector.collect();
-  Data.new(:%coverable, :%covered)
-}
-
-sub read-report(:$paths) {
-  Data.read(:$paths)
-}
 
 our sub MAIN(
   Str $config-file-section = '_',
@@ -53,53 +24,13 @@ our sub MAIN(
 		.ini(configuration-file-content(:$root), section => '_').or
 		.defaults;
 
-	my Paths $paths = make-paths-from(:$config, :$root);
-
-  $raku-bin-dir = $config<raku-bin-dir>;
-  my $moar = $config{ExecutableInDirKey.of: 'raku-bin-dir', 'moar'};
-  my $raku = $config{ExecutableInDirKey.of: 'raku-bin-dir', 'raku'};
-
-  $exec = $config<exec>;
-
-  my @reporter-classes = $config{ReporterClassesKey.of: 'reporter'};
-
-  $silent = $config{BoolKey.of: 'silent'};
-
-  $append = $config{BoolKey.of: 'append'};
-
-  $fail-level = $config{IntKey.of: 'fail-level'};
-
-  my $report;
-  if $exec {
-    my $previous-report = $append ?? read-report(:$paths) !! Nil;
-    my $proc = RunProc.new;
-    my $covered-collector = CoveredLinesCollector.new(
-        :$exec, :$paths, :$proc, print-test-log => !$silent, :$append
-		);
-    my $precomp-supplier = PrecompSupplierReal.new(
-        lookup => PrecompLookup.new(:$paths, compiler-id => compiler-id(:$raku, :$proc)),
-        precompiler => Precompiler.new(:$paths, :$raku, :$proc)
-		);
-    my $index = CoverableIndexFile.new(:$paths);
-    my $outliner = CoverableOutlinerReal.new(:$proc, :$moar);
-    my $hashcode-reader = PrecompHashcodeReaderReal.new;
-    my $coverable-supplier = CoverableLinesSupplier.new(
-        supplier => $precomp-supplier, :$index, :$outliner, :$hashcode-reader
-		);
-    my $coverable-collector = CoverableLinesCollector.new(
-        supplier => $coverable-supplier, :$paths
-		);
-    $report = Data.plus(
-      calculate-report(:$covered-collector, :$coverable-collector),
-      $previous-report
-    )
-  } else {
-    $report = read-report(:$paths);
-  }
-
-  $report.write(:$paths);
-  @reporter-classes.map({ $_.new.do(:$paths, data => $report, :$config) });
-  check-fail-level($fail-level, $report);
+	my $below-fail-level = App::Racoco.new(:$root, :$config)
+		.calculate-coverage
+		.do-report
+		.how-below-fail-level;
+	if $below-fail-level > 0 {
+		exit $below-fail-level;
+	}
 
   CATCH {
     when App::Racoco::X::NonZeroExitCode {

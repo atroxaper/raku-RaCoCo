@@ -5,12 +5,14 @@ use App::Racoco::Sha;
 use TmpDir;
 use Fixture;
 
-our sub test-directory() {
-  't-resources/'.IO.add((callframe(4).file.IO.extension: '').basename).absolute.IO
+our sub test-directory($up-calls = 3) {
+  't-resources/'.IO
+		.add((callframe($up-calls).file.IO.extension: '').basename)
+		.absolute.IO
 }
 
-our sub subtest-directory($subtest) {
-  test-directory().add($subtest)
+our sub subtest-directory($subtest, $up-calls = 3) {
+  test-directory($up-calls).add($subtest)
 }
 
 our sub exam-directory() {
@@ -21,7 +23,7 @@ our sub prepare($subtest --> IO::Path) {
   my $exam-directory = exam-directory();
   TmpDir::rm_dir($exam-directory);
   TmpDir::create-dir($exam-directory);
-  copy-content(from => subtest-directory($subtest), to => $exam-directory);
+  copy-content(from => subtest-directory($subtest, 4), to => $exam-directory);
 }
 
 sub copy-content(:$from, :$to is copy) {
