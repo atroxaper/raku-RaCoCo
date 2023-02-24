@@ -13,6 +13,7 @@
     "App::Prove6"
   ],
   "provides": {
+    "App::Racoco": "lib/App/Racoco.rakumod",
     "App::Racoco::Cli": "lib/App/Racoco/Cli.rakumod",
     "App::Racoco::ConfigFile": "lib/App/Racoco/ConfigFile.rakumod",
     "App::Racoco::Configuration": "lib/App/Racoco/Configuration.rakumod",
