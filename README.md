@@ -50,6 +50,8 @@ You may specify the following options:
 
 * **--fail-level** - integer number - if the coverage level will be less than it then `racoco` will exit with a non-zero exit code;
 
+* **--cache-dir** - path to directory where project related files racoco will be stored (`'./.racoco'` by default);
+
 * **--silent** - hide test result output;
 
 * **--append** - append the previous run result to the new one;
@@ -102,6 +104,6 @@ Sources can be found at: [github](https://github.com/atroxaper/raku-RaCoCo). The
 
 # COPYRIGHT AND LICENSE
 
-Copyright 2022 Mikhail Khorkov
+Copyright 2023 Mikhail Khorkov
 
 This library is free software; you can redistribute it and/or modify it under the Artistic License 2.0.

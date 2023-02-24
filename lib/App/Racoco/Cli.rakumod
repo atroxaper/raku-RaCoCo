@@ -102,6 +102,7 @@ our sub GENERATE-USAGE(&main, |c) is export {
 		--lib=<path>                   path to directory with target source files ('./lib' by default)
 		--raku-bin-dir=<path>          path to directory with raku and moar binaries, which supposed to be used in the --exec ($*EXECUTABLE.parent by default)
 		--fail-level=<int>             minimum possible coverage percent for success exit (0 by default)
+		--cache-dir=<path>             path to directory where project related files racoco will be stored ('./.racoco' by default)
 		--silent                       hide the tests result output (false by default)
 		--append                       append the previous run result to the new one (false by default)
 		--html                         produce a simple HTML page to visualize results
