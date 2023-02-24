@@ -184,7 +184,7 @@ class ConfigurationFactoryOr does Factory {
 }
 
 our sub configuration-file-content(IO() :$root) is export {
-	my $path = config-path(:$root);
+	my $path = Paths.config-path-in($root);
 	return $path.f ?? $path.slurp !! '';
 }
 

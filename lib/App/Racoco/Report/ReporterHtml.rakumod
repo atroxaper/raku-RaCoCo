@@ -28,7 +28,7 @@ method !write-main-page($data, %module-links) {
   my $template = %?RESOURCES<report.html>.slurp;
 
   $template .= subst('%%report-lines%%', self!code-main-page-content($data, %module-links));
-  $template .= subst('%%project-name%%', project-name(:lib($!paths.lib)), :g);
+  $template .= subst('%%project-name%%', project-name(:$!paths), :g);
 
   $path.spurt: $template;
 }

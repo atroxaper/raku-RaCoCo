@@ -17,35 +17,6 @@ constant \REPORT-HTML = 'report.html';
 constant \META6 = 'META6.json';
 constant \CONFIG-FILE = 'racoco.ini';
 
-sub absolute(IO::Path $path --> IO::Path) {
-	$path.is-absolute ?? $path !! $path.absolute.IO
-}
-
-our sub racoco-path(IO() :$lib --> IO::Path:D) is export {
-	mkdir absolute($lib).parent.add(DOT-RACOCO)
-		.add(root-hash-name($lib.parent));
-}
-
-our sub meta6-path(IO() :$lib --> IO::Path:D) is export {
-  absolute($lib).parent.add(META6)
-}
-
-our sub parent-name(IO() $path) is export {
-  absolute($path).parent.basename
-}
-
-our sub root-hash-name(IO() $path --> Str) is export {
-	App::Racoco::Sha::create.uc(absolute($path).Str)
-}
-
-our sub config-file(IO() :$lib) is export {
-	absolute($lib).parent.add(CONFIG-FILE)
-}
-
-our sub config-path(IO() :$root) is export {
-	$root.add(CONFIG-FILE)
-}
-
 class Paths is export {
 	has IO::Path $.root;
 	has IO::Path $.lib;
@@ -77,10 +48,18 @@ class Paths is export {
 		absolute($path);
 	}
 
+	sub absolute(IO::Path $path --> IO::Path) {
+		$path.is-absolute ?? $path !! $path.absolute.IO
+	}
+
 	method !calc-root-racoco(--> IO::Path:D) {
 		$!root ~~ $!racoco.parent
 			?? $!racoco
-			!! $!racoco.add(root-hash-name($!root))
+			!! $!racoco.add(self!root-hash-name)
+	}
+
+	method !root-hash-name(--> Str:D) {
+		App::Racoco::Sha::create.uc($!root.Str)
 	}
 
 	method coverage-log-path(--> IO::Path:D) {
@@ -109,5 +88,17 @@ class Paths is export {
 
 	method report-html-data-path(--> IO::Path:D) {
 		$!root-racoco.add(REPORT-DATA)
+	}
+
+	method meta6-path(--> IO::Path:D) {
+  	$!root.add(META6)
+	}
+
+	method root-name(--> Str:D) {
+		$!root.basename
+	}
+
+	method config-path-in(::?CLASS:U: IO() $path --> IO::Path:D) {
+		$path.add(CONFIG-FILE)
 	}
 }
