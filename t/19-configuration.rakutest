@@ -1,0 +1,293 @@
+use Test;
+use lib 'lib';
+use lib 't/lib';
+use App::Racoco::Configuration;
+use App::Racoco::Paths;
+use App::Racoco::Report::ReporterHtml;
+use App::Racoco::Report::ReporterHtmlColorBlind;
+use App::Racoco::Report::ReporterSimple;
+use App::Racoco::Report::ReporterCustomOne;
+use App::Racoco::Report::ReporterCustomThree;
+use App::Racoco::Report::ReporterTwo;
+use TestResources;
+use TestHelper;
+
+plan 21;
+
+subtest '01-empty', {
+	plan 2;
+	my $config = ConfigurationFactory.empty();
+	isa-ok $config, Configuration, 'empty type';
+	is $config.get('foo'), Nil, 'empty get';
+}
+
+subtest '02-env', {
+	plan 3;
+	my $config = ConfigurationFactory.env();
+	isa-ok $config, Configuration, 'env type';
+	is $config.get('foo'), Nil, 'env not get';
+	%*ENV<foo> = 'bar';
+	is $config.get('foo'), 'bar', 'env get';
+}
+
+subtest '03-args', {
+	plan 4;
+	my $config = ConfigurationFactory.args(:foo(42));
+	isa-ok $config, Configuration, 'args type';
+	is $config.get('foo'), 42, 'args get';
+	is $config.get('bar'), Nil, 'args omit';
+	is ConfigurationFactory.args(:foo(42), :bar<baz>).get('bar'), 'baz',
+			'args get';
+}
+
+subtest '04-or', {
+	plan 3;
+	my $factory = ConfigurationFactory.empty().or();
+	isa-ok $factory, App::Racoco::Configuration::Factory, 'factory type';
+	my $config = ConfigurationFactory.env.or.args(:foo(42), :bar(24));
+	%*ENV<foo> = 'from env';
+	is $config.get('foo'), 'from env', 'get from env';
+	is $config.get('bar'), 24, 'get from args';
+}
+
+subtest '05-args-filter', {
+	plan 2;
+	sub make(:$foo, :$bar) { ConfigurationFactory.args(:$foo, :$bar).or.env }
+	my $config = make(:foo<baz>);
+	%*ENV<bar> = 42;
+	is $config.get('bar'), 42, 'agrs filter';
+	is make(:foo<baz>, :bar<foobar>).get('bar'), 'foobar', 'agrs filter 2';
+}
+
+subtest '06-one-line', {
+	plan 3;
+	my $config = ConfigurationFactory.property-line('foo:42;bar:baz');
+	isa-ok $config, Configuration, 'property-line type';
+	is $config.get('bar'), 'baz', 'property-line get';
+	nok ConfigurationFactory.property-line(Str)<foo>, 'property-line with empty';
+}
+
+subtest '07-ini', {
+	plan 6;
+	my $content = q:to/END/;
+		top = good value
+		good = boom
+
+		[good]
+		top = boom
+		good = good value
+
+		[bad]
+		top = boom
+		good = boom
+		END
+	my $top-config = ConfigurationFactory.ini($content);
+	isa-ok $top-config, Configuration, 'ini top type';
+	is $top-config.get('top'), 'good value', 'ini top get ok';
+	is $top-config.get('good'), 'boom', 'ini top get nok';
+	my $section-config = ConfigurationFactory.ini($content, :section<good>);
+	is $section-config.get('top'), 'boom', 'ini section get nok';
+	is $section-config.get('good'), 'good value', 'ini section get ok';
+	my $miss-section = ConfigurationFactory.ini($content, :section<miss>);
+	nok $miss-section.get('top'), 'ini miss section nok';
+}
+
+subtest '08-all-or', {
+	plan 1;
+	my $config = ConfigurationFactory
+		.empty.or
+		.env.or
+		.args(values => %{:3a}).or
+		.ini("foo = bar").or
+		.empty;
+	isa-ok $config, Configuration, 'all or ok';
+}
+
+subtest '09-int-key', {
+	plan 3;
+	my $config = ConfigurationFactory.args(int => 5, str => '6');
+	is-deeply $config.get(IntKey.of: 'int'), 5, 'int key int';
+	is-deeply $config.get(IntKey.of: 'str'), 6, 'int key str';
+	nok $config.get(IntKey.of: 'miss'), 'int key nok';
+}
+
+subtest '10-file-path-key', {
+	plan 6;
+	my $config = ConfigurationFactory.args(
+		file => 'resources'.IO.add('report.html').Str,
+		dir => 't-resources'.IO.Str,
+		not-path => 'foo'
+	);
+	my $report = $config.get(FilePathKey.of: 'file');
+	isa-ok $report, IO::Path, 'file path key type';
+	ok $report.is-absolute, 'file path key absolute';
+	ok $report.f, 'file path key exists';
+	nok $config.get(FilePathKey.of: 'dir'), 'file path key dir nok';
+	nok $config.get(FilePathKey.of: 'not-path'), 'file path key nok';
+	nok $config.get(FilePathKey.of: 'miss'), 'file path key nok';
+}
+
+subtest '11-get-by-brackets', {
+	plan 2;
+	my $config = ConfigurationFactory.args(foo => '5');
+	is $config{'foo'}, '5', 'bracket with str';
+	is-deeply $config{IntKey.of: 'foo'}, 5, 'bracket with key';
+}
+
+subtest '12-or-with-key', {
+	plan 2;
+	class StrKeyLen does App::Racoco::Configuration::Key[Str] {
+		has Int:D $.len = 2;
+		method convert(Str $value --> Str) {
+			return Nil without $value;
+			return $value.chars == $!len ?? $value !! Nil;
+		}
+	}
+	my $config = ConfigurationFactory.args(foo => 'a').or.args(foo => 'bb');
+	is $config{StrKeyLen.new(name => 'foo', len => 1)}, 'a', 'or with key first';
+	is $config{StrKeyLen.new(name => 'foo', len => 2)}, 'bb', 'or with key second';
+}
+
+subtest '13-defaults', {
+	plan 1;
+	my $config = ConfigurationFactory.defaults;
+	is $config<silent>, False, 'defaults';
+}
+
+subtest '14-dir-path-key', {
+	plan 6;
+	my $config = ConfigurationFactory.args(
+		file => 'resources'.IO.add('report.html').Str,
+		dir => 't-resources'.IO.Str,
+		not-path => 'foo'
+	);
+	my $report = $config.get(DirPathKey.of: 'dir');
+	isa-ok $report, IO::Path, 'dir path key type';
+	ok $report.is-absolute, 'dir path key absolute';
+	ok $report.d, 'dir path key exists';
+	nok $config.get(DirPathKey.of: 'file'), 'dir path key for file nok';
+	nok $config.get(DirPathKey.of: 'not-path'), 'dir path key nok';
+	nok $config.get(DirPathKey.of: 'miss'), 'dir path key nok';
+}
+
+sub setup() {
+	plan $*plan;
+	TestResources::prepare($*subtest);
+	my $sources = TestResources::exam-directory;
+}
+
+'15-configuration-file-content'.&test(:1plan, {
+	setup();
+	my $root = TestResources::exam-directory;
+	indir($root, {
+		is configuration-file-content(:$root), 'foo = bar', 'config file content';
+	});
+});
+
+'16-make-paths'.&test(:4plan, {
+	setup();
+	my $root = TestResources::exam-directory;
+	indir($root, {
+		my $path =
+			make-paths-from(:config(ConfigurationFactory.defaults), :root($*CWD));
+		isa-ok $path, Paths, 'make type';
+		ok $path.root-racoco.d, '.racoco exists';
+		ok $path.lib.d, 'lib exists';
+		is $path.root, $root, 'root';
+	});
+});
+
+subtest '17-path-key', {
+	plan 4;
+	my $config = ConfigurationFactory.args(
+		file => 'resources'.IO.add('report.html').Str,
+		dir => 't-resources'.IO.Str,
+		not-path => 'foo'
+	);
+	my $report = $config.get(PathKey.of: 'dir');
+	isa-ok $report, IO::Path, 'path key type';
+	ok $report.is-absolute, 'path key absolute';
+	ok $config.get(PathKey.of: 'file'), 'path key for file ok';
+	ok $config.get(PathKey.of: 'not-path'), 'path key ok';
+}
+
+subtest '18-bool-key', {
+	plan 15;
+	my $key = BoolKey.of('');
+	ok $key.convert('true'), 'true';
+	ok $key.convert('True'), 'True';
+	ok $key.convert('TRUE'), 'TRUE';
+	ok $key.convert(1), '1';
+	ok $key.convert(True), 'True bool';
+	ok $key.convert("Any"), 'Any';
+
+	nok $key.convert('false'), 'false';
+	nok $key.convert('False'), 'False';
+	nok $key.convert('FALSE'), 'FALSE';
+	nok $key.convert('0'), '"0"';
+	nok $key.convert(0), '0';
+	nok $key.convert(''), 'empty';
+	nok $key.convert(Nil), 'Nil';
+	nok $key.convert(Any), 'Any';
+	nok $key.convert(Str), 'Any';
+}
+
+subtest '19-reporter-classes-key', {
+	plan 5;
+	my $key = ReporterClassesKey.of('');
+	is $key.convert(Nil), Nil, 'nil';
+	is-deeply
+		$key.convert('html-color-blind'),
+		(
+			App::Racoco::Report::ReporterSimple,
+			App::Racoco::Report::ReporterHtmlColorBlind,
+		),
+		'single blind';
+	is-deeply
+		$key.convert('html,html-color-blind'),
+		(
+			App::Racoco::Report::ReporterSimple,
+			App::Racoco::Report::ReporterHtml,
+			App::Racoco::Report::ReporterHtmlColorBlind,
+		),
+		'html and blind';
+	is-deeply
+		$key.convert('html,custom-one,custom-three,two'),
+		(
+			App::Racoco::Report::ReporterSimple,
+			App::Racoco::Report::ReporterHtml,
+			App::Racoco::Report::ReporterCustomOne,
+			App::Racoco::Report::ReporterCustomThree,
+			App::Racoco::Report::ReporterTwo,
+		),
+		'html with customs';
+	is-deeply
+		$key.convert(''), (App::Racoco::Report::ReporterSimple, ), 'empty';
+}
+
+subtest '20-executable-in-dir-key', {
+	plan 4;
+	my $key = ExecutableInDirKey.of('', 'raku');
+	is $key.convert(Nil), Nil, 'nil';
+
+	my $dir = $*EXECUTABLE.parent;
+	my $expected = $dir.add('raku' ~ ($*DISTRO.is-win ?? '.exe' !! ''));
+	is $key.convert($dir.Str), $expected, 'good executable';
+
+	$dir = $*TMPDIR;
+	throws-like
+		{ $key.convert($dir) },
+		App::Racoco::X::WrongRakuBinDirPath,
+		'bad executable',
+		message => /$dir/;
+
+	dies-ok { ExecutableInDirKey.of('') }, 'of with one param';
+}
+
+subtest '21-associative-subscripting', {
+	plan 3;
+	my $config = ConfigurationFactory.args(:foo(42));
+	is $config<foo>, 42, 'associative get';
+	ok $config<foo>:exists, 'associative exists';
+	nok $config<bar>:exists, 'associative not exists';
+}

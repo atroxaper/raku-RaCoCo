@@ -1,27 +1,28 @@
 use Test;
 use lib 'lib';
+use lib 't/lib';
 use App::Racoco::Report::Data;
 use App::Racoco::Report::ReporterHtml;
 use App::Racoco::Report::ReporterHtmlColorBlind;
 use App::Racoco::ModuleNames;
 use App::Racoco::Paths;
-use lib 't/lib';
 use Fixture;
 use TestResources;
 use TestHelper;
 
 plan 2;
 
-my ($lib, $data);
+my ($lib, $paths, $data);
 sub setup($lib-name) {
 	plan $*plan;
 	TestResources::prepare($*subtest);
 	$lib = TestResources::exam-directory.add($lib-name);
+	$paths = Paths.from(:$lib);
 }
 
 sub check-page($data, $file-name, $page-name, :$color-blind = False) {
   my $part = $data.for(:$file-name);
-  my $page = (report-html-data-path(:$lib).add($page-name) ~ '.html').IO;
+  my $page = ($paths.report-html-data-path.add($page-name) ~ '.html').IO;
   ok $page.e, $page-name ~ ' exists';
   my $content = $page.slurp;
   for 1..4 -> $line {
@@ -50,9 +51,9 @@ sub check-main-page($content, $file-name, $page-name) {
 
 '01-render'.&test(:37plan, {
 	setup('lib');
-  $data = Data.read(:$lib);
-  Fixture::silently({ indir($lib.parent, { ReporterHtml.new.do(:$lib, :$data) }) });
-  is report-html-data-path(:$lib).dir.elems, 3, 'data dir with pages';
+  $data = Data.read(:$paths);
+  Fixture::silently({ indir($lib.parent, { ReporterHtml.new.do(:$paths, :$data) }) });
+  is $paths.report-html-data-path.dir.elems, 3, 'data dir with pages';
   my $file-name-page-name = $data.get-all-parts
     .map(*.file-name)
     .map({$_ => .split('/').join('-').substr(0, *-8)}).Map;
@@ -60,11 +61,11 @@ sub check-main-page($content, $file-name, $page-name) {
   $file-name-page-name
     .map({check-page($data, .key, .value)});
 
-  my $with-esc = report-html-data-path(:$lib).add('RootModule.html').slurp;
+  my $with-esc = $paths.report-html-data-path.add('RootModule.html').slurp;
   ok $with-esc ~~ /'&quot;&amp;&lt;&gt;'/, 'escape ok';
 
-  ok report-html-path(:$lib).e, 'html report exists';
-  my $main-content = report-html-path(:$lib).slurp;
+  ok $paths.report-html-path.e, 'html report exists';
+  my $main-content = $paths.report-html-path.slurp;
   $file-name-page-name
     .map({check-main-page($main-content, .key, .value)});
   nok $main-content ~~ /'%%'/, 'main page has no placeholders';
@@ -72,8 +73,8 @@ sub check-main-page($content, $file-name, $page-name) {
 
 '02-color-blind'.&test(:7plan, {
 	setup('lib');
-	$data = Data.read(:$lib);
+	$data = Data.read(:$paths);
 	my $reporter = ReporterHtmlColorBlind.new;
-  Fixture::silently({ indir($lib.parent, { $reporter.do(:$lib, :$data) }) });
+  Fixture::silently({ indir($lib.parent, { $reporter.do(:$paths, :$data) }) });
   check-page($data, 'RootModule.rakumod', 'RootModule', :color-blind);
 });

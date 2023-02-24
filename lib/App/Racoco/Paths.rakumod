@@ -1,5 +1,8 @@
 unit module App::Racoco::Paths;
 
+use App::Racoco::Sha;
+use App::Racoco::X;
+
 constant \DOT-RACOCO = '.racoco';
 constant \DOT-PRECOMP = '.precomp';
 constant \OUR-PRECOMP = '.precomp';
@@ -14,51 +17,88 @@ constant \REPORT-HTML = 'report.html';
 constant \META6 = 'META6.json';
 constant \CONFIG-FILE = 'racoco.ini';
 
-sub absolute(IO::Path $path --> IO::Path) {
-	$path.is-absolute ?? $path !! $path.absolute.IO
-}
+class Paths is export {
+	has IO::Path $.root;
+	has IO::Path $.lib;
+	has IO::Path $!racoco;
+	has IO::Path $.root-racoco is built(False);
 
-our sub racoco-path(IO() :$lib --> IO::Path:D) is export {
-	mkdir absolute($lib).parent.add(DOT-RACOCO)
-}
+	multi method from(IO() :$lib! --> Paths:D) {
+		self.bless(:root($lib.parent), :$lib, :racoco($lib.parent.add(DOT-RACOCO)))
+	}
 
-our sub our-precomp-path(IO() :$lib --> IO::Path:D) is export {
-	mkdir racoco-path(:$lib).add(DOT-PRECOMP)
-}
+	submethod BUILD(IO() :$root!, IO() :$lib!, IO() :$racoco!) {
+		$!root = check-dir-path($root, App::Racoco::X::WrongRootPath);
+		$!lib = check-dir-path(concat($!root, $lib), App::Racoco::X::WrongLibPath);
+		$!racoco = concat($!root, $racoco);
+		mkdir $!racoco;
+		$!racoco = check-dir-path($!racoco, App::Racoco::X::WrongRacocoPath);
+		$!root-racoco = self!calc-root-racoco;
+		mkdir $!root-racoco;
+		mkdir self.our-precomp-path;
+		mkdir self.report-html-data-path;
+	}
 
-our sub lib-precomp-path(IO() :$lib --> IO::Path:D) is export {
-	absolute($lib).add(DOT-PRECOMP)
-}
+	sub concat($root, $path) {
+		$path.is-absolute ?? $path !! $root.add($path)
+	}
 
-our sub index-path(IO() :$lib --> IO::Path:D) is export {
-	racoco-path(:$lib).add(INDEX)
-}
+	sub check-dir-path(IO $path, App::Racoco::X::WrongPath:U $err-class) {
+		$err-class.new(:$path).throw unless $path ~~ :e & :d;
+		absolute($path);
+	}
 
-our sub coverage-log-path(IO() :$lib --> IO::Path:D) is export {
-	racoco-path(:$lib).add(COVERAGE-LOG)
-}
+	sub absolute(IO::Path $path --> IO::Path) {
+		$path.is-absolute ?? $path !! $path.absolute.IO
+	}
 
-our sub report-data-path(IO() :$lib --> IO::Path:D) is export {
-	racoco-path(:$lib).add(REPORT-TXT)
-}
+	method !calc-root-racoco(--> IO::Path:D) {
+		$!root ~~ $!racoco.parent
+			?? $!racoco
+			!! $!racoco.add(self!root-hash-name)
+	}
 
-our sub report-html-data-path(IO() :$lib --> IO::Path:D) is export {
-	mkdir racoco-path(:$lib).add(REPORT-DATA)
-}
+	method !root-hash-name(--> Str:D) {
+		App::Racoco::Sha::create.uc($!root.Str)
+	}
 
-our sub report-html-path(IO() :$lib --> IO::Path:D) is export {
-	racoco-path(:$lib).add(REPORT-HTML)
-}
+	method coverage-log-path(--> IO::Path:D) {
+		$!root-racoco.add(COVERAGE-LOG)
+	}
 
-our sub meta6-path(IO() :$lib --> IO::Path:D) is export {
-  absolute($lib).parent.add(META6)
-}
+	method lib-precomp-path(--> IO::Path:D) {
+		$!lib.add(DOT-PRECOMP)
+	}
 
-our sub parent-name(IO() $path) is export {
-  absolute($path).parent.basename
-}
+	method our-precomp-path(--> IO::Path:D) {
+		$!root-racoco.add(DOT-PRECOMP)
+	}
 
-our sub config-file(IO() :$lib) is export {
-	absolute($lib).parent.add(CONFIG-FILE)
-}
+	method index-path(--> IO::Path:D) {
+		$!root-racoco.add(INDEX)
+	}
 
+	method report-data-path(--> IO::Path:D) {
+		$!root-racoco.add(REPORT-TXT)
+	}
+
+	method report-html-path(--> IO::Path:D) {
+		$!root-racoco.add(REPORT-HTML)
+	}
+
+	method report-html-data-path(--> IO::Path:D) {
+		$!root-racoco.add(REPORT-DATA)
+	}
+
+	method meta6-path(--> IO::Path:D) {
+  	$!root.add(META6)
+	}
+
+	method root-name(--> Str:D) {
+		$!root.basename
+	}
+
+	method config-path-in(::?CLASS:U: IO() $path --> IO::Path:D) {
+		$path.add(CONFIG-FILE)
+	}
+}

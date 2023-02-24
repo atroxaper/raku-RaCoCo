@@ -3,26 +3,26 @@ use lib 'lib';
 use lib 't/lib';
 use App::Racoco::CoveredLinesCollector;
 use App::Racoco::RunProc;
-use App::Racoco::Paths;
 use Fixture;
 use TestResources;
 use TestHelper;
 
 plan 7;
 
-my ($sources, $lib, $coverage-log, $collector);
+my ($root, $lib, $coverage-log, $collector);
 sub setup($lib-name, :$exec = 'prove6', :$proc, :$append = False, :outloud($print-test-log) = False) {
 	plan $*plan;
 	TestResources::prepare($*subtest);
-	$sources = TestResources::exam-directory;
-	$lib = $sources.add($lib-name);
-	$coverage-log = coverage-log-path(:$lib).IO;
-	$collector = CoveredLinesCollector.new(:$exec, :$proc, :$lib, :$append, :$print-test-log);
+	$root = TestResources::exam-directory;
+	my $paths = Fixture::make-paths($root);
+	$lib = $paths.lib;
+	$coverage-log = $paths.coverage-log-path;
+	$collector = CoveredLinesCollector.new(:$exec, :$proc, :$paths, :$append, :$print-test-log);
 }
 
 sub collect() {
 	my %covered-lines;
-	indir($sources, { %covered-lines = $collector.collect() });
+	indir($root, { %covered-lines = $collector.collect() });
 	%covered-lines;
 }
 
@@ -67,8 +67,10 @@ sub collect() {
 
 '07-parse-log'.&test(:3plan, {
 	setup('lib', proc => Fixture::fakeProc, :!exec);
-	my $path = coverage-log-path(:$lib);
-	$path.spurt: $path.slurp.subst('lib/', $lib ~ '/', :g).subst('/', $*SPEC.dir-sep, :g);
+	my $path = $coverage-log;
+	$path.spurt: $path.slurp
+		.subst('lib/', $lib ~ '/', :g)
+		.subst('/', $*SPEC.dir-sep, :g);
 	my %covered-lines = collect();
 	is %covered-lines.elems, 2, 'filter corrupt';
 	ok %covered-lines<MyModuleName1.rakumod> === bag(1, 2, 2, 1, 3, 5), 'parse 1 ok';

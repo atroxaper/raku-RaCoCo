@@ -8,19 +8,19 @@ use TestResources;
 
 plan 2;
 
-my ($lib);
-sub setup($lib-name) {
+my ($paths);
+sub setup() {
 	plan $*plan;
 	TestResources::prepare($*subtest);
-	$lib = TestResources::exam-directory.add($lib-name);
+	$paths = Fixture::make-paths(TestResources::exam-directory);
 }
 
 '01-from-meta'.&test(:1plan, {
-	setup('lib');
-	is project-name(:$lib), 'Test::Project';
+	setup();
+	is project-name(:$paths), 'Test::Project';
 });
 
-'02-from-path'.&test(:1plan, {
-	setup('lib');
-	is project-name(:$lib), 'exam';
+'02-from-root'.&test(:1plan, {
+	setup();
+	is project-name(:$paths), 'exam';
 });

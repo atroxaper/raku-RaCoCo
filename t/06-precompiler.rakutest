@@ -10,29 +10,33 @@ use TestResources;
 
 plan 6;
 
-my ($lib, $our-precomp, $proc, $precompiler, $subtest);
+my ($paths, $our-precomp, $proc, $precompiler, $subtest);
 sub setup($proc-arg, :$subtest, :$plan!, :$wo-resources = False) {
 	plan $plan;
+	my $lib;
 	if $wo-resources {
 		$lib = $*CWD;
 	} else {
-			TestResources::prepare($subtest);
+        TestResources::prepare($subtest);
 		$lib = TestResources::exam-directory.add('lib');
 	}
-	$our-precomp = our-precomp-path(:$lib);
+	$paths = Paths.from(:$lib);
+	$our-precomp = $paths.our-precomp-path;
 	$proc = $proc-arg;
-	$precompiler = Precompiler.new(:$lib, :raku<raku>, :$proc);
+	$precompiler = Precompiler.new(:$paths, :raku<raku>, :$proc);
 }
 
 $subtest = '01-right-proc-args';
 subtest $subtest, {
 	setup(Fixture::fakeProc, :$subtest, :6plan, :wo-resources);
-  my $file-name = 'Module'.IO.add('Module2.rakumod').Str;
-  my $source-file = $lib.add($file-name);
-  my $out-path = $our-precomp.add(file-precomp-path(:$lib, path => $file-name));
-  $precompiler.compile(:$file-name);
-  is $proc.c.elems, 1, 'one comand';
-	is $proc.c.list.[0], "raku -I$lib --target=mbc --output=$out-path $source-file", 'right comand';
+	my $lib = $paths.lib;
+	my $file-name = 'Module'.IO.add('Module2.rakumod').Str;
+	my $source-file = $paths.lib.add($file-name);
+	my $out-path = $our-precomp.add(file-precomp-path(:$lib, path => $file-name));
+	$precompiler.compile(:$file-name);
+	is $proc.c.elems, 1, 'one comand';
+	is $proc.c.list.[0],
+		"raku -I$lib --target=mbc --output=$out-path $source-file", 'right comand';
 	is $proc.c.hash.elems, 3, 'three optioons';
 	is $proc.c.hash.<out>, False, ':!out';
 	is $proc.c.hash.<err>, True, ':err';
@@ -42,6 +46,7 @@ subtest $subtest, {
 $subtest = '02-real-compile';
 subtest $subtest, {
 	setup(RunProc.new, :$subtest, :2plan);
+	my $lib = $paths.lib;
   my $file-name = 'Module3.rakumod';
   my $out-path = $our-precomp.add(file-precomp-path(:$lib, path => $file-name));
   is $precompiler.compile(:$file-name), $out-path, 'precomp ok';
@@ -76,6 +81,7 @@ subtest $subtest, {
 $subtest = '06-dependency-with-no-precompile';
 subtest $subtest, {
 	setup(RunProc.new, :$subtest, :2plan);
+	my $lib = $paths.lib;
 	my $file-name = 'Module2.rakumod';
 	my $out-path = $our-precomp.add(file-precomp-path(:$lib, path => $file-name));
 	nok $precompiler.compile(:$file-name).defined, 'precomp ok without output file';

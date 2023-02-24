@@ -1,14 +1,16 @@
 unit module App::Racoco::CoverableLinesCollector;
 
 use App::Racoco::Coverable::CoverableLinesSupplier;
+use App::Racoco::Paths;
 use App::Racoco::Misc;
 
 class CoverableLinesCollector is export {
-  has IO::Path $.lib;
+  has IO::Path $!lib;
   has CoverableLinesSupplier $.supplier;
   has Int $!lib-path-len;
 
-  submethod TWEAK() {
+  submethod TWEAK(Paths :$paths!) {
+  	$!lib = $paths.lib;
     $!lib-path-len = $!lib.Str.chars + $*SPEC.dir-sep.chars;
   }
 

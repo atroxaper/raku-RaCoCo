@@ -14,12 +14,12 @@ sub cover(Str $file-name, Str() $time, Str $hashcode, *@lines) {
   	:$file-name, :timestamp(Instant.from-posix($time)), :$hashcode, :@lines)
 }
 
-my ($lib, $index, $subtest);
-sub setup($lib-name, :$subtest, :$plan!) {
+my ($paths, $index, $subtest);
+sub setup($lib, :$subtest, :$plan!) {
 	plan $plan;
 	TestResources::prepare($subtest);
-	$lib = TestResources::exam-directory.add($lib-name);
-	$index = CoverableIndexFile.new(:$lib);
+	$paths = Paths.from(lib => TestResources::exam-directory.add($lib));
+	$index = CoverableIndexFile.new(:$paths);
 }
 
 $subtest = '01-retrieve-from-index';
@@ -44,7 +44,7 @@ subtest $subtest, {
   $index.put(coverable => $first-c);
   $index.put(coverable => $update-c);
 
-  is index-path(:$lib).slurp, q:to/END/.trim, 'flush ok';
+  is $paths.index-path.slurp, q:to/END/.trim, 'flush ok';
     Average.rakumod | 1485726596 | hash | 1 2
     Empty.rakumod | 1485726595.3 | hashcode |
     Module.rakumod | 1485726595 | updated | 7 9 15

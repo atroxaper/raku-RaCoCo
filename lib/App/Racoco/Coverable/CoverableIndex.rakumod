@@ -12,8 +12,8 @@ class CoverableIndexFile does CoverableIndex is export {
 	has IO::Path $!index-path;
   has Coverable %!coverables;
 
-  submethod BUILD(IO() :$lib) {
-    $!index-path = index-path(:$lib);
+  submethod BUILD(Paths :$paths!) {
+    $!index-path = $paths.index-path;
     %!coverables = self!read-index();
   }
 

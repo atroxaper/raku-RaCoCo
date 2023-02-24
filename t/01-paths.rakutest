@@ -1,36 +1,122 @@
 use Test;
 use lib 'lib';
-use App::Racoco::Paths;
 use lib 't/lib';
-use TestResources;
+use App::Racoco::Configuration;
+use App::Racoco::Paths;
+use App::Racoco::X;
+use Fixture;
 use TestHelper;
+use TestResources;
 
-plan 8;
+plan 14;
 
-TestResources::prepare('whole');
-my $lib = TestResources::exam-directory.add('lib');
-
-{
-	my $racoco-path = racoco-path(:$lib);
-	ok $racoco-path.is-absolute, 'racoco path is absolute';
-	ok $racoco-path.e, 'racoco path exists';
+my $root = TestResources::exam-directory;
+sub setup() {
+	plan $*plan;
+	TestResources::prepare($*subtest) unless $*wo-resources;
 }
 
-{
-	my $precomp-path = our-precomp-path(:$lib);
-	ok $precomp-path.is-absolute, 'precomp path is absolute';
-	ok $precomp-path.e, 'precomp path exists';
+'01-from-lib'.&test(:6plan, {
+	setup();
+	indir($root, {
+		throws-like { Paths.from(:lib<non-exist>) }, App::Racoco::X::WrongLibPath,
+				'throw non-esist';
+		throws-like { Paths.from(:lib<non-lib-dir>) }, App::Racoco::X::WrongLibPath,
+				'throw non-lib-dir';
+		my $p = Paths.from(:lib<exist-lib>);
+		ok $p.lib.e, 'lib exist';
+		ok $p.root.e, 'root exist';
+		ok $p.root-racoco.e, 'root racoco exist';
+		is $p.lib.parent, $p.root, 'root is parent of lib';
+	});
+});
+
+'02-root-racoco-in-root'.&test(:1plan, {
+	setup();
+	my $paths = Fixture::make-paths(TestResources::exam-directory);
+	ok $paths.root-racoco.add('.keep').e, 'root racoco in root';
+});
+
+'03-root-racoco-out-root'.&test(:1plan, {
+	setup();
+	my $root = TestResources::exam-directory.add('root');
+	my $paths = Paths.new(
+		root => $root,
+		lib => $root.add('lib'),
+		racoco => $root.parent.add('.racoco')
+	);
+	ok $paths.root-racoco.add('.keep').e, 'root racoco out root';
+});
+
+subtest '04-config-path-from-config', {
+	plan 1;
+	is Paths.config-path-in($*CWD), $*CWD.add(App::Racoco::Paths::CONFIG-FILE),
+		'config file from configuration';
 }
 
-{
-	nok lib-precomp-path(:$lib).e, 'lib precomp path does not exists by default';
-}
+'05-constructor'.&test(:6plan, {
+	setup();
+	throws-like { Paths.new(:$root, :lib<non-exist>, :racoco<.racoco>) },
+			App::Racoco::X::WrongLibPath, 'throw non-esist';
+	throws-like { Paths.new(:$root, :lib<non-lib-dir>, :racoco<.racoco>) },
+			App::Racoco::X::WrongLibPath, 'throw non-lib-dir';
+	my $p = Paths.new(:$root, :lib<exist-lib>, :racoco<.racoco>);
+	ok $p.lib.e, 'lib exist';
+	ok $p.root.e, 'root exist';
+	ok $p.root-racoco.e, 'root racoco exist';
+	is $p.lib.parent, $p.root, 'root is parent of lib';
+});
 
-{
-	is our-precomp-path(:$lib).parent, racoco-path(:$lib), 'out precomp parent';
-	isnt our-precomp-path(:$lib), lib-precomp-path(:$lib), 'lib and our precomp';
-}
+'06-coverage-log-path'.&test(:1plan, {
+	setup();
+	my $paths = Fixture::make-paths(TestResources::exam-directory);
+	ok $paths.coverage-log-path.e, 'coverage-log-path';
+});
 
-{
-  is parent-name($lib), 'exam', 'parent name ok';
-}
+'07-lib-precomp-path'.&test(:1plan, {
+	setup();
+	my $paths = Fixture::make-paths(TestResources::exam-directory);
+	ok $paths.lib-precomp-path.e, 'lib-precomp-path';
+});
+
+'08-our-precomp-path'.&test(:1plan, {
+	setup();
+	my $paths = Fixture::make-paths(TestResources::exam-directory);
+	ok $paths.our-precomp-path.add('.keep').e, 'our-precomp-path';
+});
+
+'09-index-path'.&test(:1plan, {
+	setup();
+	my $paths = Fixture::make-paths(TestResources::exam-directory);
+	ok $paths.index-path.e, 'index-path';
+});
+
+'10-report-data-path'.&test(:1plan, {
+	setup();
+	my $paths = Fixture::make-paths(TestResources::exam-directory);
+	ok $paths.report-data-path.e, 'report-data-path';
+});
+
+'11-report-html-path'.&test(:1plan, {
+	setup();
+	my $paths = Fixture::make-paths(TestResources::exam-directory);
+	ok $paths.report-html-path.e, 'report-html-path';
+});
+
+'12-report-html-data-path'.&test(:1plan, {
+	setup();
+	my $paths = Fixture::make-paths(TestResources::exam-directory);
+	ok $paths.report-html-data-path.add('.keep').e, 'report-html-data-path';
+});
+
+'13-meta6-path'.&test(:1plan, {
+	setup();
+	my $paths = Fixture::make-paths(TestResources::exam-directory);
+	ok $paths.meta6-path.e, 'meta6';
+});
+
+'14-root-name'.&test(:1plan, {
+	setup();
+	my $paths = Fixture::make-paths(TestResources::exam-directory);
+	is $paths.root-name, 'exam', 'root-name';
+});

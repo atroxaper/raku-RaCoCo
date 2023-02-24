@@ -1,5 +1,12 @@
 Version history:
 
+2.0.1		2023-02-24	'RaCoCo as library and configurable cache directory'
+	- Add '--cache-dir' option. With the option we can point to directory to store index, reports, precomp files and so on for racoco. It is possible to have the directory outside of a project
+	- Encapsulate racoco login in one class App::Racoco. With that we can use RaCoCo as library in any Raku code
+	- Refactor Cli - stay only work with options in it
+	- Create Paths class to encapsulate logic with directories and files for a project. Paths can replace :$lib parameter through all the code. The change force to bump API version
+	- Create cascade Configuration system. The system replaced Properties class. The change force to bump API version
+
 1.6.0   2022-07-02  'No precompilation modules and -I'
 	- Add support for project modules with 'no precompilation' pragma. Such project will have inaccurate results.
 	- Add '-I' option key as a short-cut for --exec='prove6 -I.'
