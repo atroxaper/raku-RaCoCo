@@ -3,13 +3,39 @@ use lib 'lib';
 use lib 't/lib';
 use App::Racoco;
 use App::Racoco::Configuration;
+use App::Racoco::Report::Data;
 use Fixture;
 use TestResources;
 use TestHelper;
 
-plan 1;
+plan 9;
 
-my %default-args = %(
+my ($root, $captured, $below-fail-level);
+sub setup {
+	plan $*plan;
+	TestResources::prepare($*subtest);
+	$root = TestResources::exam-directory;
+}
+
+sub test-captured($out, $err) {
+	is $captured.out.text.trim.lines.join('|'), $out, $*subtest ~ ' out';
+	is $captured.err.text.trim.lines.join('|'), $err, $*subtest ~ ' err';
+}
+
+sub test-fail-level($good) {
+	is $below-fail-level <= 0, $good, $*subtest ~ ' fail level';
+}
+
+sub do-racoco($racoco) {
+	$captured = Fixture::silently {
+		$below-fail-level = $racoco
+			.calculate-coverage
+			.do-report
+			.how-below-fail-level
+	};
+}
+
+my %default = %(
 	append => False,
 	cache-dir => App::Racoco::Paths::DOT-RACOCO,
 	exec => 'prove6',
@@ -20,25 +46,103 @@ my %default-args = %(
 	reporter => ''
 );
 
-my ($root);
-sub setup {
-	plan $*plan;
-	TestResources::prepare($*subtest);
-	$root = TestResources::exam-directory;
-}
-
-'01-full-without-reporters'.&test(:2plan, {
+'01-full-without-reporters'.&test(:5plan, {
 	setup();
 	my $racoco = App::Racoco.new: :$root,
-		config => ConfigurationFactory.args(|%default-args,);
-	ok True;
+		config => ConfigurationFactory.args(|%default, :74fail-level);
 
-	my $fail-by-level;
-	my $captured = Fixture::silently {
-		$fail-by-level = $racoco
-			.calculate-coverage
+	do-racoco($racoco);
+	test-captured('Coverage: 75%', '');
+	test-fail-level(True);
+	ok $racoco.data, 'get data';
+	isa-ok $racoco.data, App::Racoco::Report::Data, 'get is a data';
+});
+
+'02-with-no-precompilation'.&test(:2plan, {
+	setup();
+	my $racoco = App::Racoco.new: :$root,
+		config => ConfigurationFactory.args(|%default,);
+
+	do-racoco($racoco);
+	test-captured('Module.rakumod cannot be precompiled. ' ~
+		'Coverage results may be inaccurate.|Coverage: 75%', '');
+});
+
+'03-pass-exec'.&test(:2plan, {
+	setup();
+	my $racoco = App::Racoco.new: :$root,
+		config => ConfigurationFactory.args(|%default, exec => 'echo "foo"');
+
+	do-racoco($racoco);
+	test-captured('Coverage: 0%', '');
+});
+
+'04-no-exec-and-no-report-fail'.&test(:1plan, {
+	setup();
+	my $racoco = App::Racoco.new: :$root,
+		config => ConfigurationFactory.args(|%default, exec => False);
+
+	Fixture::silently {
+		throws-like { $racoco.calculate-coverage }, App::Racoco::X::CannotReadReport,
+			'no report, exception', message => /'lib'/;
+	};
+});
+
+'05-append'.&test(:2plan, {
+	setup();
+	my $racoco = App::Racoco.new: :$root,
+		config => ConfigurationFactory.args(|%default, :append, :exec('prove6 xt'));
+
+	do-racoco($racoco);
+	test-captured('Coverage: 60%', '');
+});
+
+'06-no-exec-with-custom-report'.&test(:2plan, {
+	setup();
+	my $racoco = App::Racoco.new: :$root,
+		config => ConfigurationFactory.args(|%default, :!exec, reporter => 'custom-one');
+
+	do-racoco($racoco);
+	test-captured('Coverage: 75%|CustomOne: 75%', '');
+});
+
+'07-do-report-without-calculation'.&test(:2plan, {
+	setup();
+	my $racoco = App::Racoco.new: :$root,
+		config => ConfigurationFactory.args(|%default,);
+
+	$captured = Fixture::silently {
+		$below-fail-level = $racoco
 			.do-report
 			.how-below-fail-level
 	};
-	ok $fail-by-level < 0;
+	test-captured('', '');
+});
+
+'08-fail-level'.&test(:6plan, {
+	setup();
+	my $config1 = ConfigurationFactory.args(|%default, :!exec, :33fail-level);
+	my $config2 = ConfigurationFactory.args(|%default, :!exec, :34fail-level);
+
+	my $racoco = App::Racoco.new: :$root,
+		config => ConfigurationFactory.args(|%default, :!exec);
+
+	do-racoco(App::Racoco.new(:$root, config => $config1));
+	test-captured('Coverage: 33.3%', '');
+	test-fail-level(True);
+	do-racoco(App::Racoco.new(:$root, config => $config2));
+	test-captured('Coverage: 33.3%', '');
+	test-fail-level(False);
+});
+
+'09-fail-level-without-calculation'.&test(:3plan, {
+	setup();
+	my $racoco = App::Racoco.new: :$root,
+		config => ConfigurationFactory.args(|%default,);
+
+	$captured = Fixture::silently {
+		$below-fail-level = $racoco.how-below-fail-level
+	};
+	test-captured('', '');
+	test-fail-level(False);
 });

@@ -19,7 +19,7 @@ has IO::Path $.root is required;
 has Configuration $.config is required;
 has Paths $!paths;
 has RunProc $!proc;
-has Data $!data;
+has Data $.data;
 
 submethod TWEAK {
 	$!proc = RunProc.new;
@@ -86,12 +86,13 @@ method !read-data() {
 }
 
 method do-report(::?CLASS:D: --> App::Racoco:D) {
+	return without $!data;
 	$!config{ReporterClassesKey.of: 'reporter'}
 		.map({ $_.new.do(:$!paths, :$!data, :$!config) });
 	return self;
 }
 
 method how-below-fail-level(::?CLASS:D: --> Int:D) {
-
-	return -3;
+	return 146 without $!data;
+	return $!config{IntKey.of('fail-level')} - $!data.percent.Int;
 }
